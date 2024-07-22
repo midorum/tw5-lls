@@ -1,0 +1,544 @@
+created: 20240423123149995
+modified: 20240719041620679
+tags: $:/plugins/midorum/lls/tags/procedure
+title: $:/plugins/midorum/lls/procedures/lls-semantic-relation-group-edit-form
+type: text/vnd.tiddlywiki
+
+\procedure lls-semantic-relation-group-edit-form()
+\parameters (
+ state:"$:/temp/lls/state/semanticRelationGroupEditForm",
+ semanticRelationType:"synonym",
+ semanticRelation,
+ wordArticle,
+ contextIndex:"lls-semantic-relation-group-edit-form-context",
+ wordListIndex:"lls-semantic-relation-group-edit-form-word-list", 
+ wordSelectStyleIndex:"lls-semantic-relation-group-edit-form-open-select-style-form-word",
+ wordStyleIndexPrefix:"lls-semantic-relation-group-edit-form-",
+ hideDescription,
+ afterSaveAction,
+ log:"false",
+ idle:"false"
+)
+
+\procedure descriptionBlock()
+<div>
+<$list
+ filter="[<hideDescription>compare:string:eq[true]]"
+><$wikify
+ name=wikifiedDescription
+ text=<<descriptionText>>
+><div 
+ title=<<wikifiedDescription>>
+><$transclude
+ $tiddler="$:/core/images/info-button"
+ size="18"
+/></div></$wikify></$list><$list
+ filter="[<hideDescription>!compare:string:eq[true]]"
+><$transclude
+ $variable="descriptionText"
+/></$list>
+</div>
+\end descriptionBlock
+
+\procedure descriptionText()
+<$list
+ filter="[<semanticRelationType>tag[$:/lls/tags/semanticRelationType]]"
+><$transclude/></$list>
+\end descriptionText
+
+\procedure contextInput()
+<div>
+Describe the context in which the selected words can be substituted without changing the overall meaning of the sentence. It is highly recommended to do this. You can change it later.
+</div>
+<div>
+<$edit-text
+ tiddler=<<state>>
+ index=<<contextIndex>>
+/>
+</div>
+\end contextInput
+
+\procedure selectedWordList()
+<$list
+ filter="[<wordArticle>!is[blank]]"
+><$transclude
+ $variable="wordArticleEntry"
+ ref=<<currentTiddler>>
+ $mode="block"
+/></$list><$set 
+ name="wordList"
+ tiddler=<<state>>
+ index=<<wordListIndex>>
+><$list
+ filter="[enlist<wordList>]"
+><$list
+ filter="[<currentTiddler>tag[$:/lls/tags/wordArticle]]"
+><$transclude
+ $variable="wordArticleEntry"
+ ref=<<currentTiddler>>
+ canBeDeleted
+ $mode="block"
+/></$list><$list
+ filter="[<currentTiddler>!is[tiddler]]"
+><$transclude
+ $variable="unknownWordEntry"
+ ref=<<currentTiddler>>
+ canBeDeleted
+ $mode="block"
+/></$list></$list></$set>
+\end selectedWordList
+
+\procedure wordArticleEntry(ref, canBeDeleted)
+<div>
+<$list
+ filter="[<ref>tags[]tag[$:/lls/tags/word]]"
+><$transclude
+ $field="text"
+/></$list><$transclude
+ $variable="languageStyleView"
+ ref=<<ref>>
+/><$text
+ text=" - "
+/><$list
+ filter="[<ref>tags[]tag[$:/lls/tags/wordMeaning]]"
+><$transclude
+ $field="text"
+/></$list><$list
+ filter="[<canBeDeleted>compare:string:eq[true]]"
+>&nbsp;<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<removeWordFromList "[[ref]]">>
+><$transclude
+ $variable="no-wrap-text"
+ text="[X]"
+/></$button></$list>
+</div>
+<div>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<openSelectStyleForm "[[ref]]">>
+><$transclude
+ $variable="no-wrap-text"
+ text="[select language style for the word in specified context]"
+/></$button>
+</div>
+<div>
+<$transclude
+ $variable="selectStyleForm"
+ ref=<<ref>>
+ $mode="block"
+/>
+</div>
+\end wordArticleEntry
+
+\procedure unknownWordEntry(ref, canBeDeleted)
+<div>
+<<ref>>
+<$transclude
+ $variable="languageStyleView"
+ ref=<<ref>>
+/><$text
+ text=" - (this word does not have own article yet)"
+/><$list
+ filter="[<canBeDeleted>compare:string:eq[true]]"
+>&nbsp;<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<removeWordFromList "[[ref]]">>
+><$transclude
+ $variable="no-wrap-text"
+ text="[X]"
+/></$button></$list>
+</div>
+<div>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<openSelectStyleForm "[[ref]]">>
+><$transclude
+ $variable="no-wrap-text"
+ text="[select language style for the word in specified context]"
+/></$button>
+</div>
+<div>
+<$transclude
+ $variable="selectStyleForm"
+ ref=<<ref>>
+ $mode="block"
+/>
+</div>
+\end unknownWordEntry
+
+\procedure prefixedWordStyleRef(ref)
+<<wordStyleIndexPrefix>><<ref>>
+\end prefixedWordStyleRef
+
+\procedure languageStyleView(ref)
+<$wikify
+ name=wikifiedFieldName
+ text=<<prefixedWordStyleRef "[[ref]]">>
+><$list
+ filter="[<state>getindex<wikifiedFieldName>split[ ]join[, ]addprefix[ (]addsuffix[)]]"
+><$transclude
+ $field="title"
+/></$list></$wikify>
+\end languageStyleView
+
+\procedure selectStyleForm(ref)
+<$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<wordSelectStyleIndex>>
+ text=<<ref>>
+>
+<div>
+Select most appropriate language style for the word meaning in specified context. Hold Ctrl or Shift key pressed to select several styles.
+</div>
+<div>
+<$wikify
+ name=wikifiedRef
+ text=<<prefixedWordStyleRef "[[ref]]">>
+><$select
+ tiddler=<<state>>
+ index=<<wikifiedRef>>
+ multiple
+ size='8'
+><$list
+ filter='[tag[$:/lls/tags/languageStyle]]'
+><option value={{!!title}}><$view
+ field='title'
+/></option></$list></$select></$wikify>
+</div>
+<div>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<clearWordStyle "[[ref]]">>
+><$transclude
+ $variable="no-wrap-text"
+ text="[clear selection]"
+/></$button><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<closeSelectStyleForm>>
+><$transclude
+ $variable="no-wrap-text"
+ text="[close]"
+/></$button>
+</div>
+</$reveal>
+\end selectStyleForm
+
+\procedure removeWordFromList(ref)
+<$action-listops
+ $tiddler=<<state>>
+ $index=<<wordListIndex>>
+ $subfilter="-[<ref>]"
+/>
+\end removeWordFromList
+
+\procedure openSelectStyleForm(ref)
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<wordSelectStyleIndex>>
+ $value=<<ref>>
+/>
+\end openSelectStyleForm
+
+\procedure closeSelectStyleForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<wordSelectStyleIndex>>
+/>
+\end closeSelectStyleForm
+
+\procedure clearWordStyle(ref)
+<$wikify
+ name=wikifiedRef
+ text=<<prefixedWordStyleRef "[[ref]]">>
+><$action-setfield
+ $tiddler=<<state>>
+ $index=<<wikifiedRef>>
+/></$wikify>
+\end clearWordStyle
+
+\procedure chooseWordArticleForm()
+<div>
+Search words which can be substituted in the specified context.
+</div>
+<div>
+<$transclude
+ $variable="lls-choose-word-meaning-form"
+ state=<<state>> 
+ actions="chooseWordArticleFormButtons"
+/>
+</div>
+\end chooseWordArticleForm
+
+\procedure chooseWordArticleFormButtons()
+<$set
+ name=wa
+ tiddler=<<state>>
+ index="lls-choose-word-meaning-form-selected-word-article"
+><$set
+ name=p
+ tiddler=<<state>>
+ index="predicate"
+><$set 
+ name=addWordArticleDisabled 
+ filter="[<wa>!compare:string:eq[]then[no]else[yes]]"
+><$set 
+ name=addWordDisabled 
+ filter="[<p>compare:string:eq[]then[yes]] [<wa>!compare:string:eq[]then[yes]] :else[tag[$:/lls/tags/word]get[text]compare:string:eq<p>then[yes]else[no]]"
+>
+<div>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<addWordArticleToList>>
+ disabled=<<addWordArticleDisabled>>
+><$transclude
+ $variable="no-wrap-text"
+ text="[add word meaning]"
+/></$button>
+</div>
+<div>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<addUnknownWordToList>>
+ disabled=<<addWordDisabled>>
+><$transclude
+ $variable="no-wrap-text"
+ text="[add word without article]"
+/></$button>
+</div>
+</$set></$set></$set></$set>
+\end chooseWordArticleFormButtons
+
+\procedure addWordArticleToList()
+<$set
+ name=var
+ tiddler=<<state>>
+ index="lls-choose-word-meaning-form-selected-word-article"
+><$action-listops
+ $tiddler=<<state>>
+ $index=<<wordListIndex>>
+ $subfilter=<<var>>
+/></$set><$transclude
+ $variable="clearChooseWordArticleForm"
+/>
+\end addWordArticleToList
+
+\procedure addUnknownWordToList()
+<$set 
+ name=var 
+ filter="[<state>getindex[predicate]]"
+><$action-listops
+ $tiddler=<<state>>
+ $index=<<wordListIndex>>
+ $subfilter=<<var>>
+/></$set><$transclude
+ $variable="clearChooseWordArticleForm"
+/>
+\end addUnknownWordToList
+
+\procedure clearChooseWordArticleForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index="predicate"
+/><!-- fixme: we clear foreign index --><$action-setfield
+ $tiddler=<<state>>
+ $index="lls-choose-word-meaning-form-selected-word"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index="lls-choose-word-meaning-form-selected-word-article"
+/>
+\end clearChooseWordArticleForm
+
+\procedure clearWholeForm()
+<$transclude
+ $variable="clearChooseWordArticleForm"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<contextIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<wordListIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<wordSelectStyleIndex>>
+/><$set
+ name="pattern"
+ value="^<<wordStyleIndexPrefix>>.*"
+><$wikify
+ name=wikifiedPattern
+ text=<<pattern>>
+><$action-setmultiplefields
+ $tiddler=<<state>>
+ $indexes="[<state>indexes[]regexp:title<wikifiedPattern>]"
+/></$wikify></$set>
+\end clearWholeForm
+
+\procedure saveSemanticRelationGroupButton()
+<div>
+<$set 
+ name=l 
+ filter="[<wordArticle>is[blank]then[1]else[0]]"
+><$set 
+ name=disabled 
+ filter="[<state>getindex<wordListIndex>enlist-input[]count[]compare:integer:gt<l>then[no]else[yes]]"
+><$button 
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<saveSemanticRelationGroupAction>>
+ disabled=<<disabled>>
+><$transclude
+ $variable="no-wrap-text"
+ text="[save semantic relation group]"
+/></$button></$set></$set>
+</div>
+\end saveSemanticRelationGroupButton
+
+\define saveSemanticRelationGroupAction()
+<$set 
+ name=logEnabled 
+ filter="[<log>compare:string:eq[false]then[false]else[true]]"
+><$set 
+ name=idleEnabled 
+ filter="[<idle>compare:string:eq[false]then[false]else[true]]"
+><$set
+ name="wordList"
+ tiddler=<<state>>
+ index=<<wordListIndex>>
+><!-- <$action-log
+ semanticRelationType=<<semanticRelationType>>
+ semanticRelation=<<semanticRelation>>
+ state=<<state>>
+ wordArticle=<<wordArticle>>
+ contextIndex=<<contextIndex>>
+ wordListIndex=<<wordListIndex>>
+ wordStyleIndexPrefix=<<wordStyleIndexPrefix>>
+ wordList=<<wordList>>
+/> --><$action-sendmessage
+ $message="tm-lls-save-semantic-relation-group"
+ semanticRelationType=<<semanticRelationType>>
+ semanticRelation=<<semanticRelation>>
+ state=<<state>>
+ wordArticle=<<wordArticle>>
+ contextIndex=<<contextIndex>>
+ wordListIndex=<<wordListIndex>>
+ wordStyleIndexPrefix=<<wordStyleIndexPrefix>>
+ log=<<logEnabled>>
+ idle=<<idleEnabled>>
+/><$transclude
+ $variable=<<afterSaveAction>>
+/></$set></$set></$set>
+\end saveSemanticRelationGroupAction
+
+<!---------- content ------------>
+
+<div class="lls-semantic-relation-group-edit-form">
+<$transclude
+ $variable="descriptionBlock"
+ $mode="block"
+/><$transclude
+ $variable="contextInput"
+ $mode="block"
+/><$transclude
+ $variable="selectedWordList"
+ $mode="block"
+/><$transclude
+ $variable="chooseWordArticleForm"
+ $mode="block"
+/><$transclude
+ $variable="saveSemanticRelationGroupButton"
+ $mode="block"
+/>
+</div>
+\end lls-semantic-relation-group-edit-form
+
+<!----------- usages ------------->
+
+
+
+<!---- creating a new semantic relation
+$:/lls/db/wa/1712853024348
+$:/lls/db/wa/1712853123919
+$:/lls/db/wa/1712852736268
+
+<<spring-stub
+ factor:3
+ transclude:"$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ transcludeAlign:"bottom"
+>>
+<hr>
+[[$:/temp/lls/state/semanticRelationGroupEditFormTest]]
+<$transclude
+ $variable="lls-semantic-relation-group-edit-form"
+ state="$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ log
+ idle
+/>
+<hr>
+[[$:/temp/lls/state/semanticRelationGroupEditFormTest]]
+<$transclude
+ $variable="lls-semantic-relation-group-edit-form"
+ state="$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ wordArticle="$:/lls/db/wa/1712852736268"
+ contextIndex="myContextIndex"
+ wordListIndex="myWordListIndex"
+ wordStyleIndexPrefix="myWordStyleIndexPrefix-"
+ hideDescription
+ log
+ idle
+/>
+<hr>
+-->
+
+<!-- editing an exist semantic relation
+$:/lls/db/sr/1713721489270
+$:/lls/db/sr/1713956901931
+
+\procedure initializeTestStateAction()
+<$set 
+ name=semanticRelation 
+ value="$:/lls/db/sr/1713956901931"
+><$set 
+ name=context 
+ tiddler=<<semanticRelation>>
+ field=text
+><$action-setfield
+ $tiddler="$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ $index="myContextIndex"
+ $value=<<context>>
+/></$set><$set 
+ name=wordList 
+ tiddler=<<semanticRelation>>
+ field=semanticRelationList
+><$action-setfield
+ $tiddler="$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ $index="myWordListIndex"
+ $value=<<wordList>>
+/></$set><$action-setmultiplefields
+ $tiddler="$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ $indexes="[<semanticRelation>fields[]regexp[^srls-]search-replace[srls-],[myWordStyleIndexPrefix-]]"
+ $values="[<semanticRelation>fields[]regexp[^srls-]] :map[<semanticRelation>get<currentTiddler>]"
+/></$set>
+\end initializeTestStateAction
+
+<<spring-stub
+ factor:3
+ transclude:"$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ transcludeAlign:"bottom"
+>>
+<hr>
+[[$:/temp/lls/state/semanticRelationGroupEditFormTest]]
+<$button actions=<<initializeTestStateAction>>>initialize state</$button>
+<$transclude
+ $variable="lls-semantic-relation-group-edit-form"
+ state="$:/temp/lls/state/semanticRelationGroupEditFormTest"
+ semanticRelation="$:/lls/db/sr/1713956901931"
+ contextIndex="myContextIndex"
+ wordListIndex="myWordListIndex"
+ wordStyleIndexPrefix="myWordStyleIndexPrefix-"
+ hideDescription
+ log
+ idle
+/>
+<hr>
+
+---->

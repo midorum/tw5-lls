@@ -1,0 +1,16 @@
+created: 20240526114153189
+modified: 20240719054951579
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/usageExampleBackwardQuestionCardTemplate
+type: text/vnd.tiddlywiki
+
+\parameters (
+ src,
+ random
+)
+
+<$transclude
+ $variable="lls-usage-example-backward-question-card"
+ src=<<src>>
+ random=<<random>>
+/>

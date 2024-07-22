@@ -1,0 +1,24 @@
+created: 20240704114750966
+modified: 20240719062234565
+tags: 
+title: Learning Rules
+type: text/vnd.tiddlywiki
+state: $:/lls/state/learningRules
+
+<$set
+    name="groupFilter"
+    tiddler={{!!state}}
+    field="groupFilter"
+><$transclude
+    $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionTemplate"
+    src="$:/lls/tags/usageExample"
+    groupFilter=<<groupFilter>>
+    groupStrategy="groupOnly"
+    forwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleForwardQuestionCardTemplate"
+    forwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleForwardAnswerCardTemplate"
+    backwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleBackwardQuestionCardTemplate"
+    backwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleBackwardAnswerCardTemplate"
+    directions="backward"
+    directionButtons="[[Start learn rules]]" 
+    limit=200
+/></$set>

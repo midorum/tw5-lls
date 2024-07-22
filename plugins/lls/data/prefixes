@@ -1,0 +1,13 @@
+word:$:/lls/db/w/
+wordArticle:$:/lls/db/wa/
+wordMeaning:$:/lls/db/wm/
+wordTranscription:$:/lls/db/wt/
+transcriptionGroup:$:/lls/db/tg/
+usageExample:$:/lls/db/ue/
+semanticRelation:$:/lls/db/sr/
+semanticRelationTag:$:/lls/tags/sr/
+semanticRelationLanguageStyleFieldName:srls-
+temp:$:/temp/
+userTag:$:/lls/db/ut/
+userTagValue:$:/lls/db/utv/
+rule:$:/lls/db/r/

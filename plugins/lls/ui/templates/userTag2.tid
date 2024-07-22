@@ -1,0 +1,111 @@
+created: 20240503165424379
+modified: 20240719054627123
+name: test tag name
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/userTag2
+type: text/vnd.tiddlywiki
+
+\define lls-tag-pill2(tagName, popupTemplate, removeTagAction)
+\define _removeTagAction()
+<$transclude
+ $variable=$removeTagAction$
+/>
+\end _removeTagAction
+<span class="tc-tag-label lls-tag-label">
+<$button
+ class="lls-tag-button"
+ popup=<<qualify $popupTemplate$>>
+ tag='span'
+ style.fill={{$(palette)$##background}}
+><$view
+ tiddler=<<__tagName__>>
+ field="title"
+ format="text"
+/></$button><$list
+ filter="[[$removeTagAction$]!compare:string:eq[]]"
+><$button
+ class="tc-remove-tag-button lls-remove-tag-button"
+ tag='span'
+ style.fill={{$(palette)$##background}}
+ actions=<<_removeTagAction>>
+>{{$:/core/images/close-button}}</$button></$list>
+<span>
+\end lls-tag-pill2
+
+\define remove-tag-action()
+<$action-log
+ $$message="remove-tag-action"
+ tag=<<userTag>>
+/>
+\end remove-tag-action
+
+<span class="tc-tag-list-item">
+<$set 
+ name=palette 
+ value={{$:/palette}}
+><$set
+ name="userTag"
+ value=<<currentTiddler>>
+><$set
+ name="tagName"
+ tiddler=<<userTag>>
+ field="name"
+>
+ 
+<$transclude
+ $variable="lls-tag-pill2"
+ tagName=<<tagName>>
+ popupTemplate="$:/state/popup/tag"
+/>
+
+<$transclude
+ $variable="lls-tag-pill2"
+ tagName=<<tagName>>
+ popupTemplate="$:/state/popup/tag"
+ removeTagAction="remove-tag-action"
+/>
+
+<$reveal
+ state=<<qualify "$:/state/popup/tag">>
+ type="popup"
+ position="below"
+ animate="yes"
+ class="tc-drop-down"
+>
+<div class="tc-menu-list-item lls-drop-down-item">
+<$transclude
+ $tiddler=<<userTag>>
+ $field="text"
+/>
+</div>
+<$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref=<<userTag>>
+ _text="[other words with this tag]"
+/>
+<hr>
+<div class="tc-menu-list-item lls-drop-down-item">
+Description for this word: TBD
+</div>
+</$reveal>
+
+</$set></$set></$set>
+</span>
+
+<style>
+span.tc-tag-label.lls-tag-label{
+ white-space: normal;
+}
+span.lls-tag-button, span.lls-remove-tag-button {
+ cursor: pointer;
+}
+span.lls-remove-tag-button svg {
+  font-size: 0.7em;
+  vertical-align: middle;
+}
+</style>
+
+<!--
+
+
+-->

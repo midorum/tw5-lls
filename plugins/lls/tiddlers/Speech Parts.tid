@@ -1,0 +1,52 @@
+created: 20240320120335329
+modified: 20240515172344172
+tags: 
+title: Speech Parts
+type: text/vnd.tiddlywiki
+
+\define new-speech-part()
+<$action-sendmessage 
+  $message="tm-new-tiddler" 
+  title={{$:/temp/midorum/speechPartInput}}
+  tags="[[Speech Parts]]"
+  text={{$:/temp/midorum/speechPartDescriptionInput}}
+  />
+<$action-setfield 
+  $tiddler="$:/temp/midorum/speechPartInput" 
+  text=""/>
+<$action-setfield 
+  $tiddler="$:/temp/midorum/speechPartDescriptionInput" 
+  text=""/>
+\end
+
+<!--------------------------------------------------------->
+
+By default, only the main parts of speech found in most languages are listed. If you are missing any part of speech for the language you are learning, simply add it using the form below.
+
+<$list filter="[!has[draft.of]tag[Speech Parts]sort[created]]">
+
+<$link to={{!!title}}>
+<$view field="title"/>
+</$link>
+- <$view field="text"/>
+
+</$list>
+
+<!--------------------------------------------------------->
+
+<hr>
+
+!! Create new Part of Speech
+
+Part of Speech
+
+<$edit-text tiddler="$:/temp/midorum/speechPartInput" tag="input" default=""/>
+
+Description
+
+<$edit-text tiddler="$:/temp/midorum/speechPartDescriptionInput" default="" size="50"/>
+
+
+<$button actions=<<new-speech-part>>>
+Create
+</$button>

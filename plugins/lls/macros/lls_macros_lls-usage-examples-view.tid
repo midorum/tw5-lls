@@ -1,0 +1,91 @@
+created: 20240330043242953
+modified: 20240719054014149
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-usage-examples-view
+type: text/vnd.tiddlywiki
+
+\define openState() $:/temp/lls/lls-usage-examples-view-openState
+\define moreState() $:/temp/lls/lls-usage-examples-view-moreState
+
+\define open()
+<$action-setfield $tiddler=<<openState>> $index=<<outer>> $value="open"/>
+\end
+
+\define hide()
+<$action-setfield $tiddler=<<openState>> $index=<<outer>> $value=""/>
+\end
+
+\define moreExamples()
+<$action-setfield $tiddler=<<moreState>> $index=<<outer>> $value="more"/>
+\end
+
+\define lessExamples()
+<$action-setfield $tiddler=<<moreState>> $index=<<outer>> $value=""/>
+\end
+
+\define lls-usage-example-view-action()
+<$transclude $variable="openExampleViewFormLink" ref=<<currentTiddler>> text="[view]" />
+\end
+
+\define lls-usage-example-table(actions)
+<table style="border-collapse: collapse; border: none;">
+  <tr style="border: none;">
+    <td style="border: none;">
+      {{!!original}}
+    </td>
+    <td style="border: none;">
+      -
+    </td>
+    <td style="border: none;">
+      {{!!translation}}
+    </td>
+    <td style="border: none;">
+      $actions$
+    </td>
+  </tr>  
+</table>  
+\end
+ 
+\define lls-usage-examples-view(filter:"[all[current]]", number:5, actions)
+<$vars outer=<<currentTiddler>>>
+<div class="lls-usage-examples-view">
+  <$reveal type="match" stateTitle=<<openState>> stateIndex=<<outer>> text="">
+  <div class="lls-usage-examples-caption">
+    <$button class="tc-btn-invisible tc-tiddlylink" actions=<<open>>>Examples</$button>
+  </div>
+  </$reveal>
+  <$reveal type="match" stateTitle=<<openState>> stateIndex=<<outer>> text="open">
+  <div class="lls-usage-examples-caption">
+    <$button class="tc-btn-invisible tc-tiddlylink" actions=<<hide>>>Examples</$button>
+  </div>
+  <div class="lls-usage-examples-table">
+    <$reveal type="match" stateTitle=<<moreState>> stateIndex=<<outer>> text="">
+    <$list filter="$filter$ +[first[$number$]]">
+      <$transclude $variable="lls-usage-example-table" actions=<<__actions__>>/>
+    </$list>
+    <$button class="tc-btn-invisible tc-tiddlylink" actions=<<moreExamples>>>More examples</$button>
+    </$reveal>
+    <$reveal type="nomatch" stateTitle=<<moreState>> stateIndex=<<outer>> text="">
+    <$list filter="$filter$">
+      <$transclude $variable="lls-usage-example-table" actions=<<__actions__>>/>
+    </$list>
+    <$button class="tc-btn-invisible tc-tiddlylink" actions=<<lessExamples>>>Less examples</$button>
+    </$reveal>
+  </div>
+  </$reveal>
+</div>
+</$vars>
+\end
+
+
+
+
+
+<!-- usages
+
+<$transclude $variable="lls-usage-examples-view" filter="[tag[$:/lls/tags/usageExample]tag[$:/lls/db/wa/1711433973512]]" number=3 actions=<<lls-usage-example-view-action>>/>
+
+<$transclude $variable="lls-usage-examples-view" filter="[tag[$:/lls/tags/usageExample]tag[$:/lls/db/wa/1712853024344]]" number=3 actions=<<lls-usage-example-view-action>>/>
+
+
+-->

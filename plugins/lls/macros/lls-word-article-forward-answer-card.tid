@@ -1,0 +1,173 @@
+created: 20240404160304822
+modified: 20240719054231742
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-word-article-forward-answer-card
+type: text/vnd.tiddlywiki
+
+\define lls-word-article-forward-answer-card(src, random)
+\import $:/plugins/midorum/lls/procedures/lls-semantic-relation-group-view
+
+\define synonymsSection()
+<$set
+ name=synonymsGroup
+ filter="[<src>tagging[]tag[$:/lls/tags/sr/synonymsGroup]]"
+><$list
+ filter="[<synonymsGroup>is[tiddler]]"
+>Similar words (synonyms)<$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation=<<synonymsGroup>>
+ exclude=<<src>>
+ mode="full"
+/></$list></$set>
+\end synonymsSection
+
+\define usageExampleSection(ref)
+\define srsFieldView(field)
+<$list
+ filter="[[$ref$]get[$field$]format:timestamp[YY/0MM/0DD 0hh:0mm]]"
+><$text
+ text=" at: "
+/><$text
+ text=<<currentTiddler>>
+/></$list>
+\end srsFieldView
+\define scheduledForward()
+<$list
+ filter="[[$ref$]tag[$:/srs/tags/scheduledForward]]"
+ emptyMessage="Isn't scheduled forward"
+><$text
+ text="Scheduled forward"
+/><$transclude
+ $variable="srsFieldView"
+ field="srs-forward-due"
+/></$list>
+\end scheduledForward
+\define scheduledBackward()
+<$list
+ filter="[[$ref$]tag[$:/srs/tags/scheduledBackward]]"
+ emptyMessage="Isn't scheduled backward"
+><$text
+ text="Scheduled backward"
+/><$transclude
+ $variable="srsFieldView"
+ field="srs-backward-due"
+/></$list>
+\end scheduledBackward
+\define infoText()
+<$transclude
+ $variable="scheduledForward"
+/>&#10;<$transclude
+ $variable="scheduledBackward"
+/>
+\end infoText
+\define usageExampleInfoTooltip()
+<$wikify
+ name=wikified
+ text=<<infoText>>
+><span
+ title=<<wikified>>
+><$transclude
+ $tiddler="$:/core/images/info-button"
+ size="18"
+/></span></$wikify>
+\end usageExampleInfoTooltip
+<$text
+ text="The sentence translation:"
+/><h3><div><$transclude
+ $tiddler="$ref$"
+ $field="original"
+/><$text
+ text=" "
+/><$transclude
+ $variable="usageExampleInfoTooltip"
+/></div><div><$transclude
+ $tiddler="$ref$"
+ $field="translation"
+/></div></h3><$transclude
+ $variable="openExampleViewFormLink"
+ ref="$ref$"
+ text="[view usage example card]"
+/>
+\end usageExampleSection
+
+<$set name=src value="$src$">
+<$set name=random value="$random$">
+<$set name=examples filter="[<src>tagging[]tag[$:/lls/tags/usageExample]]">
+<$set name=count filter="[<examples>split[ ]!is[blank]count[]]">
+<$set name=index filter="[<random>multiply<count>floor[]]">
+
+<$set name="word" filter="[<src>tags[]tag[$:/lls/tags/word]]">
+<$set name="wordMeaning" filter="[<src>tags[]tag[$:/lls/tags/wordMeaning]]">
+The answer is:
+<h2>
+<$transclude
+ $tiddler=<<word>>
+ $field="text"
+/><$text
+ text=" - "
+/><$list
+ filter="[<wordMeaning>tags[]tag[Speech Parts]]"
+>(<<currentTiddler>>)</$list><$text
+ text=" "
+/><$transclude
+ $tiddler=<<wordMeaning>>
+ $field="text"
+ $mode="inline"
+/>
+</h2>
+<!-- todo: delete after processing all words --><$transclude
+ $tiddler=<<src>>
+ $field="similarWords"
+ $mode="inline"
+/><$transclude
+ $variable="synonymsSection"
+ $mode="block"
+/><$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<word>>
+ text="[view other word meanings]"
+ $mode="block"
+/>
+</$set>
+</$set>
+
+<$list
+ filter="[<count>!compare:integer:eq[0]]"
+><$list
+ filter="[<examples>split[ ]zth<index>]"
+><$transclude
+ $variable="usageExampleSection"
+ ref=<<currentTiddler>>
+ $mode="block"
+/></$list></$list>
+
+</$set>
+</$set>
+</$set>
+</$set>
+</$set>
+\end
+
+<!------------- usages -------------->
+
+<!--
+<$transclude
+ $variable="spring-stub"
+ factor=3
+/>
+
+-->
+
+
+
+
+<!-- 
+
+
+<$transclude $variable="lls-word-article-forward-answer-card" src="$:/lls/db/wa/1711772669550" random=0.10920145163645778/>
+<hr>
+<$transclude $variable="lls-word-article-forward-answer-card" src="$:/lls/db/wa/1712852736246" random=0.10920145163645778/>
+<hr>
+<$transclude $variable="lls-word-article-forward-answer-card" src="$:/lls/db/wa/1711735037298" random=0.10920145163645778/>
+
+-->

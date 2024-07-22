@@ -1,0 +1,391 @@
+created: 20240427153036426
+modified: 20240719041351169
+tags: $:/plugins/midorum/lls/tags/procedure
+title: $:/plugins/midorum/lls/procedures/lls-search
+type: text/vnd.tiddlywiki
+
+\procedure lls-search()
+\parameters (
+ state:"$:/temp/lls/state/search",
+ searchInputIndex:"lls-search-predicate",
+ searchMode,
+ entryTransclude,
+ searchOnly,
+ periodStart,
+ periodEnd,
+ showFilter,
+ autoFocus:"yes",
+ log,
+ limit:100,
+ inputActions
+)
+ 
+\procedure _filterOptions()
+<$list
+ filter="[[limit=<<limit>>]]
+ =[<searchMode>!compare:string:eq[]then<searchMode>]
+ =[<searchOnly>compare:string:eq[true]then[searchOnly]]
+ =[<log>compare:string:eq[true]then[log]]
+ +[join[:]]"
+><$transclude
+ $field="title"
+ $mode="inline"
+/></$list>
+\end _filterOptions
+
+\procedure _filter()
+[lls:search:<<_filterOptions>><_predicate>,[<<periodStart>>],[<<periodEnd>>]]
+\end _filter
+
+\procedure _inputHook()
+<$set
+ name=actionValue
+ tiddler=<<state>>
+ index=<<searchInputIndex>>
+><$transclude
+ $variable=<<inputActions>>
+ actionValue=<<actionValue>>
+/></$set>
+\end _inputHook
+ 
+\procedure _entry(_ref)
+<$list
+ filter="[<entryTransclude>!compare:string:eq[]]"
+><$transclude
+ $variable=<<entryTransclude>>
+ _ref=<<_ref>>
+/></$list>
+<$list
+ filter="[<entryTransclude>compare:string:eq[]]"
+><$set 
+ name=var 
+ filter="[<searchMode>regexp[.*getExamples.*]then[_entryUsageExample]] :else[<searchMode>regexp[.*getUserTags.*]then[_entryUserTag]] :else[<searchMode>regexp[.*getRules.*]then[_entryRule]] :else[[_entryWord]]"
+><$transclude
+ $variable=<<var>>
+ _ref=<<_ref>>
+/></$set></$list>
+\end _entry
+
+\procedure _entryWord(_ref)
+<$tiddler
+ tiddler=<<_ref>>
+><div><$list
+ filter="[<_ref>is[tiddler]]"
+><$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<_ref>>
+ text={{!!text}}
+ $mode=inline
+/></$list><$list
+ filter="[<_ref>!is[tiddler]]"
+><$text
+ text=<<_ref>>
+/></$list></div></$tiddler>
+\end _entryWord
+
+\procedure _entryUsageExample(_ref)
+<$tiddler
+ tiddler=<<_ref>>
+><div><$list
+ filter="[<_ref>is[tiddler]]"
+><$transclude
+ $variable="lls-usage-example-table"
+ actions=<<lls-usage-example-view-action>>
+ $mode=inline
+/></$list><$list
+ filter="[<_ref>!is[tiddler]]"
+><$text
+ text=<<_ref>>
+/></$list></div></$tiddler>
+\end _entryUsageExample
+
+\procedure _entryUserTag(_ref)
+<$tiddler
+ tiddler=<<_ref>>
+><div><$list
+ filter="[<_ref>is[tiddler]]"
+><$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref=<<_ref>>
+ $mode=inline
+/></$list><$list
+ filter="[<_ref>!is[tiddler]]"
+><$text
+ text=<<_ref>>
+/></$list></div></$tiddler>
+\end  _entryUserTag
+
+\procedure _entryRule(_ref)
+<$tiddler
+ tiddler=<<_ref>>
+><div><$list
+ filter="[<_ref>is[tiddler]]"
+><$transclude
+ $variable="open-rule-view-form-link"
+ _ref=<<_ref>>
+ $mode=inline
+/></$list><$list
+ filter="[<_ref>!is[tiddler]]"
+><$text
+ text=<<_ref>>
+/></$list></div></$tiddler>
+\end  _entryRule
+
+\procedure _clearSearchInputAction()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<searchInputIndex>>
+/>
+\end  _clearSearchInputAction
+
+
+<!------------- content ------------------>
+<div
+ class="lls-search"
+><div
+ class="lls-search-input"
+><$edit-text
+ tiddler=<<state>>
+ index=<<searchInputIndex>>
+ tag="input"
+ focus=<<autoFocus>>
+ focusSelectFromStart=-1
+ focusSelectFromEnd=-1
+ default=""
+ inputActions=<<_inputHook>>
+/><$button
+ class="lls-icon-button"
+ tag='span'
+ tooltip='Clear search'
+ actions=<<_clearSearchInputAction>>
+><$transclude
+ $tiddler="$:/core/images/close-button"
+/></$button></div><div><$set
+ name=_predicate
+ tiddler=<<state>>
+ index=<<searchInputIndex>>
+><$wikify
+ name=wf
+ text=<<_filter>>
+><$list
+ filter="[<showFilter>compare:string:eq[true]]"
+><$transclude
+ $variable="wf"
+/></$list><$list
+ variable=entry
+ filter=<<wf>>
+><$transclude
+ $variable="_entry"
+ _ref=<<entry>>
+/></$list></$wikify></$set></div></div>
+\end lls-search
+
+\procedure lls-search-period-paginator()
+\parameters (
+ state:"$:/temp/lls/state/search",
+ selectedPeriodIndex:"lls-search-period-paginator-period",
+ periodOffsetIndex:"lls-search-period-paginator-offset"
+)
+
+\procedure shiftPeriodOffsetAction()
+\parameters (_shift)
+<$action-log _shift=<<_shift>>/>
+<$set 
+ name=var 
+ filter="[<state>getindex<periodOffsetIndex>else[0]] +[add<_shift>]"
+><$action-setfield
+ $tiddler=<<state>>
+ $index=<<periodOffsetIndex>>
+ $value=<<var>>
+/></$set>
+\end shiftPeriodOffsetAction
+
+\procedure dec()
+<$transclude
+ $variable="shiftPeriodOffsetAction"
+ _shift=-1
+/>
+\end dec
+
+\procedure inc()
+<$transclude
+ $variable="shiftPeriodOffsetAction"
+ _shift=1
+/>
+\end inc
+
+\procedure zero()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<periodOffsetIndex>>
+ $value=0
+/>
+\end zero
+
+<div>
+<$list
+ variable=_p
+ filter="[[hour day  week  month  quarter  year]enlist-input[]]"
+ join="&nbsp;"
+><$radio
+ tiddler=<<state>>
+ index=<<selectedPeriodIndex>>
+ value=<<_p>>
+ actions=<<zero>>
+>&nbsp;<$text
+ text=<<_p>>
+/></$radio></$list>&nbsp;<$button
+ actions=<<dec>>
+><$text
+ text="<<"
+/></$button><$button
+ actions=<<zero>>
+><$text
+ text="0"
+/></$button>
+<$button
+ actions=<<inc>>
+><$text
+ text=">>"
+/></$button>
+</div><div>
+<$set 
+ name=offset 
+ filter="[<state>getindex<periodOffsetIndex>]"
+><$list
+ variable=selected
+ filter="[<state>getindex<selectedPeriodIndex>]"
+><$text
+ text="Current period is: "
+/><$list
+ filter="[lls:period:log<selected>,<offset>]"
+ join=" - "
+><$list
+ filter="[<currentTiddler>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+><<currentTiddler>></$list></$list></$list></$set>
+</div>
+\end lls-search-period-paginator
+
+<!---------------- usages ---------------------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+ transclude="$:/temp/lls/state/search"
+ transcludeAlign="bottom"
+/>
+
+<!--
+-->
+
+
+
+
+
+<!-- 
+
+<$transclude
+ $variable="lls-search"
+ autoFocus="no"
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchOnly
+ limit=500
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="meanings"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="meanings:examples"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="meanings:recent"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="getExamples"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="getExamples:recent"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="getUserTags"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="getRules"
+ searchOnly
+ log
+/>
+
+<$transclude
+ $variable="lls-search"
+ searchMode="meanings:recent"
+ periodStart=1711918800000
+ periodEnd=1714510799999
+ showFilter
+ log
+/>
+
+[[$:/temp/lls/search]]
+<$transclude
+ $variable="lls-search"
+ state="$:/temp/lls/search"
+/>
+
+\procedure lls-search-input-hook-example(actionValue)
+<$action-log actionValue=<<actionValue>>/>
+\end lls-search-input-hook-example
+<$transclude
+ $variable="lls-search"
+ inputActions="lls-search-input-hook-example"
+/>
+
+\procedure lls-search-word-entry-checkbox(_ref)
+<$tiddler
+ tiddler=<<_ref>>
+><div><$radio
+ tiddler="$:/temp/lls/search"
+ index="selected"
+ value=<<_ref>>
+><$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<_ref>>
+ text={{!!text}}
+/></$radio>
+</div></$tiddler>
+\end lls-search-word-entry-checkbox
+[[$:/temp/lls/search]]
+<$transclude
+ $variable="lls-search"
+ entryTransclude="lls-search-word-entry-checkbox"
+/>
+
+
+-->

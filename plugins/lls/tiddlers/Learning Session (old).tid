@@ -1,0 +1,363 @@
+created: 20240526111059849
+modified: 20240526111113504
+tags: 
+title: Learning Session (old)
+type: text/vnd.tiddlywiki
+
+\define session() $:/temp/srs/state/session
+\define volatileState() $:/temp/lls/learningSession/buttonsDisabled
+
+\define createSession(
+ src, 
+ direction:both, 
+ limit:100, 
+ groupFilter, 
+ groupStrategy
+)
+<$action-sendmessage
+ $message="tm-srs-create-session"
+ ref=<<session>>
+ src="$src$"
+ groupFilter="$groupFilter$"
+ groupStrategy="$groupStrategy$"
+ direction="$direction$"
+ limit="$limit$"
+/><$action-setfield
+ $tiddler=<<session>>
+ $index="showAnswer"
+ $value=""
+/><$action-setfield
+ $tiddler=<<session>>
+ $index="random"
+ $value=<<lls-random>>
+/><$action-setfield
+ $tiddler=<<volatileState>>
+ text="yes"
+/>
+\end createSession
+
+\define endSessionAction()
+<$action-sendmessage
+ $message="tm-lls-delete-temp-tiddler"
+ title=<<session>>
+/>
+\end endSessionAction
+
+\define commitAnswer(answer)
+<$action-sendmessage
+ $message="tm-srs-commit-answer"
+ ref=<<session>>
+ src="$(src)$"
+ direction="$(direction)$"
+ answer="$answer$"
+/><$action-setfield
+ $tiddler=<<session>>
+ $index="showAnswer"
+/><$action-setfield
+ $tiddler=<<session>>
+ $index="random"
+ $value=<<lls-random>>
+/><$action-setfield
+ $tiddler=<<volatileState>>
+ text="yes"
+/>
+\end
+
+\define resetTime()
+<$list
+ filter="[<session>getindex[next-step-reset]lls:gtu[]]"
+><<currentTiddler>></$list>
+\end resetTime
+
+\define holdTime()
+<$list
+ filter="[<session>getindex[next-step-hold]lls:gtu[]]"
+><<currentTiddler>></$list>
+\end holdTime
+ 
+\define onwardTime()
+<$list
+ filter="[<session>getindex[next-step-onward]lls:gtu[]]"
+><<currentTiddler>></$list>
+\end onwardTime
+ 
+\define sessionInfo()
+<<session>>
+<div><$text
+ text="src: "
+/><$transclude
+ $variable="src"
+/><$text
+ text=" "
+/><$transclude
+ $variable="direction"
+/></div><div><$text
+ text="random: "
+/><$transclude
+ $tiddler=<<session>>
+ $index="random"
+/></div><div><$text
+ text="transcriptionGroup: "
+/><$list
+ filter="[<src>tags[]tag[$:/lls/tags/transcriptionGroup]]"
+><<currentTiddler>></$list></div>
+
+<$set name="srs-forward-due" filter="[<src>get[srs-forward-due]]" >
+<$set name="srs-forward-last" filter="[<src>get[srs-forward-last]]" >
+srs-forward-due: 
+<$list filter="[<srs-forward-due>format:timestamp[YY/0MM/0DD 0hh:0mm]]"><$text text=<<currentTiddler>> /></$list>
+ &gt; srs-forward-last: 
+<$list filter="[<srs-forward-last>format:timestamp[YY/0MM/0DD 0hh:0mm]]"><$text text=<<currentTiddler>> /></$list>
+ &gt; diff: 
+<$list filter="[<srs-forward-due>subtract<srs-forward-last>lls:gtu[]]"><$text text=<<currentTiddler>> /></$list>
+</$set>
+</$set>
+<br>
+<$set name="srs-backward-due" filter="[<src>get[srs-backward-due]]" >
+<$set name="srs-backward-last" filter="[<src>get[srs-backward-last]]" >
+srs-backward-due: 
+<$list filter="[<srs-backward-due>format:timestamp[YY/0MM/0DD 0hh:0mm]]"><$text text=<<currentTiddler>> /></$list>
+ &gt; srs-backward-last: 
+<$list filter="[<srs-backward-last>format:timestamp[YY/0MM/0DD 0hh:0mm]]"><$text text=<<currentTiddler>> /></$list>
+ &gt; diff: 
+<$list filter="[<srs-backward-due>subtract<srs-backward-last>lls:gtu[]]"><$text text=<<currentTiddler>> /></$list>
+</$set>
+</$set>
+<br>
+next-step-reset: <<resetTime>> &gt; next-step-hold: <<holdTime>> &gt; next-step-onward: <<onwardTime>>
+\end sessionInfo
+
+\define sessionInfoIcon()
+\define sessionInfoBrief()
+<$text
+ text="src: "
+/><$transclude
+ $variable="src"
+/><$text
+ text=" "
+/><$transclude
+ $variable="direction"
+/>&#10;<$text
+ text="random: "
+/><$transclude
+ $tiddler=<<session>>
+ $index="random"
+/>
+\end sessionInfoBrief
+<$wikify
+ name=wikified
+ text=<<sessionInfoBrief>>
+><span 
+ title=<<wikified>>
+><$transclude
+ $tiddler="$:/core/images/info-button"
+ size="18"
+/></span></$wikify>
+\end sessionInfoIcon
+
+\define showAnswerAction()
+<$action-setfield
+ $tiddler=<<session>>
+ $index="showAnswer"
+ $value="yes"
+/><$lls-action-setfield
+ $tiddler=<<volatileState>>
+ $defer=1000
+ text="no"
+/>
+\end showAnswerAction
+
+\define answerButtons()
+<$reveal
+ type="nomatch"
+ stateTitle=<<session>>
+ stateIndex="showAnswer"
+ text="yes"
+><$button
+ actions=<<showAnswerAction>>
+>Show answer</$button></$reveal><$reveal
+ type="match"
+ stateTitle=<<session>>
+ stateIndex="showAnswer"
+ text="yes"
+><$set
+ name=disabled
+ tiddler=<<volatileState>>
+ field="text"
+><$button
+ actions=<<commitAnswer answer:"reset">>
+ disabled=<<disabled>>
+>Again ~<<resetTime>></$button><$button
+ actions=<<commitAnswer answer:"hold">>
+ disabled=<<disabled>>
+>Hard ~<<holdTime>></$button><$button
+ actions=<<commitAnswer answer:"onward">>
+ disabled=<<disabled>>
+>Good ~<<onwardTime>></$button></$set></$reveal>
+\end
+
+\define endSessionButton()
+<$button
+ actions=<<endSessionAction>>
+ style.float=right
+>End session</$button>
+\end endSessionButton
+
+\define counters()
+<div><$transclude
+ $variable=sessionInfoIcon
+ $mode=inline
+/><$text
+ text=" "
+/><span
+ style="color: #129099"
+><$list
+ filter="[<session>getindex[counter-newcomer]]"
+><$transclude
+ $variable=currentTiddler
+/></$list></span>&nbsp;+&nbsp;<span
+ style="color: #c65364"
+><$list
+ filter="[<session>getindex[counter-repeat]]"
+><$transclude
+ $variable=currentTiddler
+/></$list></span>&nbsp;+&nbsp;<span
+ style="color: #279627"
+><$list
+ filter="[<session>getindex[counter-overdue]]"
+><$transclude
+ $variable=currentTiddler
+/></$list></span></div><div><$list
+ filter="[<session>getindex[current-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]"
+>This question was scheduled for: <$text
+ text=<<currentTiddler>>
+/></$list></div><div><$reveal
+ type="match"
+ stateTitle=<<session>>
+ stateIndex="current-due"
+ text=""
+><$text
+ text="This is a new question for you. Good luck!"
+/></$reveal></div><div><$list
+ filter="[<session>getindex[estimatedEndTime]format:timestamp[YY/0MM/0DD 0hh:0mm]]"
+>Estimated session end time: <$text
+ text=<<currentTiddler>>
+/></$list></div>
+\end
+
+<!---------------------------------------------------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+ transclude=<<session>>
+ transcludeAlign="bottom"
+/>
+
+<!--
+-->
+
+<!--
+<<session>>
+
+<$button actions=<<createSession src:"$:/lls/tags/wordArticle" direction:forward limit:200>> >Start learn words forward</$button>
+
+<$button actions=<<createSession src:"$:/lls/tags/wordArticle" direction:backward limit:200>> >Start learn words backward</$button>
+
+<$button actions=<<createSession src:"$:/lls/tags/wordArticle" direction:both limit:200>> >Start learn words both directions</$button>
+
+<$button actions=<<createSession src:"$:/lls/tags/usageExample" direction:forward limit:200>> >Start learn through usage examples forward</$button>
+
+<$button actions=<<createSession src:"$:/lls/tags/usageExample" direction:backward limit:200>> >Start learn through usage examples backward</$button>
+
+<$button actions=<<createSession src:"$:/lls/tags/usageExample" direction:both limit:200>> >Start learn through usage examples both directions</$button>
+-->
+
+<$set name=type filter="[<session>getindex[src]]">
+<$set name=direction filter="[<session>getindex[current-direction]]">
+<$set name=src filter="[<session>getindex[current-src]]">
+
+<$list filter="[<src>is[blank]]">
+  <$button actions=<<createSession src:"$:/lls/tags/wordArticle" direction:both limit:200 groupFilter:"[<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>tags[]tag[$:/lls/tags/word]]" groupStrategy:"oneFromGroup">> >Start learn words</$button>
+  <$button actions=<<createSession src:"$:/lls/tags/usageExample" direction:both limit:200>> >Start learn words through usage examples</$button>
+  <hr>
+  There are currently no flashcards to study. Try to create a new training session by clicking the button above, or take a break.
+</$list>
+
+<$list filter="[<src>!is[blank]]">
+<$set name=random tiddler=<<session>> index="random">
+
+<!--
+<<sessionInfo>>
+-->
+
+<table
+ class="lls-learning-session-form-actions-table"
+><tr><td><$transclude
+ $variable="counters"
+/></td><td><$transclude
+ $variable="answerButtons"
+ $mode=inline
+/><$transclude
+ $variable="endSessionButton"
+ $mode=inline
+/></td></tr></table>
+
+<hr><!---------- card --------->
+
+<$list filter="[<type>compare:string:eq[$:/lls/tags/wordArticle]]">
+  <$list filter="[<direction>compare:string:eq[forward]]">
+    <$transclude $variable="lls-word-article-forward-question-card" src=<<src>> random=<<random>>/>
+    <$reveal type="match" stateTitle=<<session>> stateIndex="showAnswer" text="yes" >
+      <hr>
+      <$transclude $variable="lls-word-article-forward-answer-card" src=<<src>> random=<<random>>/>
+    </$reveal>
+  </$list>
+  <$list filter="[<direction>compare:string:eq[backward]]">
+    <$transclude $variable="lls-word-article-backward-question-card" src=<<src>> random=<<random>>/>
+    <$reveal type="match" stateTitle=<<session>> stateIndex="showAnswer" text="yes" >
+      <hr>
+      <$transclude $variable="lls-word-article-backward-answer-card" src=<<src>> random=<<random>>/>
+    </$reveal>
+  </$list>
+</$list>
+
+<$list filter="[<type>compare:string:eq[$:/lls/tags/usageExample]]">
+  <$list filter="[<direction>compare:string:eq[forward]]">
+    <$transclude $variable="lls-usage-example-forward-question-card" src=<<src>> random=<<random>>/>
+    <$reveal type="match" stateTitle=<<session>> stateIndex="showAnswer" text="yes" >
+      <hr>
+      <$transclude $variable="lls-usage-example-forward-answer-card" src=<<src>> random=<<random>>/>
+    </$reveal>
+  </$list>
+  <$list filter="[<direction>compare:string:eq[backward]]">
+    <$transclude $variable="lls-usage-example-backward-question-card" src=<<src>> random=<<random>>/>
+    <$reveal type="match" stateTitle=<<session>> stateIndex="showAnswer" text="yes" >
+      <hr>
+      <$transclude $variable="lls-usage-example-backward-answer-card" src=<<src>> random=<<random>>/>
+    </$reveal>
+  </$list>
+</$list>
+
+</$set>
+</$list>
+
+</$set>
+</$set>
+</$set>
+
+<!------------------------------------>
+
+<style>
+table.lls-learning-session-form-actions-table {
+  width:100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border: none;
+}
+table.lls-learning-session-form-actions-table tr {
+}
+table.lls-learning-session-form-actions-table td {
+  border: none;
+}
+</style>

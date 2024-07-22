@@ -1,0 +1,98 @@
+created: 20240625042300283
+modified: 20240719055046144
+title: $:/plugins/midorum/lls/ui/templates/new-language-rule
+type: text/vnd.tiddlywiki
+
+\parameters (
+ state:"$:/temp/lls/state/new-language-rule-form",
+ briefEditIndex:"briefEditIndex",
+ descriptionEditIndex:"descriptionEditIndex",
+ usageExamplesTag:"$:/temp/lls/new-language-rule-form/usageExamplesTag",
+ usageExamplesBulkData:"$:/temp/lls/state/new-language-rule-form/usageExamplesBulkData"
+)
+
+\procedure createRuleAction()
+<$set
+ name="brief"
+ tiddler=<<state>>
+ index=<<briefEditIndex>>
+><$set
+ name="description"
+ tiddler=<<state>>
+ index=<<descriptionEditIndex>>
+><$action-sendmessage
+ $message="tm-lls-create-rule"
+ brief=<<brief>>
+ description=<<description>>
+ usageExamplesTag=<<usageExamplesTag>>
+ usageExamplesBulkData=<<usageExamplesBulkData>>
+ schedule="all"
+/></$set></$set><$transclude
+ $variable="clearForm"
+/>
+\end createRuleAction
+
+\procedure clearForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<briefEditIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<descriptionEditIndex>>
+/><$action-sendmessage
+ $message="tm-lls-delete-all-temp-tiddlers"
+ tag=<<usageExamplesTag>>
+/><$action-sendmessage
+ $message="tm-lls-delete-temp-tiddler"
+ title=<<usageExamplesBulkData>>
+/>
+
+\end clearForm
+
+<div class="lls-new-language-rule-form">
+
+<p>
+<h3>
+Brief Rule Description
+</h3>
+<div class="lls-new-language-rule-form-brief-input">
+<$edit-text
+ tiddler=<<state>>
+ index=<<briefEditIndex>>
+ tag="input"
+/>
+</div>
+</p>
+
+<p>
+<h3>
+Full Rule Description
+</h3>
+<div class="lls-new-language-rule-form-description-input">
+<$edit-text
+ tiddler=<<state>>
+ index=<<descriptionEditIndex>>
+ tag="textarea"
+/>
+</div>
+</p>
+
+<p>
+<h3>
+Usage examples
+</h3>
+<$transclude
+ $variable="lls-new-usage-examples-form"
+ tag=<<usageExamplesTag>>
+ bulkData=<<usageExamplesBulkData>>
+/>
+</p>
+
+<p>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<createRuleAction>>
+> [create rule]</$button>
+</p>
+
+</div>

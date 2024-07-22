@@ -1,0 +1,490 @@
+created: 20240320174520737
+modified: 20240530173043963
+title: Corrupted and Orphan Database Content
+type: text/vnd.tiddlywiki
+
+\procedure type1(tagA, regexpB)
+<div><$scrollable
+ class='lls-scrollable'
+><$list
+ variable=lost
+ filter="[tag<tagA>tags[]regexp<regexpB>is[missing]]"
+ emptyMessage="not found"
+><div>lost: <<lost>>
+objects: <$list
+ filter="[<lost>tagging[]]"
+ join=", "
+></$list></div></$list></$scrollable></div>
+\end type1
+
+\procedure type2(tagA, typeB)
+<div><$scrollable
+ class='lls-scrollable'
+><$list
+ filter="[tag<tagA>lls:absent<typeB>]"
+ emptyMessage="not found"
+><div><<currentTiddler>></div></$list></$scrollable></div>
+\end type2
+
+\procedure type3a(tagB)
+<div><$scrollable
+ class='lls-scrollable'
+><$list
+ filter="[tag<tagB>!is[tag]]"
+ emptyMessage="not found"
+><div><<currentTiddler>></div></$list></$scrollable></div>
+\end type3a
+
+A -> B - объект A ссылается (хранит ссылку, тег) на объект B; другими словами объект B служит тегм для объекта A 
+
+Варианты нарушений отношения:
+
+* тип 1: известен объект A, он хранит ссылку (тег) на объект B, но объект B не существует в системе (потерян, lost)
+** нужно проверить все теги объекта A и убедиться, что они указывают на существующие объекты
+** `[tag[A-tag]tags[]is[missing]]` - если проверять все теги на существование объектов
+** `[tag[A-tag]tags[]regexp[B-prefix]is[missing]]` - если проверять конкретно для объектов типа B
+
+* тип 2: известен объект A, он должен хранить ссылку на B, но ссылки нет (утеряна ссылка); существование объекта B в системе не определено
+** все что мы знаем о B - это формат его заголовка, поэтому такой случай мы можем определить по отсутствию у A любого тега в формате, характерном для B (имеющего префикс, общий для всех B)
+** `[tag[A-tag]lls:absent[B-prefix]]`
+
+* тип 3: известен объект B, но нет ни одного объекта (A), которые бы ссылались бы на него (хранили ссылку (тег)) (брошеный объект, orphan)
+** `[!tag[B]]` - объект B, который вообще не используются как теги ни для чего
+** тип 3a: `[tag[B-tag]!is[tag]]` - все объекты типа B, которые не используются как теги ни для чего
+** тип 3b: ? - все объекты типа B, которые не используются как теги для конкретного типа объектов (A)
+
+! Проверки по типам связей
+
+`wordMeaning *?->1? speechPart`
+
+тип 1
+
+тип 2
+
+тип 3
+
+`wordArticle *!->1! word`
+
+тип 1 - cтатьи, для которых были удалены (возможно случайно) слова, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/wordArticle"
+ regexpB="^\$:/lls/db/w//*"
+/>
+
+тип 2 - статьи, не имеющие ни одной ссылки (тега) на слово
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/wordArticle"
+ typeB="word"
+/>
+
+тип 3
+
+`wordArticle 1!->1! wordMeaning`
+
+тип 1 - cтатьи, для которых были удалены (возможно случайно) значения слов, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/wordArticle"
+ regexpB="^\$:/lls/db/wm//*"
+/>
+
+тип 2 - статьи, не имеющие ни одной ссылки (тега) на значение слова
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/wordArticle"
+ typeB="wordMeaning"
+/>
+
+тип 3 - слова не связанные ни с одной статьей (ни одна статья не ссылается на это слово)
+<div><$scrollable
+ class='lls-scrollable'
+><$list
+ filter="[tag[$:/lls/tags/word]] :filter[<currentTiddler>tagging[]tag[$:/lls/tags/wordArticle]count[]compare:integer:eq[0]]"
+ emptyMessage="not found"
+><div><<currentTiddler>></div></$list></$scrollable></div>
+
+`wordArticle *?->1? transcriptionGroup`
+
+тип 1 - cтатьи, для которых были удалены (возможно случайно) группы транскрипций, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/wordArticle"
+ regexpB="^\$:/lls/db/tg//*"
+/>
+
+тип 2 - статьи, не имеющие ни одной ссылки (тега) на группу транскрипций
+статьи необязательно должны ссылаться на группу транскрипций, но здесь удобно проверять работу фильтра
+<!--<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/wordArticle"
+ typeB="transcriptionGroup"
+/>-->
+
+тип 3
+
+`wordArticle *?->*? userTag`
+
+тип 1 - cтатьи, для которых были удалены (возможно случайно) пользовательские теги, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/wordArticle"
+ regexpB="^\$:/lls/db/ut//*"
+/>
+
+тип 2 - статьи, не имеющие ни одной ссылки (тега) на пользовательский тег
+статьи необязательно должны ссылаться на пользовательский тег
+
+тип 3
+
+`transcriptionGroup *?->1! word`
+
+тип 1 - группы транскрипций, для которых были удалены (возможно случайно) слова, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/transcriptionGroup"
+ regexpB="^\$:/lls/db/w//*"
+/>
+
+тип 2 - группы транскрипций, не имеющие ни одной ссылки (тега) на слово
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/transcriptionGroup"
+ typeB="word"
+/>
+
+тип 3
+
+`transcriptionGroup 1!->*? wordTranscription`
+
+тип 1 - группы транскрипций, для которых были удалены (возможно случайно) транскрипции, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/transcriptionGroup"
+ regexpB="^\$:/lls/db/wt//*"
+/>
+
+тип 2 - группы транскрипций, не имеющие ни одной ссылки (тега) на транскрипцию
+<br>группы транскрипций необязательно должны ссылаться на транскрипции (пустые группы транскрипций)
+
+тип 3
+
+`usageExample *?->*? wordArticle`
+
+тип 1 - примеры использования, для которых были удалены (возможно случайно) статьи, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/usageExample"
+ regexpB="^\$:/lls/db/wa//*"
+/>
+
+тип 2 - примеры использования, не имеющие ни одной ссылки (тега) на статью
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/usageExample"
+ typeB="wordArticle"
+/>
+
+тип 3
+
+`synonymsGroup 1?->*! wordArticle`
+
+тип 1 - группы синонимов, для которых были удалены (возможно случайно) статьи, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/sr/synonymsGroup"
+ regexpB="^\$:/lls/db/wa//*"
+/>
+
+тип 2 - группы синонимов, не имеющие ни одной ссылки (тега) на статью
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/sr/synonymsGroup"
+ typeB="wordArticle"
+/>
+
+тип 3
+
+`antonymsGroup 1?->*! wordArticle`
+
+тип 1 - группы антонимов, для которых были удалены (возможно случайно) статьи, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/sr/antonymsGroup"
+ regexpB="^\$:/lls/db/wa//*"
+/>
+
+тип 2 - группы антонимов, не имеющие ни одной ссылки (тега) на статью
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/sr/antonymsGroup"
+ typeB="wordArticle"
+/>
+
+тип 3
+
+`contrastGroup 1?->*! wordArticle`
+
+тип 1 - группы контрастных слов, для которых были удалены (возможно случайно) статьи, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/sr/contrastGroup"
+ regexpB="^\$:/lls/db/wa//*"
+/>
+
+тип 2 - группы контрастных слов, не имеющие ни одной ссылки (тега) на статью
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/sr/contrastGroup"
+ typeB="wordArticle"
+/>
+
+тип 3
+
+`homophonesGroup 1?->*! (wordArticle or transcriptionGroup?)`
+
+тип 1 - группы гомофонов, для которых были удалены (возможно случайно) статьи, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/sr/homophonesGroup"
+ regexpB="^\$:/lls/db/wa//*"
+/>
+
+тип 1 - группы гомофонов, для которых были удалены (возможно случайно) группы транскрипций, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/sr/homophonesGroup"
+ regexpB="^\$:/lls/db/tg//*"
+/>
+
+тип 2 - группы гомофонов, не имеющие ни одной ссылки (тега) на статью
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/sr/homophonesGroup"
+ typeB="wordArticle"
+/>
+
+тип 2 - группы гомофонов, не имеющие ни одной ссылки (тега) на группу транскрипций
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/sr/homophonesGroup"
+ typeB="transcriptionGroup"
+/>
+
+тип 3
+
+`userTagValue *?->1! userTag`
+
+тип 1 - значения пользовательских тегов, для которых были удалены (возможно случайно) сами пользовательские теги, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/userTagValue"
+ regexpB="^\$:/lls/db/ut//*"
+/>
+
+тип 2 - значения пользовательских тегов, не имеющие ни одной ссылки (тега) на сам пользовательский тег
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/userTagValue"
+ typeB="userTag"
+/>
+
+тип 3
+
+`userTagValue *?->1! wordArticle`
+
+тип 1 - значения пользовательских тегов, для которых были удалены (возможно случайно) статьи, но тег остался
+<$transclude
+ $variable="type1"
+ tagA="$:/lls/tags/userTagValue"
+ regexpB="^\$:/lls/db/wa//*"
+/>
+
+тип 2 - значения пользовательских тегов, не имеющие ни одной ссылки (тега) на статью
+<$transclude
+ $variable="type2"
+ tagA="$:/lls/tags/userTagValue"
+ typeB="wordArticle"
+/>
+
+тип 3
+
+! Проверки по потерянные объекты, которые используются как теги
+
+`? -> word`
+
+тип 3a - слова на которые не указывает ни один объект (не имеет тега)
+<$transclude
+ $variable="type3a"
+ tagB="$:/lls/tags/word"
+/>
+
+`? -> wordArticle`
+
+тип 3a - статьи на которые не указывает ни один объект (не имеет тега)
+<br>статья необязательно должна использоваться как тег
+<!--<$transclude
+ $variable="type3a"
+ tagB="$:/lls/tags/wordArticle"
+/>-->
+
+`? -> wordMeaning`
+
+тип 3a - значения слов на которые не указывает ни один объект (не имеет тега)
+<$transclude
+ $variable="type3a"
+ tagB="$:/lls/tags/wordMeaning"
+/>
+
+`? -> wordTranscription`
+
+тип 3a - транскрипции на которые не указывает ни один объект (не имеет тега)
+<$transclude
+ $variable="type3a"
+ tagB="$:/lls/tags/wordTranscription"
+/>
+
+`? -> transcriptionGroup`
+
+тип 3a - группы транскрипций на которые не указывает ни один объект (не имеет тега)
+<br>это могут быть открепленные группы транскрипций, на которые не ссылается ни одна статья (система это допускает, но в качестве временного переходного состояния) (wordArticlesCount > 0)
+<br>это также могут быть группы транскрипций, для которых статья случайно удалена (wordArticlesCount == 0)
+<div><$scrollable
+ class='lls-scrollable'
+><$list
+ variable="transcriptionGroup"
+ filter="[tag[$:/lls/tags/transcriptionGroup]!is[tag]]"
+ emptyMessage="not found"
+><div><<transcriptionGroup>> - <$list
+ variable="word"
+ filter="[<transcriptionGroup>tags[]tag[$:/lls/tags/word]]"
+>word: <<word>> - <$list
+ variable="wordArticlesCount"
+ filter="[<word>tagging[]tag[$:/lls/tags/wordArticle]count[0]]"
+>wordArticlesCount: <<wordArticlesCount>>
+</$list>
+</$list>
+</div></$list></$scrollable></div>
+
+`? -> usageExample`
+
+тип 3a - примеры использования на которые не указывает ни один объект (не имеет тега)
+<br>пример использования сам ссылается (хранит теги) на целевые объекты
+
+`? -> synonymsGroup`
+
+тип 3a - группы синонимов на которые не указывает ни один объект (не имеет тега)
+<br>группа синонимов сама ссылается (хранит теги) на целевые объекты
+
+`? -> antonymsGroup`
+
+тип 3a - группы антонимов на которые не указывает ни один объект (не имеет тега)
+<br>группа антонимов сама ссылается (хранит теги) на целевые объекты
+
+`? -> contrastGroup`
+
+тип 3a - группы контрастных слов на которые не указывает ни один объект (не имеет тега)
+<br>группа контрастных слов сама ссылается (хранит теги) на целевые объекты
+
+`? -> homophonesGroup`
+
+тип 3a - группы гомофонов на которые не указывает ни один объект (не имеет тега)
+<br>группа гомофонов сама ссылается (хранит теги) на целевые объекты
+
+`? -> userTag`
+
+тип 3a - пользовательские теги на которые не указывает ни один объект (не имеет тега)
+<br>пользовательский тег необязательно должен использоваться (например, сразу после создания он существует сам по себе)
+<!--<$transclude
+ $variable="type3a"
+ tagB="$:/lls/tags/userTag"
+/>-->
+
+`? -> userTagValue`
+
+тип 3a - значения пользовательских тегов на которые не указывает ни один объект (не имеет тега)
+<br>значение пользовательского тега не должно использоваться как тег; вместо этого оно само хранит теги на целевые объекты
+
+
+!! Очистка базы
+
+* ?
+
+!! Статьи вне SRS
+
+<$list
+ filter="[tag[$:/lls/tags/wordArticle]!tag[$:/srs/tags/scheduledForward]count[]]"
+><$transclude
+ $field="title"
+ $mode="block"
+/></$list>
+
+<$button
+ disabled="yes"
+ actions="""
+<$list
+ filter="[tag[$:/lls/tags/wordArticle]!tag[$:/srs/tags/scheduledForward]]"
+><$fieldmangler
+ tiddler=<<currentTiddler>>
+><$action-sendmessage
+ $message="tm-add-tag"
+ $param="$:/srs/tags/scheduledForward"
+/><$action-sendmessage
+ $message="tm-add-tag"
+ $param="$:/srs/tags/scheduledBackward"
+/></$fieldmangler>
+</$list>
+"""
+>set SRS to word articles</$button>
+
+
+!! Примеры вне SRS
+
+<$list
+ filter="[tag[$:/lls/tags/usageExample]!tag[$:/srs/tags/scheduledForward]count[]]"
+><$transclude
+ $field="title"
+ $mode="block"
+/></$list>
+
+<$button
+ disabled="yes"
+ actions="""
+<$list
+ filter="[tag[$:/lls/tags/usageExample]!tag[$:/srs/tags/scheduledForward]]"
+><$fieldmangler
+ tiddler=<<currentTiddler>>
+><$action-sendmessage
+ $message="tm-add-tag"
+ $param="$:/srs/tags/scheduledForward"
+/><$action-sendmessage
+ $message="tm-add-tag"
+ $param="$:/srs/tags/scheduledBackward"
+/></$fieldmangler>
+</$list>
+"""
+>set SRS to usage example</$button>
+
+!! Word Translations without pronunciation ref
+
+uncomment
+<!-- 
+<$list
+ filter="
+[tag[$:/lls/tags/wordTranscription]!has[src]]
++[tagging[]tag[$:/lls/tags/transcriptionGroup]]
++[tags[]tag[$:/lls/tags/word]count[]]"
+><div><$transclude
+ $field="title"
+/></div></$list>
+
+<$list
+ filter="
+[tag[$:/lls/tags/wordTranscription]!has[src]]
++[tagging[]tag[$:/lls/tags/transcriptionGroup]]
++[tags[]tag[$:/lls/tags/word]limit[9999999]]"
+><div><$transclude
+ $field="text"
+/></div></$list>
+-->

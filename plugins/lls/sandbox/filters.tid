@@ -1,0 +1,27 @@
+created: 20240415050811987
+modified: 20240719053852992
+tags: 
+title: $:/plugins/midorum/lls/sandbox/filters
+type: text/vnd.tiddlywiki
+
+word article with transcriptions group:
+
+
+<$tiddler tiddler="$:/lls/db/wa/1712852736241">
+
+<$list filter="[<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>tags[]tag[$:/lls/tags/word]]"/>
+
+<$list filter="[<currentTiddler>] +[tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>] +[tags[]tag[$:/lls/tags/word]]"/>
+
+</$tiddler>
+
+
+word article without transcriptions group:
+
+<$tiddler tiddler="$:/lls/db/wa/1712854288862">
+
+<$list filter="[<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>tags[]tag[$:/lls/tags/word]]"/>
+
+<$list filter="[<currentTiddler>] +[tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>] +[tags[]tag[$:/lls/tags/word]]"/>
+
+</$tiddler>

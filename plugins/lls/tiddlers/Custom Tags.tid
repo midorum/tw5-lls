@@ -1,0 +1,90 @@
+created: 20240503120451940
+modified: 20240720053946580
+tags: 
+title: Custom Tags
+type: text/vnd.tiddlywiki
+state: $:/lls/state/customTags
+
+\parameters (
+ state:"$:/temp/lls/state/customTagsForm",
+ tagNameEditIndex:"tagNameEdit",
+ tagDescriptionEditIndex:"tagDescriptionEdit",
+ presetTagNameField:"tagName",
+)
+
+\procedure createUserTagAction()
+<$set
+ name="userTagName"
+ tiddler=<<state>>
+ index=<<tagNameEditIndex>>
+><$set
+ name="userTagDescritpion"
+ tiddler=<<state>>
+ index=<<tagDescriptionEditIndex>>
+><$action-sendmessage 
+ $message="tm-lls-create-user-tag" 
+ name=<<userTagName>>
+ description=<<userTagDescritpion>>
+/></$set></$set><$transclude
+ $variable="clearFormAction"
+/>
+\end createUserTagAction
+
+\procedure clearFormAction()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<tagNameEditIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<tagDescriptionEditIndex>>
+/><$action-setfield 
+ $tiddler={{!!state}}
+ $field=<<presetTagNameField>>
+/>
+\end clearFormAction
+
+\procedure newUserTagBlock()
+<h2>Create new Custom Tag</h2><p><div><$text
+ text="Tag Name"
+/></div><div><$edit-text
+ tiddler=<<state>>
+ index=<<tagNameEditIndex>>
+ tag="input"
+ default=<<preset>>
+/></div></p><p><div><$text
+ text="Tag Description"
+/></div><div><$edit-text
+ tiddler=<<state>>
+ index=<<tagDescriptionEditIndex>>
+ default=""
+ size="50"
+/></div></p><p><div><$button
+ actions=<<createUserTagAction>>
+>Create</$button></div></p>
+\end newUserTagBlock
+
+\procedure userTagListBlock()
+<$list
+ filter="[!has[draft.of]tag[$:/lls/tags/userTag]sort[name]]"
+><div><$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref=<<currentTiddler>>
+/> - <$view
+ field="text"
+/></div></$list>
+\end userTagListBlock
+
+<!----------------- content --------------------->
+<$set
+ name=this
+ value=<<currentTiddler>>
+><$set
+ name=preset
+ tiddler={{!!state}}
+ field=<<presetTagNameField>>
+><$transclude
+ $variable="newUserTagBlock"
+/><hr><$transclude
+ $variable="userTagListBlock"
+/>
+</$set></$set>

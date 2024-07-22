@@ -1,0 +1,60 @@
+created: 20240526114316287
+modified: 20240719055318134
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/usageExampleBackwardAnswerCardTemplate
+type: text/vnd.tiddlywiki
+
+\parameters (
+    src,
+    random
+)
+
+The answer is:
+
+<h2><$tiddler
+    tiddler=<<src>>
+>{{!!original}}<!--<br><br>{{!!translation}}--></$tiddler></h2>
+
+<$transclude
+    $variable="openExampleViewFormLink"
+    ref=<<src>>
+    text="[view more about example]"
+/>
+
+<h3>Related Words</h3>
+
+<$list
+    variable=wordArticle
+    filter="[<src>tags[]tag[$:/lls/tags/wordArticle]]"
+    emptyMessage="There are not related words"
+><div
+    style="display: flex; align-items: center; gap: 5px;"
+    class="lls-tiny-audio"
+><span><$list
+    filter="[<wordArticle>tags[]tag[$:/lls/tags/word]]"
+><$transclude
+    $variable="openWordEditorFormLink"
+    ref={{!!text}}
+    text={{!!text}}
+/></$list></span><span><$list
+    variable=tg
+    filter="[<wordArticle>tags[]tag[$:/lls/tags/transcriptionGroup]]"
+><$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/wordTranscription/view/single"
+    filter="[<tg>tags[]tag[$:/lls/tags/wordTranscription]]"
+    random=<<lls-random>>
+/></$list></span><span> - <$list
+    filter="[<wordArticle>tags[]tag[$:/lls/tags/wordMeaning]]"
+>{{!!text}}</$list></span></div></$list>
+
+<h3>Related Rules</h3>
+
+<$list
+    variable=rule
+    filter="[<src>tags[]tag[$:/lls/tags/rule]]"
+    emptyMessage="There are not related rules"
+><$transclude
+    $variable="open-rule-view-form-link"
+    _ref=<<rule>>
+    $mode=block
+/></$list>

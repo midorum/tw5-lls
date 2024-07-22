@@ -1,0 +1,380 @@
+created: 20240630022418255
+modified: 20240719055058999
+title: $:/plugins/midorum/lls/ui/templates/language-rule
+type: text/vnd.tiddlywiki
+
+\parameters(
+ rule,
+ state:$:/temp/lls/state/language-rule,
+ editIndex:editRule,
+ briefEditIndex:briefEdit,
+ descriptionEditIndex:descriptionEdit,
+ addWordFormOpenIndex:addWordFormOpen,
+ addExamplesFormOpenIndex:addExamplesFormOpen,
+ usageExamplesTag:$:/temp/lls/languageRuleForm/usageExamplesTag,
+ usageExamplesBulkData:$:/temp/lls/languageRuleForm/usageExamplesBulkData,
+)
+
+\procedure openEditRuleForm()
+<$tiddler
+ tiddler=<<rule>>
+><$action-setfield
+ $tiddler=<<state>>
+ $index=<<briefEditIndex>>
+ $value={{!!brief}}
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<descriptionEditIndex>>
+ $value={{!!text}}
+/></$tiddler><$action-setfield
+ $tiddler=<<state>>
+ $index=<<editIndex>>
+ $value="yes"
+/>
+\end openEditRuleForm
+
+\procedure closeEditRuleForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<briefEditIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<descriptionEditIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<editIndex>>
+/>
+\end closeEditRuleForm
+
+\procedure saveEditRuleForm()
+<$set
+ name="brief"
+ tiddler=<<state>>
+ index=<<briefEditIndex>>
+><$set
+ name="description"
+ tiddler=<<state>>
+ index=<<descriptionEditIndex>>
+><$action-sendmessage
+ $message="tm-lls-save-rule"
+ rule=<<rule>>
+ brief=<<brief>>
+ description=<<description>>
+/></$set></$set><$transclude
+ $variable="closeEditRuleForm"
+/>
+\end saveEditRuleForm
+
+\procedure deleteRuleAction()
+<$action-createtiddler
+ $basetitle="$:/temp/alerts/UnsupportedOperationAlert"
+ tags="$:/tags/Alert"
+ text="Deleting rules is not supported yet"
+/>
+\end deleteRuleAction
+
+\procedure cancelEditRuleButton()
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<closeEditRuleForm>>
+>[cancel]</$button>
+\end cancelEditRuleButton
+
+\procedure editRuleButton()
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<openEditRuleForm>>
+>[edit]</$button>
+\end editRuleButton
+
+\procedure doneEditRuleButton()
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<saveEditRuleForm>>
+>[done]</$button>
+\end doneEditRuleButton
+
+\procedure deleteRuleButton()
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<deleteRuleAction>>
+>[delete]</$button>
+\end deleteRuleButton
+
+\procedure briefCell()
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<editIndex>>
+ text="yes"
+><h2><$transclude
+ $tiddler=<<rule>>
+ $field="brief"
+/></h2></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<editIndex>>
+ text="yes"
+><div><$edit-text
+ tiddler=<<state>>
+ index=<<briefEditIndex>>
+ tag="input"
+/></div>
+</$reveal>
+\end briefCell
+
+\procedure descriptionCell()
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<editIndex>>
+ text="yes"
+><$tiddler
+ tiddler=<<rule>>
+><$wikify
+ name="wikified"
+ text={{!!text}}
+ output="html"
+><<wikified>></$wikify></$tiddler></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<editIndex>>
+ text="yes"
+><div><$edit-text
+ tiddler=<<state>>
+ index=<<descriptionEditIndex>>
+ minHeight="10px"
+ tag="textarea"
+/></div>
+</$reveal>
+\end descriptionCell
+
+\procedure actionsCell()
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<editIndex>>
+ text="yes"
+><<editRuleButton>><br><<srsScheduleButton>></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<editIndex>>
+ text="yes"
+><<doneEditRuleButton>><br><<cancelEditRuleButton>><br><<deleteRuleButton>></$reveal>
+\end actionsCell
+
+<!-- \procedure srsDataCell()
+<$list filter="[<rule>tag[$:/srs/tags/scheduledForward]]">
+  <div>
+    <$list filter="[<rule>get[srs-forward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
+      Forward check due at: <$text text=<<currentTiddler>> />
+    </$list>
+  </div>
+</$list>
+<$list filter="[<rule>tag[$:/srs/tags/scheduledBackward]]">
+  <div>
+    <$list filter="[<rule>get[srs-backward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
+      Backward check due at: <$text text=<<currentTiddler>> />
+    </$list>
+  </div>
+</$list>
+\end srsDataCell -->
+
+\procedure ruleTable()
+<table class="lls-borderless lls-rule-table">
+  <tr>
+    <td class="lls-borderless lls-wide-input brief-cell"><<briefCell>></td>
+    <td class="lls-borderless lls-v-top actions-cell" rowspan="3"><<actionsCell>></td>
+  </tr>
+  <tr>
+    <td class="lls-borderless lls-wide-input description-cell"><<descriptionCell>></td>
+  </tr>
+<!--
+  <tr>
+    <td class="lls-borderless srs-data-cell"><<srsDataCell>></td>
+  </tr>
+-->
+</table>
+\end ruleTable
+
+\procedure addWordMeaningSection()
+\procedure closeAddWordForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index="lls-choose-word-meaning-form-selected-word"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index="lls-choose-word-meaning-form-selected-word-article"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index="predicate"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<addWordFormOpenIndex>>
+/>
+\end closeAddWordForm
+\procedure linkWordArticle()
+<$action-sendmessage
+ $message="tm-lls-attach-rule-to-word-article"
+ rule=<<rule>>
+ article={{{ [<state>getindex[lls-choose-word-meaning-form-selected-word-article]] }}}
+/><$transclude
+ $variable="closeAddWordForm"
+/>
+\end linkWordArticle
+\procedure choose-word-meaning-form-button()
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<linkWordArticle>>
+>&nbsp;<<no-wrap-text "[link]">></$button>
+\end choose-word-meaning-form-button
+\procedure closeAddWordForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index="lls-choose-word-meaning-form-selected-word"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index="lls-choose-word-meaning-form-selected-word-article"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index="predicate"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<addWordFormOpenIndex>>
+/>
+\end closeAddWordForm
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<addWordFormOpenIndex>>
+ text="yes"
+><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ setTitle=<<state>>
+ setIndex=<<addWordFormOpenIndex>>
+ setTo="yes"
+>[add word meaning]</$button></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<addWordFormOpenIndex>>
+ text="yes"
+><h3>Search and choose appropriate word meaning</h3><$transclude
+ $variable="lls-choose-word-meaning-form"
+ state=<<state>>
+ actions="choose-word-meaning-form-button"
+/><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<closeAddWordForm>>
+>[cancel]</$button></$reveal>
+\end addWordMeaningSection
+
+\procedure linkedWordsSection()
+\procedure unlinkWordArticle()
+<$action-confirm
+ $message="Do you wish to detach the word article from the rule?"
+><$action-sendmessage
+ $message="tm-lls-detach-rule-from-word-article"
+ rule=<<rule>>
+ article=<<wordArticle>>
+/></$action-confirm>
+\end unlinkWordArticle
+<$list
+ filter="[<rule>tagging[]tag[$:/lls/tags/wordArticle]]"
+><$vars
+ wordArticle=<<currentTiddler>>
+><p><$list
+ filter="[<wordArticle>tags[]tag[$:/lls/tags/word]]"
+><$transclude
+ $variable="openWordEditorFormLink"
+ ref={{!!text}}
+ text={{!!text}}
+/></$list> - <$list
+ filter="[<wordArticle>tags[]tag[$:/lls/tags/wordMeaning]]"
+>{{!!text}}</$list><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<unlinkWordArticle>>
+>[unlink]</$button></p></$vars></$list><$transclude
+ $variable="addWordMeaningSection"
+/>
+\end linkedWordsSection
+
+\procedure addUsageExamplesSection()
+\procedure closeAddExamplesForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<addExamplesFormOpenIndex>>
+/><$action-sendmessage
+ $message="tm-lls-delete-all-temp-tiddlers"
+ tag=<<usageExamplesTag>>
+/><$action-sendmessage
+ $message="tm-lls-delete-temp-tiddler"
+ title=<<usageExamplesBulkData>>
+/>
+\end closeAddExamplesForm
+\procedure addUsageExamplesToRule()
+<$action-sendmessage
+ $message="tm-lls-add-usage-examples-to-rule"
+ rule=<<rule>>
+ usageExamplesTag=<<usageExamplesTag>>
+ usageExamplesBulkData=<<usageExamplesBulkData>>
+ schedule="all"
+/><$transclude
+ $variable="closeAddExamplesForm"
+/>
+\end addUsageExamplesToRule
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<addExamplesFormOpenIndex>>
+ text="yes"
+><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ setTitle=<<state>>
+ setIndex=<<addExamplesFormOpenIndex>>
+ setTo="yes"
+><$transclude
+ $variable="no-wrap-text"
+ text="[add usage examples]"
+/></$button></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<addExamplesFormOpenIndex>>
+ text="yes"
+><$transclude
+ $variable="lls-new-usage-examples-form"
+ tag=<<usageExamplesTag>>
+ addButtonText="[+]"
+ bulkData=<<usageExamplesBulkData>>
+ $mode="block"
+/><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<addUsageExamplesToRule>>
+>[done]</$button><br><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<closeAddExamplesForm>>
+>[cancel]</$button></$reveal>
+\end addUsageExamplesSection
+
+\procedure usageExamplesSection()
+<$transclude
+ $variable="lls-usage-examples-view"
+ filter="[tag[$:/lls/tags/usageExample]tag<rule>]"
+ number=3
+ actions=<<lls-usage-example-view-action>>
+/><$transclude
+ $variable="addUsageExamplesSection"
+/>
+\end usageExamplesSection
+
+<!-------------------------------------->
+<div class="lls-table-view lls-language-rule-view-form">
+
+<<ruleTable>>
+
+!! Related Words
+<<linkedWordsSection>>
+
+!! Usage Examples
+<<usageExamplesSection>>
+
+</div>

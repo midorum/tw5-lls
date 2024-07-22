@@ -1,0 +1,18 @@
+created: 20240722050454104
+modified: 20240722050614131
+title: Home
+type: text/vnd.tiddlywiki
+
+<div class="tc-error">
+Plugin is not ready for use! Please do not import it!
+</div>
+<!--
+-->
+
+[[link to import|$:/plugins/midorum/lls]]
+
+!! Creating start page
+
+# create ''Home'' (or something like this) tiddler in your wiki
+# set it as your startup tiddler in [[settings|$:/ControlPanel]]
+# put the text `{{LLS Home}}` into your ''Home'' tiddler and save it

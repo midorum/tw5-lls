@@ -1,0 +1,19 @@
+created: 20240407122958103
+modified: 20240719054324221
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-usage-example-forward-question-card
+type: text/vnd.tiddlywiki
+
+\define lls-usage-example-forward-question-card(src, random)
+What is the translation of the following sentence?
+<h2>
+{{$src$!!original}}
+</h2>
+\end
+
+
+<!-- usage example
+
+<$transclude $variable="lls-usage-example-forward-question-card" src="$:/lls/db/ue/1712052331236" random=0.10920145163645778/>
+
+-->

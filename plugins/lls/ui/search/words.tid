@@ -1,0 +1,12 @@
+caption: Words
+created: 20240331053139751
+modified: 20240719035304031
+tags: $:/plugins/midorum/lls/tags/Search
+title: $:/plugins/midorum/lls/ui/search/words
+type: text/vnd.tiddlywiki
+
+<$transclude
+ $variable="lls-search-word"
+ state="$:/temp/lls/state/search/words"
+ onlySearch="yes"
+/>

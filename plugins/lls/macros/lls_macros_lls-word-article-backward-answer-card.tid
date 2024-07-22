@@ -1,0 +1,75 @@
+created: 20240405143337349
+modified: 20240719054307155
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-word-article-backward-answer-card
+type: text/vnd.tiddlywiki
+
+\define lls-word-article-backward-answer-card(src, random)
+<$set
+ name=src
+ value="$src$"
+><$set
+ name=word
+ filter="[<src>tags[]tag[$:/lls/tags/word]]"
+><$set
+ name=wordMeaning
+ filter="[<src>tags[]tag[$:/lls/tags/wordMeaning]]"
+><$text
+ text="The answer is:"
+/><h2><$transclude
+ $tiddler=<<word>>
+ $field="text"
+/><$text
+ text=" - "
+/><$list
+ filter="[<wordMeaning>tags[]tag[Speech Parts]]"
+>(<<currentTiddler>>) </$list><$transclude
+ $tiddler=<<wordMeaning>>
+ $field="text"
+/><$scrollable
+ class='lls-word-article-backward-answer-card-scrollable'
+><$set
+ name=tg
+ filter="[<src>tags[]tag[$:/lls/tags/transcriptionGroup]]"
+><$transclude
+ $variable="lls-transcription-view"
+ filter="[<tg>tags[]tag[$:/lls/tags/wordTranscription]]"
+ autoplay="autoplay"
+ random="$random$"
+/></$set></$scrollable></h2></$set><$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<word>>
+ text="[view other word meanings]"
+ $mode="block"
+/></$set><$transclude
+ $variable="lls-usage-examples-view"
+ filter="[<src>tagging[]tag[$:/lls/tags/usageExample]]"
+ number=3
+/></$set>
+\end
+<!----------- usages ------------>
+
+
+
+
+<!-- 
+
+<$transclude
+ $variable="lls-word-article-backward-answer-card"
+ src="$:/lls/db/wa/1711772669550"
+ random=0.10920145163645778
+/>
+
+<$transclude
+ $variable="lls-word-article-backward-answer-card"
+ src="$:/lls/db/wa/1711433774268"
+ random=0.10920145163645778
+/>
+
+<$transclude
+ $variable="lls-word-article-backward-answer-card"
+ src="$:/lls/db/wa/1712852930942"
+ random=0.50920145163645778
+/>
+
+-->

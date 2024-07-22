@@ -1,0 +1,15 @@
+created: 20240411161519050
+modified: 20240515172354304
+tags: 
+title: Statistics
+type: text/vnd.tiddlywiki
+
+!!! Word spellings total: <$list filter="[tag[$:/lls/tags/word]count[]]"><<currentTiddler>></$list>
+
+!!! Word articles total: <$list filter="[tag[$:/lls/tags/wordArticle]count[]]"><<currentTiddler>></$list>
+
+!!! Word meanings total: <$list filter="[tag[$:/lls/tags/wordMeaning]count[]]"><<currentTiddler>></$list>
+
+!!! Word pronunciations total: <$list filter="[tag[$:/lls/tags/wordTranscription]count[]]"><<currentTiddler>></$list>
+
+!!! Usage examples total: <$list filter="[tag[$:/lls/tags/usageExample]count[]]"><<currentTiddler>></$list>

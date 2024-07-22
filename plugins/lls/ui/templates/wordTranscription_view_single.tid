@@ -1,0 +1,50 @@
+created: 20240706043727335
+modified: 20240719055318095
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/wordTranscription/view/single
+type: text/vnd.tiddlywiki
+
+\parameters(
+    filter:"[tag[$:/lls/tags/wordTranscription]limit[10]]",
+    autoplay,
+    random:0
+)
+
+\define audio-player(autoplay, src)
+<audio
+    controls
+    preload="none"
+    $autoplay$
+><source
+    src="$src$"
+></audio>
+\end audio-player
+
+<$set
+    name=transcriptions
+    filter=<<filter>>
+><$set
+    name=count
+    filter="[<transcriptions>split[ ]!is[blank]count[]]"
+><$set
+    name=index
+    filter="[<random>multiply<count>floor[]]"
+><$list
+    filter="[<transcriptions>split[ ]zth<index>]"
+><table
+    class="lls-borderless"
+><tr><td
+    class="lls-borderless lls-v-mid"
+><$transclude
+    $variable="no-wrap-text"
+    text={{!!text}}
+/></td><td
+    class="lls-borderless lls-v-mid"
+><$list
+    variable=_
+    filter="[{!!src}!is[blank]]"
+><$transclude
+    $variable="audio-player"
+    autoplay=<<autoplay>>
+    src={{!!src}}
+/></$list></td></tr></table></$list></$set></$set></$set>

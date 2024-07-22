@@ -1,0 +1,13 @@
+created: 20240630021733371
+modified: 20240719055059061
+title: Language Rule
+type: text/vnd.tiddlywiki
+state: $:/lls/state/languageRule
+
+<$set
+    name="ref"
+    tiddler={{!!state}}
+><$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule"
+    rule=<<ref>>
+/></$set>

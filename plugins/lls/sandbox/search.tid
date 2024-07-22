@@ -1,0 +1,97 @@
+created: 20240324040744517
+modified: 20240719053830285
+search: 
+tags: 
+title: $:/plugins/midorum/lls/sandbox/search
+type: text/vnd.tiddlywiki
+
+\define openWordViewForm(word)
+<$action-setfield $tiddler={{Word View!!state}} text=$word$/>
+<$action-navigate $to="Word View"/>
+\end
+
+\define openWordViewForm2()
+<$action-setfield $tiddler={{Word View!!state}} text=<<word>>/>
+<$action-navigate $to="Word View"/>
+\end
+
+\define wordEntry()
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<openWordViewForm {{!!text}}>>>{{!!text}}</$button> - <$view field="text"/><br>
+\end
+
+\define wordEntry2()
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<openWordViewForm2>>><<word>></$button> - {{!!text}} - <<currentTiddler>>
+<br>
+\end
+
+
+<!--------------------------------------------------------->
+
+Word:
+
+<$edit-text field="search" tag="input" default=""/>
+
+<!--------------------------------------------------------->
+
+
+<$list filter="[{!!search}!is[blank]]" variable=_>
+
+<!--
+!!! ''точное совпадение слова с фильтром''
+
+<$list filter="[!has[draft.of]tag[$:/lls/tags/word]!lls:absent[wordArticle]field:text{!!search}]">
+  <<wordEntry>>
+</$list>
+
+!!! ''вхождения фильтра в слово''
+
+<$vars pattern={{{ [{!!search}addprefix[(?i).*]addsuffix[.*]] }}}>
+<$list filter="[!has[draft.of]tag[$:/lls/tags/word]!lls:absent[wordArticle]regexp:text<pattern>]">
+  <<wordEntry>>
+</$list>
+</$vars>
+
+!!! ''вхождения фильтра в слово + точное совпадение выносится наверх''
+
+<$vars pattern={{{ [{!!search}addprefix[(?i).*]addsuffix[.*]] }}}>
+<$list filter="[!has[draft.of]tag[$:/lls/tags/word]!lls:absent[wordArticle]field:text{!!search}] :appendMissing[!has[draft.of]tag[$:/lls/tags/word]!lls:absent[wordArticle]regexp:text<pattern>]">
+  <<wordEntry>>
+</$list>
+</$vars>
+
+!!! ''вхождения фильтра в значения слов''
+
+<$vars pattern={{{ [{!!search}addprefix[(?i).*]addsuffix[.*]] }}}>
+<$list filter="[!has[draft.of]tag[$:/lls/tags/word]]">
+<$set name="current" value=<<currentTiddler>>>
+<$list filter="[<current>tags[]tag[$:/lls/tags/wordArticle]tagging[]tag[$:/lls/tags/wordMeaning]regexp:text<pattern>]">
+<$set name="word" tiddler=<<current>> field="text">
+<<wordEntry2>>
+</$set>
+</$list>
+</$set>
+</$list>
+</$vars>
+
+!!! ''вхождения фильтра в слово + точное совпадение выносится наверх + вхождения фильтра в значения слов (в разработке)''
+
+<$vars pattern={{{ [{!!search}addprefix[(?i).*]addsuffix[.*]] }}}>
+<$list filter="[!has[draft.of]tag[$:/lls/tags/word]]">
+<$set name="current" value=<<currentTiddler>>>
+<$list filter="[!has[draft.of]tag[$:/lls/tags/word]!lls:absent[wordArticle]field:text{!!search}] :appendMissing[!has[draft.of]tag[$:/lls/tags/word]!lls:absent[wordArticle]regexp:text<pattern>] :appendMissing[<current>tags[]tag[$:/lls/tags/wordArticle]tagging[]tag[$:/lls/tags/wordMeaning]regexp:text<pattern>]">
+<$set name="word" tiddler=<<current>> field="text">
+<<wordEntry2>>
+</$set>
+</$list>
+</$set>
+</$list>
+</$vars>
+
+-->
+</$list>
+
+<$list filter="[{!!search}is[blank]]" variable=_>
+<$list filter="[tag[$:/lls/tags/word]!lls:absent[wordArticle]limit[100]]">
+  <<wordEntry>>
+</$list>
+</$list>

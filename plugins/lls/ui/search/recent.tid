@@ -1,0 +1,38 @@
+caption: Recent
+created: 20240427145223924
+list-after: $:/plugins/midorum/lls/ui/search/words
+modified: 20240719041145629
+tags: $:/plugins/midorum/lls/tags/Search
+title: $:/plugins/midorum/lls/ui/search/recent
+type: text/vnd.tiddlywiki
+
+\parameters (
+ state:"$:/temp/lls/state/search"
+)
+\import $:/plugins/midorum/lls/procedures/lls-search
+<$lls-period-paginator
+ $stateTitle=<<state>>
+>
+Selected period:
+<$set
+ name=periodStart
+ tiddler=<<state>>
+ index=periodStart
+><$set
+ name=periodEnd
+ tiddler=<<state>>
+ index=periodEnd
+><$list
+ filter="[<periodStart>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+ emptyMessage="not specified"
+><<currentTiddler>> - <$list
+ filter="[<periodEnd>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+><<currentTiddler>></$list></$list>
+<$transclude
+ $variable="lls-search" 
+ searchMode="meanings:recent"
+ periodStart=<<periodStart>>
+ periodEnd=<<periodEnd>>
+ limit=100
+/></$set></$set>
+</$lls-period-paginator>

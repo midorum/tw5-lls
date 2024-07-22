@@ -1,0 +1,17 @@
+caption: Rules
+created: 20240719035545869
+list-after: $:/plugins/midorum/lls/ui/search/userTags
+modified: 20240719041145629
+tags: $:/plugins/midorum/lls/tags/Search
+title: $:/plugins/midorum/lls/ui/search/rules
+type: text/vnd.tiddlywiki
+
+\parameters (
+ state:"$:/temp/lls/state/search"
+)
+\import $:/plugins/midorum/lls/procedures/lls-search
+<$transclude
+ $variable="lls-search" 
+ searchMode="getRules"
+ limit=100
+/>

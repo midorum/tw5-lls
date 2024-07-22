@@ -1,0 +1,17 @@
+caption: User Tags
+created: 20240503135026019
+list-after: $:/plugins/midorum/lls/ui/search/examples
+modified: 20240719041145629
+tags: $:/plugins/midorum/lls/tags/Search
+title: $:/plugins/midorum/lls/ui/search/userTags
+type: text/vnd.tiddlywiki
+
+\parameters (
+ state:"$:/temp/lls/state/search"
+)
+\import $:/plugins/midorum/lls/procedures/lls-search
+<$transclude
+ $variable="lls-search" 
+ searchMode="getUserTags"
+ limit=100
+/>

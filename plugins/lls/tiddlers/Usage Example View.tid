@@ -1,0 +1,453 @@
+created: 20240331162144265
+modified: 20240719062332830
+tags: 
+title: Usage Example View
+type: text/vnd.tiddlywiki
+state: $:/lls/state/usageExampleView
+
+\define usageExampleViewState() $:/temp/lls/state/usageExampleView
+\define getExampleTiddlerField(field) {{$(ref)$!!$field$}}
+\define filterExampleTiddlerField(field) {$(ref)$!!$field$}
+
+\define openEditExampleForm()
+<$wikify name=f text=<<getExampleTiddlerField original>> >
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="original" $value=<<f>>/>
+</$wikify>
+<$wikify name=f text=<<getExampleTiddlerField translation>> >
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="translation" $value=<<f>>/>
+</$wikify>
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="editExample" $value="yes"/>
+\end
+
+\define clearEditExampleForm()
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="original" $value=""/>
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="translation" $value=""/>
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="editExample" $value=""/>
+\end
+
+\define closeEditExampleForm()
+<<clearEditExampleForm>>
+\end
+
+\define saveEditExampleForm()
+<$set name=o tiddler=<<usageExampleViewState>> index="original">
+<$set name=t tiddler=<<usageExampleViewState>> index="translation">
+<$action-sendmessage $message="tm-lls-modify-usage-example"
+  example="$(ref)$"
+  original=<<o>>
+  translation=<<t>>
+  />
+</$set>
+</$set>
+<<clearEditExampleForm>>
+\end
+
+\define clearAddWordForm()
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="lls-choose-word-meaning-form-selected-word" $value=""/>
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="lls-choose-word-meaning-form-selected-word-article" $value=""/>
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="predicate" $value=""/>
+<$action-setfield $tiddler=<<usageExampleViewState>> $index="addWordFormOpen" $value=""/>
+\end
+
+\define closeAddWordForm()
+<<clearAddWordForm>>
+\end
+
+\define linkWordArticle()
+<$action-sendmessage $message="tm-lls-attach-word-article-to-usage-example"
+  example="$(ref)$"
+  article={{{ [<usageExampleViewState>getindex[lls-choose-word-meaning-form-selected-word-article]] }}}
+  />
+<<clearAddWordForm>>
+\end
+
+\define unlinkWordArticle()
+<$action-confirm $message="Do you wish to detach the word article from the usage example?">
+<$action-sendmessage $message="tm-lls-detach-word-article-from-usage-example"
+  example="$(ref)$"
+  article="$(wordArticle)$"
+  />
+</$action-confirm>
+\end
+
+\define deleteExampleAction()
+<$action-confirm
+ $message="Do you wish to delete the usage example? This cannot be undone!"
+><$action-sendmessage
+ $message="tm-lls-delete-usage-example"
+ usageExample="$(ref)$"
+/><$transclude
+ $variable="clearEditExampleForm"
+/><$transclude
+ $variable="clearAddWordForm"
+/><$action-sendmessage
+ $message="tm-close-tiddler"
+ param="$(this)$"
+/></$action-confirm>
+\end
+
+\define scheduleUsageExample(direction)
+<$action-sendmessage $message="tm-srs-schedule"
+  ref="$(ref)$"
+  direction=$direction$
+  />
+\end
+
+\define unscheduleUsageExample(direction)
+<$action-sendmessage $message="tm-srs-unschedule"
+  ref="$(ref)$"
+  direction=$direction$
+  />
+\end
+
+\define notLinkedWord(text)
+We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text={{!!text}} /> in our database, but it does not linked with this usage example.
+\end
+
+\define editExampleButton()
+<$button class="tc-btn-invisible tc-tiddlylink"
+  actions=<<openEditExampleForm>> >[edit]</$button>
+\end
+
+\define doneEditExampleButton()
+<$button class="tc-btn-invisible tc-tiddlylink"
+  actions=<<saveEditExampleForm>> >[done]</$button>
+\end
+
+\define cancelEditExampleButton()
+<$button class="tc-btn-invisible tc-tiddlylink"
+  actions=<<closeEditExampleForm>> >[cancel]</$button>
+\end
+
+\define deleteExampleButton()
+<$button class="tc-btn-invisible tc-tiddlylink"
+  actions=<<deleteExampleAction>> >[delete]</$button>
+\end
+
+\define editNotesButton()
+<$button class="tc-btn-invisible tc-tiddlylink"
+  setTitle=<<usageExampleViewState>>
+  setIndex=editNotes 
+  setTo="yes">[edit]</$button>
+\end
+
+\define doneEditNotesButton()
+<$button class="tc-btn-invisible tc-tiddlylink"
+  setTitle=<<usageExampleViewState>>
+  setIndex=editNotes 
+  setTo="">[done]</$button>
+\end
+
+\define srsScheduleButton()
+<$list filter="[<ref>!tag[$:/srs/tags/scheduledForward]]">
+  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<scheduleUsageExample forward>>>[schedule forward]</$button>
+</$list>
+<$list filter="[<ref>tag[$:/srs/tags/scheduledForward]]">
+  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<unscheduleUsageExample forward>>>[unschedule forward]</$button>
+</$list>
+<$list filter="[<ref>!tag[$:/srs/tags/scheduledBackward]]">
+  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<scheduleUsageExample backward>>>[schedule backward]</$button>
+</$list>
+<$list filter="[<ref>tag[$:/srs/tags/scheduledBackward]]">
+  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<unscheduleUsageExample backward>>>[unschedule backward]</$button>
+</$list>
+\end
+
+\define choose-word-meaning-form-button()
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<linkWordArticle>>><<no-wrap-text "[link]">></$button>
+\end
+
+\define originalCell()
+<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <<getExampleTiddlerField original>>
+</$reveal>
+<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <div class="editor-area">
+   <$edit-text tiddler=<<usageExampleViewState>> index="original" minHeight="10px" tag=textarea/>
+  </div>
+</$reveal>
+\end
+
+\define translationCell()
+<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <<getExampleTiddlerField translation>>
+</$reveal>
+<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <div class="editor-area">
+   <$edit-text tiddler=<<usageExampleViewState>> index="translation" minHeight="10px" tag=textarea/>
+  </div>
+</$reveal>
+\end
+
+\define notesCell()
+<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
+  <<getExampleTiddlerField text>>
+</$reveal>
+<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
+  <div class="editor-area">
+   <$edit-text tiddler=<<ref>> field="text" minHeight="10px" tag=textarea/>
+  </div>
+</$reveal>
+\end
+
+\define exampleActionsCell()
+<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <<editExampleButton>>
+  <br>
+  <<srsScheduleButton>>
+</$reveal>
+<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <<doneEditExampleButton>>
+  <br>
+  <<cancelEditExampleButton>>
+  <br>
+  <<deleteExampleButton>>
+</$reveal>
+\end
+
+\define notesActionsCell()
+<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
+  <<editNotesButton>>
+</$reveal>
+<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
+  <<doneEditNotesButton>>
+</$reveal>
+\end
+
+\define srsDataCell()
+<$list filter="[<ref>tag[$:/srs/tags/scheduledForward]]">
+  <div>
+    <$list filter="[<ref>get[srs-forward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
+      Forward check due at: <$text text=<<currentTiddler>> />
+    </$list>
+  </div>
+</$list>
+<$list filter="[<ref>tag[$:/srs/tags/scheduledBackward]]">
+  <div>
+    <$list filter="[<ref>get[srs-backward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
+      Backward check due at: <$text text=<<currentTiddler>> />
+    </$list>
+  </div>
+</$list>
+\end
+
+\define exampleTable()
+<table class="lls-fixed-table">
+  <tr>
+    <td class="lls-borderless-cell lls-wide-input original-cell"><<originalCell>></td>
+    <td class="lls-borderless-cell lls-wide-input translation-cell"><<translationCell>></td>
+    <td class="lls-borderless-cell actions-cell"><<exampleActionsCell>></td>
+  </tr>
+  <tr>
+    <td class="lls-borderless-cell" colspan="3">
+      <<srsDataCell>>
+    </td>
+  </tr>
+</table>
+\end
+
+\define notesTable()
+<table class="lls-fixed-table">
+  <tr>
+    <td class="lls-borderless-cell lls-wide-input notes-cell"><<notesCell>></td>
+    <td class="lls-borderless-cell actions-cell"><<notesActionsCell>></td>
+  </tr>
+</table>
+\end
+
+\define addWordMeaningSection()
+<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=addWordFormOpen text="yes">
+  <$button class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<usageExampleViewState>>
+    setIndex=addWordFormOpen 
+    setTo="yes">[add word meaning]</$button>
+</$reveal>
+<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=addWordFormOpen text="yes">
+
+!!! Search and choose appropriate word meaning
+
+  <$transclude $variable="lls-choose-word-meaning-form" state=<<usageExampleViewState>> actions="choose-word-meaning-form-button"/>
+  <$button class="tc-btn-invisible tc-tiddlylink"
+    actions=<<closeAddWordForm>>>[cancel]</$button>
+</$reveal>
+\end
+
+\define linkedWordsSection()
+<$list
+    variable=wordArticle
+    filter="[<ref>tags[]tag[$:/lls/tags/wordArticle]]"
+><div
+    style="display: flex; align-items: center; gap: 5px;"
+    class="lls-tiny-audio"
+><span>
+<$list
+    filter="[<wordArticle>tags[]tag[$:/lls/tags/word]]"
+><$transclude
+    $variable="openWordEditorFormLink"
+    ref={{!!text}}
+    text={{!!text}}
+/></$list>
+</span><span>
+<$list
+    variable=tg
+    filter="[<wordArticle>tags[]tag[$:/lls/tags/transcriptionGroup]]"
+><$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/wordTranscription/view/single"
+    filter="[<tg>tags[]tag[$:/lls/tags/wordTranscription]]"
+    random=<<lls-random>>
+/></$list>
+</span><span>
+<$list
+    filter="[<wordArticle>tags[]tag[$:/lls/tags/wordMeaning]]"
+> - {{!!text}}</$list>
+</span><span>
+<$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<unlinkWordArticle>>
+><<no-wrap-text "[unlink]">></$button>
+</span>
+</div></$list>
+<$transclude
+ $variable="addWordMeaningSection"
+ $mode=block
+/>
+\end
+
+\define addRuleSection()
+\define searchInputIndex() addRuleSearchInput
+\define selectedRuleIndex() selectedRule
+\define closeAddRuleForm()
+<$action-setfield
+ $tiddler=<<usageExampleViewState>>
+ $index=<<searchInputIndex>>
+/><$action-setfield
+ $tiddler=<<usageExampleViewState>>
+ $index=<<selectedRuleIndex>>
+/><$action-setfield
+ $tiddler=<<usageExampleViewState>>
+ $index="addRuleFormOpen"
+/>
+\end closeAddRuleForm
+\define linkRule()
+<$set
+ name="selectedRule"
+ tiddler=<<usageExampleViewState>>
+ index=<<selectedRuleIndex>>
+><$action-sendmessage
+ $message="tm-lls-attach-rule-to-usage-example"
+ example="$(ref)$"
+ rule=<<selectedRule>>
+/></$set><$transclude
+ $variable="closeAddRuleForm"
+/>
+\end linkRule
+<$reveal
+ type="nomatch"
+ stateTitle=<<usageExampleViewState>>
+ stateIndex=addRuleFormOpen
+ text="yes"
+><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ setTitle=<<usageExampleViewState>>
+ setIndex=addRuleFormOpen 
+ setTo="yes"
+>[add rule]</$button></$reveal><$reveal
+ type="match"
+ stateTitle=<<usageExampleViewState>>
+ stateIndex=addRuleFormOpen
+ text="yes"
+><h3>Search and choose appropriate grammar rule</h3><$transclude
+ $tiddler="$:/plugins/midorum/lls/ui/templates/choose-language-rule-form"
+ state=<<usageExampleViewState>>
+ selectedRuleIndex=<<selectedRuleIndex>>
+ searchInputIndex=<<searchInputIndex>>
+ $mode=block
+><$fill
+ $name="actions"
+><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<linkRule>>
+><<no-wrap-text "[link]">></$button></$fill></$transclude><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<closeAddRuleForm>>
+>[cancel]</$button></$reveal>
+\end addRuleSection
+
+\define linkedRulesSection()
+\define unlinkRule()
+<$action-confirm
+ $message="Do you wish to detach the rule from the usage example?"
+><$action-sendmessage
+ $message="tm-lls-detach-rule-from-usage-example"
+ example="$(ref)$"
+ rule=<<rule>>
+/></$action-confirm>
+\end unlinkRule
+<$list
+ variable=rule
+ filter="[<ref>tags[]tag[$:/lls/tags/rule]]"
+><p><$transclude
+ $variable="open-rule-view-form-link"
+ _ref=<<rule>>
+ $mode=inline
+/> - <$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<unlinkRule>>
+>[unlink]</$button></p></$list><$transclude
+ $variable="addRuleSection"
+ $mode=block
+/>
+\end linkedRulesSection
+
+<!------------------------------------------------------>
+
+<$set
+ name="ref"
+ tiddler={{!!state}}
+>
+<$vars this=<<currentTiddler>>>
+<div class="lls-table-view lls-usage-example-view-form">
+
+!! Usage Example
+<<exampleTable>>
+
+!! Notes
+<<notesTable>>
+
+!! Words
+<<linkedWordsSection>>
+
+!! Rules
+<<linkedRulesSection>>
+
+<!--
+
+!! Words Meanings
+
+<$wikify name=f text=<<getExampleTiddlerField original>> >
+<$list filter="[<f>splitregexp[\s|\.|,|:|;]!is[blank]]">
+<$set name=token value=<<currentTiddler>> >
+  <<currentTiddler>> - 
+  <$list filter="[tag[$:/lls/tags/word]]">
+  <$set name=word value=<<currentTiddler>> >
+    <$list filter="[<word>get[text]match<token>]">
+      <$transclude $variable="notLinkedWord" text=<<currentTiddler>> />
+    </$list>
+  </$set>
+  </$list>
+  <br>
+</$set>
+</$list>
+</$wikify>
+
+----------
+
+<$list filter="[lls:tokens<ref>]">
+  <<currentTiddler>>
+</$list>
+ 
+-->
+
+</div>
+</$vars>
+</$set>

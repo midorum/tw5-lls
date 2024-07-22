@@ -1,0 +1,111 @@
+table.lls-borderless {
+  border-collapse: collapse;
+  border: none;
+  width:100%;
+}
+table.lls-borderless td.lls-borderless {
+  border: none;
+}
+.lls-v-top {
+  vertical-align: top;
+}
+.lls-v-mid {
+  vertical-align: middle;
+}
+
+.lls-tiny-audio audio {
+  width: 50px;
+  border-radius: 25px;
+  height: 30px;
+  /*transform: scale(75%);*/
+}
+
+.lls-buttons-align-left .lls-button-content {
+  text-align: left;
+}
+
+.lls-table-view table.lls-fixed-table,
+.lls-choose-word-meaning-form table.lls-choose-word-meaning-form-table {
+  width:100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border: none;
+}
+.lls-table-view table.lls-fixed-table td.lls-borderless-cell,
+table.lls-borderless-table td.lls-borderless-cell,
+.lls-choose-word-meaning-form table.lls-choose-word-meaning-form-table td {
+  border: none;
+  vertical-align: top;
+}
+.lls-table-view table.lls-fixed-table td.actions-cell,
+.lls-choose-word-meaning-form table.lls-choose-word-meaning-form-table td.lls-choose-word-meaning-form-actions-cell {
+  width:200px;
+}
+
+.lls-wide-input input,
+.lls-wide-input textarea,
+.lls-new-word-article-form .lls-new-word-article-form-spelling-input input,
+.lls-new-language-rule-form .lls-new-language-rule-form-brief-input input {
+  width: 100%;
+}
+.lls-new-word-article-form textarea,
+.lls-new-language-rule-form textarea {
+  width: 100%;
+}
+.lls-new-word-article-form table.lls-transcription-view {
+  margin: 0;
+}
+.lls-new-word-article-form .lls-new-word-article-form-history-scrollable {
+ border: 1px solid <<colour message-border>>;
+ background-color: <<colour message-background>>;
+ padding: 1em;
+ height: 200px;
+ position: relative;
+}
+
+.lls-semantic-relation-group-edit-form textarea {
+  width: 100%;
+}
+.lls-semantic-relation-group-edit-form select {
+  width: 100%;
+}
+
+.lls-scrollable,
+.lls-word-article-forward-question-card-scrollable,
+.lls-word-article-backward-question-card-scrollable,
+.lls-word-article-backward-answer-card-scrollable,
+.lls-word-editor-scrollable {
+ border: 1px solid <<colour message-border>>;
+ background-color: <<colour message-background>>;
+ max-height: 200px;
+ position: relative;
+}
+
+.tc-drop-down div.lls-drop-down-item {
+  display: block;
+  padding: 0 14px 0 14px;
+  width: 100%;
+  text-align: left;
+  color: #fbf1c7;
+  line-height: 1.4;
+}
+
+span.tc-tag-label.lls-tag-label{
+ white-space: normal;
+}
+span.lls-tag-button, span.lls-remove-tag-button {
+ cursor: pointer;
+}
+span.lls-remove-tag-button svg {
+  font-size: 0.7em;
+  vertical-align: middle;
+}
+
+span.lls-icon-button {
+  cursor: pointer;
+  padding-left: 4px;
+}
+span.lls-icon-button svg {
+  width: 1em;
+  vertical-align: middle;
+}

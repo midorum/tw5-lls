@@ -1,0 +1,21 @@
+created: 20240407130037152
+modified: 20240719054431517
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-usage-example-backward-answer-card
+type: text/vnd.tiddlywiki
+
+\define lls-usage-example-backward-answer-card(src, random)
+The answer is:
+<h2>
+{{$src$!!original}}
+<br>
+<br>
+{{$src$!!translation}}
+</h2>
+\end
+
+<!-- usage example
+
+<$transclude $variable="lls-usage-example-backward-answer-card" src="$:/lls/db/ue/1712052331236" random=0.10920145163645778/>
+
+-->

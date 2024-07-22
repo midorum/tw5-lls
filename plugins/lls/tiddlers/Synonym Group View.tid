@@ -1,0 +1,107 @@
+created: 20240423091004885
+modified: 20240719041351171
+tags: 
+title: Synonym Group View
+type: text/vnd.tiddlywiki
+state: $:/lls/state/synonymGroupView
+
+\import [all[shadows+tiddlers]tag[$:/plugins/midorum/lls/tags/procedure]]
+
+\procedure initializeEditFormAction()
+<$set 
+ name=context 
+ tiddler=<<semanticRelation>>
+ field=text
+><$action-setfield
+ $tiddler=<<state>>
+ $index=<<contextIndex>>
+ $value=<<context>>
+/></$set><$set 
+ name=wordList 
+ tiddler=<<semanticRelation>>
+ field=semanticRelationList
+><$action-setfield
+ $tiddler=<<state>>
+ $index=<<wordListIndex>>
+ $value=<<wordList>>
+/></$set><$action-setmultiplefields
+ $tiddler=<<state>>
+ $indexes="[<semanticRelation>fields[]regexp[^srls-]search-replace[srls-],<wordStyleIndexPrefix>]"
+ $values="[<semanticRelation>fields[]regexp[^srls-]] :map[<semanticRelation>get<currentTiddler>]"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<formModeIndex>>
+ $value="edit"
+/>
+\end initializeEditFormAction
+
+\procedure clearEditFormAction()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<contextIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<wordListIndex>>
+/><$action-setmultiplefields
+ $tiddler=<<state>>
+ $indexes="[<semanticRelation>fields[]regexp[^srls-]search-replace[srls-],<wordStyleIndexPrefix>]"
+ $values="[<semanticRelation>fields[]regexp[^srls-]] :map[[]]"
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<formModeIndex>>
+ $value="view"
+/>
+\end clearEditFormAction
+
+<$set
+ name=semanticRelation
+ tiddler={{!!state}}
+><$let 
+ state="$:/temp/lls/state/SynonymGroupView"
+ formModeIndex="formMode"
+ contextIndex="srgvContextIndex"
+ wordListIndex="srgvWordListIndex"
+ wordStyleIndexPrefix="srgvWordStyleIndexPrefix-"
+><$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<formModeIndex>>
+ text="edit"
+><$text
+ text="Synonyms "
+/><$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation=<<semanticRelation>>
+ mode="full"
+/><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<initializeEditFormAction>>
+><$transclude
+ $variable="no-wrap-text"
+ text="[edit synonyms group]"
+/></$button></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex="formMode"
+ text="edit"
+><$transclude
+ $variable="lls-semantic-relation-group-edit-form"
+ state=<<state>>
+ semanticRelationType="synonym"
+ semanticRelation=<<semanticRelation>>
+ contextIndex=<<contextIndex>>
+ wordListIndex=<<wordListIndex>>
+ wordStyleIndexPrefix=<<wordStyleIndexPrefix>>
+ afterSaveAction="clearEditFormAction"
+ hideDescription
+ log
+/><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ setTitle=<<state>>
+ setIndex=<<formModeIndex>>
+ setTo="view"
+><$transclude
+ $variable="no-wrap-text"
+ text="[cancel editing]"
+/></$button>
+</$reveal></$let></$set>

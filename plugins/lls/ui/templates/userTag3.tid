@@ -1,0 +1,62 @@
+created: 20240505152202823
+modified: 20240719054654021
+name: test tag name
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/userTag3
+type: text/vnd.tiddlywiki
+
+\import $:/plugins/midorum/lls/procedures/lls-user-tag
+\parameters (tagRef:<<currentTiddler>>, canBeRemoved:false)
+
+\define remove-tag-action()
+<$action-log
+ $$message="remove-tag-action"
+ tag=<<userTag>>
+/>
+\end remove-tag-action
+
+<span class="tc-tag-list-item">
+
+<$set
+ name="userTag"
+ value=<<currentTiddler>>
+><$set
+ name="tagName"
+ tiddler=<<userTag>>
+ field="name"
+>
+
+<$transclude
+ $variable="lls-tag-pill"
+ tagName=<<tagName>>
+ popupTemplate=<<qualify "$:/state/popup/tag">>
+ removeTagAction={{{ [<canBeRemoved>compare:string:eq[true]then[remove-tag-action]else[]] }}}
+/>
+
+<$reveal
+ state=<<qualify "$:/state/popup/tag">>
+ type="popup"
+ position="below"
+ animate="yes"
+ class="tc-drop-down"
+>
+<div class="tc-menu-list-item lls-drop-down-item">
+<$transclude
+ $tiddler=<<userTag>>
+ $field="text"
+/>
+</div>
+<$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref=<<userTag>>
+ _text="[other words with this tag]"
+/>
+<hr>
+<div class="tc-menu-list-item lls-drop-down-item">
+Description for this word: TBD
+</div>
+</$reveal>
+
+</$set></$set>
+
+</span>

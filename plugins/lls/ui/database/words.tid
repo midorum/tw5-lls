@@ -1,0 +1,251 @@
+caption: Words
+created: 20240515145342051
+modified: 20240719040643754
+tags: 
+title: $:/plugins/midorum/lls/ui/database/words
+type: text/vnd.tiddlywiki
+
+\define lls-search-word-entry-checkbox()
+<div>
+<$radio tiddler="$:/temp/lls/search" index="selected" value=<<currentTiddler>>>
+<$transclude $variable="openWordEditorFormLink" ref={{!!text}} text={{!!text}} />
+</$radio>
+</div>
+\end
+
+\procedure userTagsSection(ref)
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">user tags</div>
+<$list
+ variable=userTag
+ filter="[<ref>tags[]tag[$:/lls/tags/userTag]]"
+><$transclude
+ $tiddler=<<userTag>>
+ $field="title"
+/><$text
+ text=" - "
+/><$view
+ format=text
+ tiddler=<<userTag>>
+ field=name
+/><$text
+ text=": "
+/><$view
+ format=text
+ tiddler=<<userTag>>
+ field=text
+/><$transclude
+ $variable="userTagValueSection"
+ ref=<<ref>>
+ $mode=block
+/>
+</section>
+\end userTagsSection
+
+\procedure userTagValueSection(ref)
+<$list
+ variable=userTagValue
+ filter="[<ref>tagging[]tag[$:/lls/tags/userTagValue]tag<ref>tag<userTag>]"
+><$transclude
+ $tiddler=<<userTagValue>>
+ $field="title"
+/><$text
+ text=": "
+/><$view
+ format=text
+ tiddler=<<userTagValue>>
+ field=text
+/></$list>
+\end userTagValueSection
+
+\procedure transcriptionGroupsSection(filter)
+\procedure transcriptionGroupView()
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">transcriptions group</div>
+<div><<transcriptionGroup>></div>
+<$transclude
+ $variable="transcriptionsSection"
+ ref=<<transcriptionGroup>>
+ $mode=block
+/>
+<$transclude
+ $variable="wordArticleSection"
+ filter="[<word>tagging[]tag[$:/lls/tags/wordArticle]tag<transcriptionGroup>]"
+ $mode=block
+/>
+</section>
+\end transcriptionGroupView
+<$list
+ variable=transcriptionGroup
+ filter=<<filter>>
+><$transclude
+ $variable="transcriptionGroupView"
+ $mode=block
+/></$list>
+\end transcriptionGroupsSection
+
+\procedure transcriptionsSection(ref)
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">transcriptions</div>
+<$scrollable
+ class='lls-scrollable'
+><$list
+ filter="[<ref>tags[]tag[$:/lls/tags/wordTranscription]]"
+><div><<currentTiddler>> - {{!!text}} - {{!!src}}</div></$list></$scrollable>
+</section>
+\end transcriptionsSection
+
+\procedure wordArticleSection(filter)
+\procedure wordArticleView()
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">word article</div>
+<div><$transclude
+ $tiddler=<<wordArticle>>
+ $field="title"
+/><$text
+ text=" - "
+/><$transclude
+ $tiddler=<<wordArticle>>
+ $field="similarWords"
+/></div>
+<$transclude
+ $variable="wordMeaningsSection"
+ ref=<<wordArticle>>
+ $mode=block
+/><$transclude
+ $variable="synonymsSection"
+ ref=<<wordArticle>>
+ $mode=block
+/><$transclude
+ $variable="userTagsSection"
+ ref=<<wordArticle>>
+ $mode=block
+/><$transclude
+ $variable="usageExamplesSection"
+ ref=<<wordArticle>>
+ $mode=block
+/></section>
+\end wordArticleView
+<$list 
+ variable=wordArticle
+ filter=<<filter>>
+><$transclude
+ $variable="wordArticleView"
+ $mode=block
+/></$list>
+\end wordArticleSection
+
+\procedure wordMeaningsSection(ref)
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">word meanings</div>
+<$list
+ filter="[<ref>tags[]tag[$:/lls/tags/wordMeaning]]"
+><div><<currentTiddler>> - {{!!text}}</div></$list>
+</section>
+\end wordMeaningsSection
+
+\procedure usageExamplesSection(ref)
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">usage examples</div>
+<$scrollable
+ class='lls-scrollable'
+><$list
+ filter="[tag[$:/lls/tags/usageExample]tag<ref>]"
+><div><<currentTiddler>>
+ - {{!!original}}
+ - {{!!translation}}
+<$transclude
+ $variable="openExampleViewFormLink"
+ ref=<<currentTiddler>>
+ text="[edit]"
+/></div></$list></$scrollable>
+</section>
+\end usageExamplesSection
+
+\procedure synonymsSection(ref)
+<section
+ class="lls-db-hierarchical-section"
+><div class="lls-db-hierarchical-legend">synonyms</div>
+<$list
+ filter="[<ref>tagging[]tag[$:/lls/tags/sr/synonymsGroup]]"
+><div><<currentTiddler>></div></$list>
+</section>
+\end synonymsSection
+
+<!----------------- content ---------------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+/>
+
+<$transclude
+ $variable="lls-search-word"
+ onlySearch="yes"
+ entry=<<lls-search-word-entry-checkbox>>
+/>
+
+<$set
+ name="word"
+ tiddler="$:/temp/lls/search"
+ index="selected"
+>
+<$reveal
+ type="match"
+ state=<<word>>
+ text=""
+>Start search in the box above and select word at list</$reveal>
+
+<$reveal
+ type="nomatch"
+ state=<<word>>
+ text=""
+>
+
+<h1>word</h1>
+<<word>> - <$transclude $tiddler=<<word>> $field="text"/> <$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<word>>
+ text="[edit]"
+/>
+
+<h2>word articles with transcription group</h2>
+<$transclude
+ $variable="transcriptionGroupsSection"
+ filter="[<word>tagging[]tag[$:/lls/tags/transcriptionGroup]]"
+ $mode=block
+/>
+
+<h2>word articles without transcription group</h2>
+<$transclude
+ $variable="wordArticleSection"
+ filter="[<word>tagging[]tag[$:/lls/tags/wordArticle]lls:absent[transcriptionGroup]]"
+ $mode=block
+/>
+
+<h2>all word articles</h2>
+<$list
+ filter="[<word>tagging[]tag[$:/lls/tags/wordArticle]]"
+><div><<currentTiddler>> (<$list filter="[<currentTiddler>tags[]tag[$:/lls/tags/wordMeaning]] [<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]]"> <<currentTiddler>> </$list>)
+</div></$list>
+
+</$reveal>
+</$set>
+
+<style>
+section.lls-db-hierarchical-section {
+ margin-left: 1em;
+ padding: 5px;
+ border: thin solid white;
+}
+.lls-db-hierarchical-legend{
+ margin: 5px;
+ font-size: 1.2em;
+}
+</style>

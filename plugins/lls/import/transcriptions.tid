@@ -1,0 +1,20 @@
+created: 20240514025452046
+modified: 20240719055653688
+tags: $:/plugins/midorum/lls/tags/import
+title: $:/plugins/midorum/lls/import/transcriptions
+type: text/vnd.tiddlywiki
+
+\procedure do-import()
+<$action-sendmessage $message="tm-lls-import-trancriptions-data"
+  data="Import Transcriptions Data: Source"
+  limit=10000
+  />
+\end do-import
+
+<$button actions=<<do-import>> >Import</$button>
+
+[[Import Transcriptions Data: Source]]
+
+[[Import Transcriptions Data: Source_processed]]
+
+[[Import Transcriptions Data: Source_skipped]]

@@ -1,0 +1,16 @@
+created: 20240526112232162
+modified: 20240719054746491
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/wordArticleForwardQuestionCardTemplate
+type: text/vnd.tiddlywiki
+
+\parameters (
+ src,
+ random
+)
+
+<$transclude
+ $variable="lls-word-article-forward-question-card"
+ src=<<src>>
+ random=<<random>>
+/>

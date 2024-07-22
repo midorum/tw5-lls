@@ -1,0 +1,7 @@
+modified: 20240719055046187
+title: New language rule
+type: text/vnd.tiddlywiki
+
+<$transclude
+ $tiddler="$:/plugins/midorum/lls/ui/templates/new-language-rule"
+/>

@@ -1,0 +1,11 @@
+created: 20240417042127986
+modified: 20240719040830134
+tags: 
+title: LLS Database Content
+type: text/vnd.tiddlywiki
+
+<$transclude
+ $variable="tabs"
+ tabsList="$:/plugins/midorum/lls/ui/database/words $:/plugins/midorum/lls/ui/database/userTags"
+ default="$:/plugins/midorum/lls/ui/database/words"
+/>

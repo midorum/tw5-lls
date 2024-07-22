@@ -1,0 +1,57 @@
+created: 20240719055227109
+modified: 20240719055235437
+title: $:/plugins/midorum/lls/ui/templates/choose-language-rule-form
+type: text/vnd.tiddlywiki
+
+\import $:/plugins/midorum/lls/procedures/lls-search
+\parameters(
+ state:$:/temp/lls/state/chooseLanguageRuleForm,
+ selectedRuleIndex:selectedRule,
+ searchInputIndex:chooseLanguageRuleFormSearchInput
+)
+
+\procedure ruleRadioSearchEntry(_ref)
+<div><$radio
+ tiddler=<<state>>
+ index=<<selectedRuleIndex>>
+ value=<<_ref>>
+>&nbsp;<$transclude
+ $variable="open-rule-view-form-link"
+ _ref=<<_ref>>
+ $mode=inline
+/></$radio></div>
+\end ruleRadioSearchEntry
+
+<!--
+state: <<state>>
+-->
+
+<table class="lls-fixed-table">
+<tr>
+<td class="lls-borderless-cell"><$transclude
+ $variable="lls-search"
+ state=<<state>>
+ searchInputIndex=<<searchInputIndex>>
+ searchMode="getRules"
+ entryTransclude="ruleRadioSearchEntry"
+ limit=100
+ searchOnly
+/></td>
+<td class="lls-borderless-cell"><$scrollable
+ class="lls-scrollable"
+><$set
+ name=r
+ tiddler=<<state>>
+ index=<<selectedRuleIndex>>
+><$tiddler
+ tiddler=<<r>>
+><$wikify
+ name="wikified"
+ text={{!!text}}
+ output="html"
+><<wikified>></$wikify></$tiddler></$set></$scrollable></td>
+<td class="lls-borderless-cell actions-cell"><$slot
+ $name="actions"
+/></td>
+</tr>
+</table>

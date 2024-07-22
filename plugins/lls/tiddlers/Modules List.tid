@@ -1,0 +1,114 @@
+created: 20240426051250602
+modified: 20240719055653688
+tags: 
+title: Modules List
+type: text/vnd.tiddlywiki
+
+TiddlyWiki version: ''<<version>>''
+
+''Forms'':
+
+<$transclude
+ $tiddler="$:/plugins/midorum/lls/ui/sidebar/quicklinks"
+/>
+
+''Database'':
+
+* [[LLS Database Content]]
+* [[$:/plugins/midorum/lls/ui/database/words]]
+* [[$:/plugins/midorum/lls/ui/database/userTags]]
+* [[Corrupted and Orphan Database Content]]
+
+''Procedures'':
+<<list-links "[!has[draft.of]tag[$:/plugins/midorum/lls/tags/procedure]]">>
+
+''System'':
+
+<<list-links "[!has[draft.of]tag[Widget]] [!has[draft.of]tag[FilterOperators]] [!has[draft.of]tag[$:/plugins/midorum/lls/tags/Search]]">>
+
+* $:/plugins/midorum/lls/modules/widgets/periodpaginator.js
+* $:/plugins/midorum/lls/modules/widgets/periodpaginator-enclosed.js - enclosed variant; there are problems with refreshing
+* $:/plugins/midorum/lls/modules/widgets/set.js - for debug purposes
+* $:/plugins/midorum/lls/modules/widgets/transclude.js - for debug purposes
+* $:/plugins/midorum/lls/modules/widgets/lls-action-setfield.js
+* $:/plugins/midorum/lls/data/prefixes
+* $:/plugins/midorum/lls/data/tags
+* $:/plugins/midorum/lls/sandbox/search
+* $:/plugins/midorum/lls/sandbox/filters
+* $:/plugins/midorum/lls/sandbox/widgets
+* $:/plugins/midorum/lls/sandbox/currentPalette
+* $:/plugins/midorum/lls/macros/lls-transcription-view
+* $:/plugins/midorum/lls/macros/lls-usage-examples-view
+* $:/plugins/midorum/lls/macros/lls-new-transcriptions-form
+* $:/plugins/midorum/lls/macros/lls-new-usage-examples-form
+* $:/plugins/midorum/lls/macros/lls-choose-word-meaning-form
+* $:/plugins/midorum/lls/macros/lls-navigate
+* $:/plugins/midorum/lls/macros/lls-search-word
+* $:/plugins/midorum/lls/macros/lls-word-article-forward-question-card
+* $:/plugins/midorum/lls/macros/lls-word-article-forward-answer-card
+* $:/plugins/midorum/lls/macros/lls-word-article-backward-question-card
+* $:/plugins/midorum/lls/macros/lls-word-article-backward-answer-card
+* $:/plugins/midorum/lls/macros/lls-usage-example-forward-question-card
+* $:/plugins/midorum/lls/macros/lls-usage-example-forward-answer-card
+* $:/plugins/midorum/lls/macros/lls-usage-example-backward-question-card
+* $:/plugins/midorum/lls/macros/lls-usage-example-backward-answer-card
+* $:/plugins/midorum/lls/macros/lls-random.js
+* $:/plugins/midorum/lls/macros/lls-random-int.js
+* $:/plugins/midorum/lls/css/global.css
+* $:/plugins/midorum/lls/ui/sidebar/quicklinks
+* $:/plugins/midorum/lls/ui/templates/userTag
+* $:/plugins/midorum/lls/ui/templates/userTag2
+* $:/plugins/midorum/lls/ui/templates/userTag3
+* $:/plugins/midorum/lls/ui/templates/userTag4
+* $:/plugins/midorum/lls/ui/templates/wordArticleForwardQuestionCardTemplate
+* $:/plugins/midorum/lls/ui/templates/wordArticleForwardAnswerCardTemplate
+* $:/plugins/midorum/lls/ui/templates/wordArticleBackwardQuestionCardTemplate
+* $:/plugins/midorum/lls/ui/templates/wordArticleBackwardAnswerCardTemplate
+* $:/plugins/midorum/lls/ui/templates/usageExampleForwardQuestionCardTemplate
+* $:/plugins/midorum/lls/ui/templates/usageExampleForwardAnswerCardTemplate
+* $:/plugins/midorum/lls/ui/templates/usageExampleBackwardQuestionCardTemplate
+* $:/plugins/midorum/lls/ui/templates/usageExampleBackwardAnswerCardTemplate
+* $:/plugins/midorum/lls/ui/templates/language-rules
+* $:/plugins/midorum/lls/ui/templates/new-language-rule
+* $:/plugins/midorum/lls/ui/templates/language-rule
+* $:/plugins/midorum/lls/ui/templates/language-rule-list-item
+* $:/plugins/midorum/lls/ui/templates/choose-language-rule-form
+* $:/plugins/midorum/lls/ui/templates/wordTranscription/view/single
+
+''Test'':
+
+* [[test/utils.js]]
+* [[test/simple.js]]
+* [[test/fakeWiki.js]]
+
+''SRS'':
+
+* $:/srs/data/tags
+* $:/srs/modules/cache.js
+* $:/srs/modules/utils.js
+* $:/srs/modules/startup.js
+* $:/srs/modules/message-handler.js
+* $:/srs/filteroperators/srs.js
+ 
+''ImportData'':
+<<list-links "[!has[draft.of]tag[$:/plugins/midorum/lls/tags/import]]">>
+
+''Instance Info'':
+
+* IsLoggedIn: {{$:/status/IsLoggedIn}}
+* UserName: {{$:/status/UserName}}
+* url {{$:/info/url/full}}
+* url:protocol {{$:/info/url/protocol}}
+* url:host {{$:/info/url/host}}
+* url:hostname {{$:/info/url/hostname}}
+* url:port {{$:/info/url/port}}
+* url:pathname {{$:/info/url/pathname}}
+* url:origin {{$:/info/url/origin}}
+* url:search {{$:/info/url/search}}
+* browser {{$:/info/browser}}
+* darkmode {{$:/info/darkmode}}
+* node {{$:/info/node}}
+* startup-timestamp {{$:/info/startup-timestamp}}
+* language {{$:/info/browser/language}}
+* screen:height {{$:/info/browser/screen/height}}
+* screen:width {{$:/info/browser/screen/width}}

@@ -1,0 +1,138 @@
+created: 20240329170103788
+modified: 20240719054045060
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-new-usage-examples-form
+type: text/vnd.tiddlywiki
+
+\define newUsageExamplesFormState() $:/temp/lls/state/newUsageExamplesForm
+
+\define addUsageExample(tag)
+<$action-sendmessage 
+  $message="tm-lls-create-new-temp-tiddler"
+  tag="$tag$"
+  />
+\end
+
+\define deleteUsageExample(title)
+<$action-sendmessage 
+  $message="tm-lls-delete-temp-tiddler"
+  title=$title$
+  />
+\end
+
+\define oneByOneForm(tag, addButtonText, deleteButtonText)
+<$list filter="[tag[$tag$]first[]]" variable=_>
+<table class="lls-new-transcriptions-form" style="border-collapse: collapse; border: none;">
+<tr style="border: none;">
+  <td style="border: none;">
+    Example original text:
+  </td>
+  <td style="border: none;">
+    Example translation text:
+  </td>
+  <td style="border: none;">
+    Notes (optionally):
+  </td>
+  <td style="border: none;">    
+  </td>
+</tr>
+<$list filter="[tag[$tag$]]" join="<br>">
+<tr style="border: none;">
+  <td style="border: none;">
+    <$edit-text tiddler=<<currentTiddler>> field="original" tag=textarea default=""/>
+  </td>
+  <td style="border: none;">
+    <$edit-text tiddler=<<currentTiddler>> field="translation" tag=textarea default=""/>
+  </td>
+  <td style="border: none;">
+    <$edit-text tiddler=<<currentTiddler>> tag=textarea default=""/>
+  </td>
+  <td style="border: none;">
+    <$button class="tc-btn-invisible tc-tiddlylink" actions=<<deleteUsageExample {{!!title}}>>><span style="white-space: nowrap">$deleteButtonText$</span></$button>
+  </td>
+</tr>
+</$list>
+</table>
+</$list>
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<addUsageExample $tag$>>><span style="white-space: nowrap">$addButtonText$</span></$button>
+\end
+
+\define bulkForm(bulkData)
+<table class="lls-new-transcriptions-form" style="border-collapse: collapse; border: none;">
+<tr style="border: none;">
+  <td style="border: none;">
+    Examples original text (each one on a new line):
+  </td>
+  <td style="border: none;">
+    Examples translation text (each one on a new line):
+  </td>
+</tr>
+<tr style="border: none;">
+  <td style="border: none;">
+    <$edit-text tiddler="$bulkData$" field="original" tag=textarea default=""/>
+  </td>
+  <td style="border: none;">
+    <$edit-text tiddler="$bulkData$" field="translation" tag=textarea default=""/>
+  </td>
+</tr>
+<tr style="border: none;">
+  <td colspan=2 style="border: none;">
+    <p>
+    Check the correct collation of examples and their translations.
+    </p>
+    <p>
+      <ul>
+        <$list filter="[[$bulkData$]get[original]splitregexp[\n]trim[]addsuffix[ - ]] :glue[[$bulkData$]get[translation]splitregexp[\n]trim[]]">
+          <li><<currentTiddler>></li>
+        </$list>
+      </ul>
+    </p>   
+  </td>
+</tr>
+</table>
+\end
+
+\define lls-new-usage-examples-form(
+  tag:"$:/temp/lls/usageExamplesTag", 
+  addButtonText:"[Add usage example]", 
+  deleteButtonText:"[-]", 
+  bulkData:"$:/temp/lls/newUsageExamplesBulkForm")
+<div class="lls-new-usage-examples-form">
+<div>
+Enter usage examples below
+<$tiddler tiddler=<<newUsageExamplesFormState>> >
+<$radio index="mode" value="oneByOne" default="oneByOne"> one-by-one</$radio>
+<$radio index="mode" value="bulk"> bulk</$radio>
+</$tiddler>
+</div><div class="lls-wide-input">
+<$reveal type="nomatch" stateTitle=<<newUsageExamplesFormState>> stateIndex="mode" text="bulk" >
+  <$transclude $variable="oneByOneForm" tag="$tag$" addButtonText="$addButtonText$" deleteButtonText="$deleteButtonText$"/>
+</$reveal>
+<$reveal type="match" stateTitle=<<newUsageExamplesFormState>> stateIndex="mode" text="bulk" >
+  <$transclude $variable="bulkForm" bulkData="$bulkData$"/>
+</$reveal>
+</div></div>
+\end
+
+<style>
+.lls-new-usage-examples-form textarea {
+  width: 100%;
+  height: 100%;
+}
+</style>
+
+
+
+<!-- usage examples
+
+
+<$transclude $variable="lls-new-usage-examples-form" tag="$:/temp/lls/newUsageExamplesTag" addButtonText="[+]" bulkData="$:/temp/lls/newUsageExamplesBulkForm2" />
+
+
+<<newUsageExamplesFormState>>
+
+[[$:/temp/lls/newUsageExamplesBulkForm]]
+
+<<list-links "[tag[$:/temp/lls/newUsageExamplesTag]]">>
+
+-->

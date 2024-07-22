@@ -1,0 +1,45 @@
+created: 20240327054325646
+modified: 20240719054029781
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-new-transcriptions-form
+type: text/vnd.tiddlywiki
+
+\define addTranscriptionAction(tag:"$:/temp/lls/transcriptionInputTag")
+<$action-log $$message=$tag$/>
+<$action-sendmessage 
+  $message="tm-lls-create-new-temp-tiddler"
+  tag="$tag$"/>
+\end
+
+\define deleteTranscriptionAction(title)
+<$action-sendmessage 
+  $message="tm-lls-delete-temp-tiddler"
+  title=$title$/>
+\end
+
+\define lls-new-transcriptions-form(
+  tag:"$:/temp/lls/transcriptionInputTag", 
+  addButtonText:"[+]", 
+  deleteButtonText:"[-]")
+<table class="lls-new-transcriptions-form" style="border-collapse: collapse; border: none;">
+<$list filter="[tag[$tag$]]" join="<br>">
+<tr style="border: none;">
+  <td style="border: none;">
+    <$edit-text tiddler=<<currentTiddler>> tag="input" default=""/>
+  </td>
+  <td style="border: none;">
+    <$edit-text tiddler=<<currentTiddler>> field="src" tag="input" default=""/>
+  </td>
+  <$list filter="[{!!src}!is[blank]]" variable=_>
+    <td style="border: none;">
+      <audio controls preload="none"><source src={{!!src}}></audio>
+    </td>
+  </$list>
+  <td style="border: none;">
+    <$button class="tc-btn-invisible tc-tiddlylink" actions=<<deleteTranscriptionAction {{!!title}}>>><span style="white-space: nowrap">$deleteButtonText$</span></$button>
+  </td>
+</tr>
+</$list>
+</table>
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<addTranscriptionAction $tag$>>><span style="white-space: nowrap">$addButtonText$</span></$button>
+\end

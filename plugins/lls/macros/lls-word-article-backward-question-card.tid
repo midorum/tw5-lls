@@ -1,0 +1,62 @@
+created: 20240405141638009
+modified: 20240719054248822
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-word-article-backward-question-card
+type: text/vnd.tiddlywiki
+
+\define lls-word-article-backward-question-card(src, random)
+\import $:/plugins/midorum/lls/procedures/lls-semantic-relation-group-view
+
+\define synonymsSection()
+<$set
+ name=synonymsGroup
+ filter="[<src>tagging[]tag[$:/lls/tags/sr/synonymsGroup]]"
+><$list
+ filter="[<synonymsGroup>is[tiddler]]"
+>Similar words (synonyms)<$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation=<<synonymsGroup>>
+ exclude=<<src>>
+ mode="full"
+/></$list></$set>
+\end synonymsSection
+
+<$set name=src value="$src$">
+
+<$set filter="[<src>tags[]tag[$:/lls/tags/wordMeaning]]">
+Which word is used in the following meaning?
+<h2>
+<p>
+{{!!text}}
+</p>
+</h2>
+</$set>
+
+Examples:
+<$scrollable
+ class='lls-word-article-backward-question-card-scrollable'
+><$list
+ filter="[<src>tagging[]tag[$:/lls/tags/usageExample]]"
+ emptyMessage="Seems there are not any usage examples for this word."
+><div>{{!!translation}}</div></$list></$scrollable>
+
+<$transclude
+ $variable="synonymsSection"
+ $mode="block"
+/>
+
+</$set>
+\end
+<!---------- usages ------------->
+
+
+
+<!-- 
+
+<$transclude $variable="lls-word-article-backward-question-card" src="$:/lls/db/wa/1711433774268" random=0.10920145163645778/>
+
+<$transclude $variable="lls-word-article-backward-question-card" src="$:/lls/db/wa/1711772669550" random=0.10920145163645778/>
+
+<$transclude $variable="lls-word-article-backward-question-card" src="$:/lls/db/wa/1712853359912" random=0.10920145163645778/>
+
+-->

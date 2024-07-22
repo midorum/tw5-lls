@@ -1,0 +1,44 @@
+created: 20240626043030198
+modified: 20240719055125276
+title: $:/plugins/midorum/lls/ui/templates/language-rule-list-item
+type: text/vnd.tiddlywiki
+
+\parameters(
+    selectable,
+    state:$:/temp/lls/state/languageRuleListItem,
+    listIndex:checkedList
+)
+
+\procedure actions()
+<$action-setfield
+    $tiddler={{Language Rule!!state}}
+    text=<<currentTiddler>>
+/><$action-navigate
+    $to="Language Rule"
+/>
+\end actions
+
+<$list
+    filter="[<selectable>!match[true]]"
+    variable=_
+><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<actions>>
+    dragTiddler=<<currentTiddler>>
+><div
+    class="lls-button-content"
+><$transclude
+    $field="brief"
+/></div></$button></$list><$list
+    filter="[<selectable>match[true]]"
+    variable=_
+><$checkbox
+ tiddler=<<state>>
+ listIndex=<<listIndex>>
+ checked=<<currentTiddler>>
+>&nbsp;<$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<actions>>
+><$transclude
+    $field="brief"
+/></$button></$checkbox></$list>

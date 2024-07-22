@@ -1,0 +1,189 @@
+created: 20240418052456280
+modified: 20240719054103217
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-choose-word-meaning-form
+type: text/vnd.tiddlywiki
+
+\define lls-choose-word-meaning-form(
+ state:"$:/temp/lls/state/chooseWordMeaningForm",
+ onWordChoose,
+ onWordArticleChoose,
+ actions,
+ inputActions
+)
+<div class="lls-choose-word-meaning-form">
+  <table class="lls-choose-word-meaning-form-table">
+    <tr>
+      <td class="lls-choose-word-meaning-form-search-word-cell">
+<$set 
+ name=externalInputHook 
+ value=$inputActions$
+><$transclude
+ $variable="lls-search-word"
+ state=<<__state__>>
+ entry=<<lls-choose-word-meaning-form-search-word-entry-radio state:$state$ onWordChoose:$onWordChoose$ >>
+ onlySearch="yes"
+ inputActions="lls-choose-word-meaning-form-input-hook"
+/></$set>
+      </td>
+      <td class="lls-choose-word-meaning-form-choose-word-meaning-cell">
+        <$list filter="[<__state__>getindex[lls-choose-word-meaning-form-selected-word]tagging[]tag[$:/lls/tags/wordArticle]]">
+        <$set name=wordArticle value=<<currentTiddler>> >
+          <$list filter="[<wordArticle>tags[]tag[$:/lls/tags/wordMeaning]]">
+            <<lls-choose-word-meaning-form-word-meaning-radio state:$state$ onWordArticleChoose:$onWordArticleChoose$ >>
+          </$list>
+        </$set>
+        </$list>
+      </td>
+      <$list filter="[[$actions$]!is[blank]]">
+      <td class="lls-choose-word-meaning-form-actions-cell">
+        <$transclude $variable="$actions$" state="$state$"/>
+      </td>
+      </$list>
+    </tr>
+  </table>
+</div>
+\end
+
+\define lls-choose-word-meaning-form-input-hook()
+<$list
+ filter="[<actionValue>is[blank]]"
+><$transclude
+ $variable="lls-choose-word-meaning-form-clear"
+/></$list><$transclude
+ $variable="$(externalInputHook)$"
+ actionValue=<<actionValue>>
+/>
+\end
+
+\define lls-choose-word-meaning-form-clear()
+<$action-setfield
+ $tiddler=<<__state__>>
+ $index="lls-choose-word-meaning-form-selected-word"
+/><$action-setfield
+ $tiddler=<<__state__>>
+ $index="lls-choose-word-meaning-form-selected-word-article"
+/>
+\end
+
+\define lls-choose-word-meaning-form-search-word-entry-radio(state, onWordChoose)
+<div>
+<$radio
+ tiddler=<<__state__>>
+ index="lls-choose-word-meaning-form-selected-word"
+ value=<<currentTiddler>>
+ actions=<<lls-choose-word-meaning-form-select-word-actions state:$state$ onWordChoose:$onWordChoose$>>
+><$transclude
+ $variable="openWordEditorFormLink"
+ ref={{!!text}}
+ text={{!!text}}
+/></$radio>
+</div>
+\end
+
+\define lls-choose-word-meaning-form-select-word-actions(state, onWordChoose)
+<$action-setfield
+ $tiddler=<<__state__>>
+ $index="lls-choose-word-meaning-form-selected-word-article"
+/><$transclude
+ $variable="$onWordChoose$"
+ state="$state$"
+/>
+\end
+
+\define lls-choose-word-meaning-form-word-meaning-radio(state, onWordArticleChoose)
+<div>
+<$radio
+ tiddler=<<__state__>>
+ index="lls-choose-word-meaning-form-selected-word-article"
+ value=<<wordArticle>>
+ actions=<<lls-choose-word-meaning-form-select-word-article-actions state:$state$ onWordArticleChoose:$onWordArticleChoose$>>
+><$transclude
+ $tiddler=<<currentTiddler>>
+ $field="text"
+/></$radio>
+</div>
+\end
+
+\define lls-choose-word-meaning-form-select-word-article-actions(state, onWordArticleChoose)
+<$transclude
+ $variable="$onWordArticleChoose$"
+ state="$state$"
+/>
+\end
+
+\define lls-choose-word-meaning-form-log-action(state)
+<$set
+ name="selectedWord"
+ tiddler=<<__state__>>
+ index="lls-choose-word-meaning-form-selected-word"
+><$set
+ name="selectedWordArticle"
+ tiddler=<<__state__>>
+ index="lls-choose-word-meaning-form-selected-word-article"
+><$action-log
+ state="$state$"
+ selectedWord=<<selectedWord>>
+ selectedWordArticle=<<selectedWordArticle>>
+/></$set></$set>
+\end
+
+\define lls-choose-word-meaning-form-actions-example(state)
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<lls-choose-word-meaning-form-log-action
+ $state$>>
+><$transclude
+ $variable="no-wrap-text"
+ text="[action]"
+/></$button>
+\end
+
+\define lls-choose-word-meaning-form-input-hook-example(actionValue)
+<$action-log actionValue="$actionValue$"/>
+\end
+
+<!----------------------------------------------->
+
+
+
+<!-- usages
+<<spring-stub
+ factor:3
+ transclude:"$:/temp/lls/state/chooseWordMeaningForm"
+ transcludeAlign:"bottom"
+>>
+bare
+[[$:/temp/lls/state/chooseWordMeaningForm]]
+<hr>
+<$transclude
+ $variable="lls-choose-word-meaning-form"
+/>
+
+<hr>
+bare
+<$transclude
+ $variable="lls-choose-word-meaning-form"
+ inputActions="lls-choose-word-meaning-form-input-hook-example"
+/>
+[[$:/temp/lls/state/chooseWordMeaningForm]]
+
+<hr>
+using with actions transclude
+<$transclude
+ $variable="lls-choose-word-meaning-form"
+ state="$:/temp/lls/state/chooseWordMeaningFormExample"
+ actions="lls-choose-word-meaning-form-actions-example"
+/>
+[[$:/temp/lls/state/chooseWordMeaningFormExample]]
+
+<hr>
+using event hooks
+<$transclude
+ $variable="lls-choose-word-meaning-form"
+ state="$:/temp/lls/state/chooseWordMeaningFormExample"
+ onWordChoose="lls-choose-word-meaning-form-log-action"
+ onWordArticleChoose="lls-choose-word-meaning-form-log-action"
+/>
+[[$:/temp/lls/state/chooseWordMeaningFormExample]]
+-->

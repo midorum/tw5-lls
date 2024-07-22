@@ -1,0 +1,118 @@
+created: 20240402032341103
+modified: 20240719054141663
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-search-word
+type: text/vnd.tiddlywiki
+
+
+\define lls-search-word-entry-link()
+<div>
+<$transclude
+ $variable="openWordEditorFormLink"
+ ref={{!!text}}
+ text={{!!text}}
+/>
+</div>
+\end
+
+\define lls-search-word-entry(content)
+$content$
+\end
+
+\define lls-search-word-input-hook(inputActions)
+<$set
+ name=actionValue
+ tiddler=<<__state__>>
+ index="predicate"
+><$transclude
+ $variable="$inputActions$"
+ actionValue=<<actionValue>>
+/></$set>
+\end
+
+\define lls-search-word(
+  state:"$:/temp/lls/state/lls-search-word", 
+  entry:"<<lls-search-word-entry-link>>",
+  onlySearch:"no",
+  inputActions
+)
+<div>
+<$edit-text
+ tiddler=<<__state__>>
+ index="predicate"
+ tag="input"
+ default=""
+ inputActions=<<lls-search-word-input-hook $inputActions$>>
+/>
+</div>
+<div>
+<$list
+ filter="[<__state__>getindex[predicate]]"
+><$list
+ filter="[!has[draft.of]lls:search:meanings:limit=100<currentTiddler>]"
+><$transclude
+ $variable="lls-search-word-entry"
+ content=<<__entry__>>
+/></$list></$list><$list
+ filter="[[$onlySearch$]!match[yes]]"
+><$list
+ filter="[<__state__>getindex[predicate]else[-]compare:string:eq[-]]"
+><$list
+ filter="[!has[draft.of]tag[$:/lls/tags/word]sort[text]]"
+><$transclude
+ $variable="lls-search-word-entry"
+ content=<<__entry__>>
+/></$list></$list></$list>
+<div>
+\end
+
+\define lls-search-word-input-hook-example(actionValue)
+<$action-log actionValue="$actionValue$"/>
+\end
+
+<!--------------------------------------------->
+
+<$transclude
+ $variable="lls-search-word"
+ onlySearch="yes"
+/>
+
+
+<!-- usages
+<$transclude
+ $variable="lls-search-word"
+/>
+
+<$transclude
+ $variable="lls-search-word"
+ onlySearch="yes"
+/>
+
+<$transclude
+ $variable="lls-search-word"
+ state="$:/temp/lls/search"
+/>
+
+<$transclude
+ $variable="lls-search-word"
+ inputActions="lls-search-word-input-hook-example"
+/>
+
+\define lls-search-word-entry-checkbox()
+<div>
+<$radio
+ tiddler="$:/temp/lls/search"
+ index="selected"
+ value=<<currentTiddler>>
+><$transclude
+ $variable="openWordEditorFormLink"
+ ref={{!!text}}
+ text={{!!text}}
+/></$radio>
+</div>
+\end
+<$transclude
+ $variable="lls-search-word"
+ entry=<<lls-search-word-entry-checkbox>>
+/>
+-->

@@ -1,0 +1,10 @@
+created: 20240323052740512
+modified: 20240719035304031
+tags: 
+title: Look up words
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<div>
+<$transclude $variable="tabs" tabsList="[all[shadows+tiddlers]tag[$:/plugins/midorum/lls/tags/Search]!has[draft.of]]" default="$:/plugins/midorum/lls/ui/search/words" actions="""<$action-setfield $tiddler="$:/temp/lls/state/search/currentTab" text=<<currentTab>>/>"""/>
+</div>

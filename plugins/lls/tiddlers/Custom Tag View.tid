@@ -1,0 +1,76 @@
+created: 20240503122337610
+modified: 20240711042928729
+tags: 
+title: Custom Tag View
+type: text/vnd.tiddlywiki
+state: $:/lls/state/customTagView
+
+\parameters (
+ usageExampleViewState:"$:/temp/lls/state/customTagView"
+)
+
+\procedure userTagInfoSection()
+<h2><$transclude
+ $tiddler=<<ref>>
+ $field="name"
+/></h2><$transclude
+ $tiddler=<<ref>>
+ $field="text"
+/>
+\end userTagInfoSection
+
+\procedure linkedEntitiesSection()
+<$list
+ filter="[tag<ref>]"
+ emptyMessage="There are not any words tagged with this tag"
+><$set 
+ name=var 
+ filter="[<currentTiddler>tag[$:/lls/tags/wordArticle]then[wordArticleEntry]]"
+><$transclude
+ $variable=<<var>>
+ _ref=<<currentTiddler>>
+/></$set></$list>
+\end linkedEntitiesSection
+
+\procedure wordArticleEntry(_ref)
+<$list
+ filter="[<_ref>tags[]tag[$:/lls/tags/word]]"
+><$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<currentTiddler>>
+ text={{!!text}}
+ $mode=inline
+/></$list><$text
+ text=" - "
+/><$list
+ filter="[<_ref>tags[]tag[$:/lls/tags/wordMeaning]]"
+><$transclude
+ $field=text
+/></$list>
+\end wordArticleEntry
+
+<!----------------- content --------------------------->
+
+<$vars this=<<currentTiddler>>>
+<$set
+ name="ref"
+ tiddler={{!!state}}
+>
+<div class="custom-tag-view-form">
+
+<h3>Tag Name and Description</h3>
+
+<$transclude
+ $variable="userTagInfoSection"
+ someParameter="parameter value"
+/>
+
+<h3>Tagged Words and Usage Examples</h3>
+
+<$transclude
+ $variable="linkedEntitiesSection"
+/>
+
+</div>
+</$set>
+</$vars>

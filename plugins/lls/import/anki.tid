@@ -1,0 +1,18 @@
+created: 20240409154539264
+modified: 20240719055653687
+tags: $:/plugins/midorum/lls/tags/import
+title: $:/plugins/midorum/lls/import/anki
+type: text/vnd.tiddlywiki
+
+\define anki-import()
+<$action-sendmessage $message="tm-lls-anki-import"
+  data="Import From Anki: Important Vocabular_2"
+  limit=100
+  />
+\end
+
+<$button actions=<<anki-import>> >Import</$button>
+
+[[Import From Anki: Important Vocabular]]
+
+[[Import From Anki: Important Vocabular_2]]

@@ -1,0 +1,524 @@
+created: 20240401133258176
+modified: 20240719054118326
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-navigate
+type: text/vnd.tiddlywiki
+
+\define no-wrap-text(text)
+<span style="white-space: nowrap">$text$</span>
+\end
+
+\define openWordViewForm(word)
+<$action-setfield $tiddler={{Word View!!state}} text="$word$"/>
+<$action-navigate $to="Word View"/>
+\end
+
+<!-- word editor form  -->
+
+\define _openWordEditorFormActions(word)
+<$action-setfield $tiddler={{Word Editor!!state}} text="$word$"/>
+<$action-navigate $to="Word Editor"/>
+\end
+
+\define _openWordEditorFormButton(word, text)
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<_openWordEditorFormActions "$word$">> ><<no-wrap-text "$text$">></$button>
+\end
+
+\define openWordEditorFormLink(ref, text:"[edit word]")
+<$list filter="[<__ref__>is[tiddler]tag[$:/lls/tags/word]]">
+  <$tiddler tiddler="$ref$" >
+    <$transclude $variable="_openWordEditorFormButton" word={{!!text}} text="$text$" />
+  </$tiddler>
+</$list>
+<$list filter="[<__ref__>!is[tiddler]] [<__ref__>is[tiddler]!tag[$:/lls/tags/word]]">
+  <$transclude $variable="_openWordEditorFormButton" word="$ref$" text="$text$" />
+</$list>
+\end
+
+<!-- new word meaning form  -->
+\define open-new-word-meaning-form-link(_ref, _text:"[edit word]")
+\define button(_word)
+\define actions()
+<$action-setfield
+ $tiddler={{New word meaning!!state}}
+ preset="$_word$"
+/><$action-navigate
+ $to="New word meaning"
+/>
+\end actions
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<actions>>
+><<no-wrap-text "$_text$">></$button>
+\end button
+<$list
+ filter="[[$_ref$]is[tiddler]]"
+><$tiddler
+ tiddler="$_ref$"
+><$transclude
+ $variable="button"
+ _word={{!!text}}
+/></$tiddler></$list><$list
+ filter="[[$_ref$]!is[tiddler]]"
+><$transclude
+ $variable="button"
+ _word="$_ref$"
+/></$list>
+\end open-new-word-meaning-form-link
+
+<!-- custom tags form  -->
+\define open-custom-tags-form-link(tagName, text:"[add tag]")
+\define actions()
+<$action-setfield
+ $tiddler={{Custom Tags!!state}}
+ tagName="$tagName$"
+/><$action-navigate
+ $to="Custom Tags"
+/>
+\end actions
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<actions>>
+><<no-wrap-text "$text$">></$button>
+\end open-custom-tags-form-link
+
+<!-- custom tag view form  -->
+\define open-custom-tag-view-form-link(_ref, _text:"{{!!name}}")
+\define button(_buttonText)
+\define actions()
+<$action-setfield
+ $tiddler={{Custom Tag View!!state}}
+ text="$_ref$"
+/><$action-navigate
+ $to="Custom Tag View"
+/>
+\end actions
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<actions>>
+><<no-wrap-text "$_buttonText$">></$button>
+\end button
+<$list
+ filter="[[$_ref$]is[tiddler]]"
+><$tiddler
+ tiddler="$_ref$"
+><$transclude
+ $variable="button"
+ _buttonText="$_text$"
+/></$tiddler></$list><$list
+ filter="[[$_ref$]!is[tiddler]]"
+><$text
+ text="$_ref$"
+/></$list>
+\end open-custom-tag-view-form-link
+
+<!-- grammar rule view form  -->
+\define open-rule-view-form-link(_ref, _text:"{{!!brief}}")
+\define button(_buttonText)
+\define actions()
+<$action-setfield
+ $tiddler={{Language Rule!!state}}
+ text="$_ref$"
+/><$action-navigate
+ $to="Language Rule"
+/>
+\end actions
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<actions>>
+><<no-wrap-text "$_buttonText$">></$button>
+\end button
+<$list
+ filter="[[$_ref$]is[tiddler]]"
+><$tiddler
+ tiddler="$_ref$"
+><$transclude
+ $variable="button"
+ _buttonText="$_text$"
+/></$tiddler></$list><$list
+ filter="[[$_ref$]!is[tiddler]]"
+><$text
+ text="$_ref$"
+/></$list>
+\end open-rule-view-form-link
+
+<!-- usage examples  form -->
+
+\define _openExampleViewFormActions(ref:<<currentTiddler>>)
+<$action-setfield $tiddler={{Usage Example View!!state}} text="$ref$"/>
+<$action-navigate $to="Usage Example View"/>
+\end
+
+\define _openExampleViewFormButton(ref, text)
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<_openExampleViewFormActions "$ref$">> ><<no-wrap-text "$text$">></$button>
+\end
+
+\define openExampleViewFormLink(ref, text:"[edit usage example]")
+<$list filter="[[$ref$]is[tiddler]]">
+  <$transclude $variable="_openExampleViewFormButton" ref="$ref$" text="$text$" />
+</$list>
+<$list filter="[[$ref$]!is[tiddler]]">
+  [Error: this should be reference to usage example tiddler]
+</$list>
+\end
+
+<!-- external dictionaries -->
+
+\define cambridgeDictionaryLink(articleName)
+[[Cambridge Dictionary|https://dictionary.cambridge.org/dictionary/english/$articleName$]]
+\end
+
+\define oxfordLearnersDictionaryLink(articleName)
+[[Oxford Learner's Dictionaries|https://www.oxfordlearnersdictionaries.com/definition/english/$articleName$]]
+\end
+
+\define collinsDictionaryLink(articleName)
+\define link(_a)
+[[Collins Dictionary|https://www.collinsdictionary.com/dictionary/english/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[-]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define collinsThesaurusLink(articleName)
+\define link(_a)
+[[Collins Thesaurus|https://www.collinsdictionary.com/dictionary/english-thesaurus/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[-]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define theFreeDictionaryLink(articleName)
+\define link(_a)
+[[The Free Dictionary|https://www.thefreedictionary.com/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[+]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define theFreeThesaurusLink(articleName)
+\define link(_a)
+[[The Free Thesaurus|https://www.freethesaurus.com/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[+]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define theFreeDictionaryIdiomsLink(articleName)
+\define link(_a)
+[[The Free Dictionary Idioms|https://idioms.thefreedictionary.com/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[+]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define merriamWebsterDictionaryLink(articleName)
+[[Merriam-Webster Dictionary|https://www.merriam-webster.com/dictionary/$articleName$]]
+\end
+
+\define merriamWebsterThesaurusLink(articleName)
+[[Merriam-Webster Thesaurus|https://www.merriam-webster.com/thesaurus/$articleName$]]
+\end
+
+\define sentenceDictLink(articleName)
+[[Sentence Dict|https://sentencedict.com/$articleName$.html]]
+\end
+
+\define sentenceStackLink(articleName)
+[[Sentence Stack|https://sentencestack.com/q/$articleName$]]
+\end
+
+\define oxfordCollocationDictionaryLink(articleName)
+[[Online OXFORD Collocation Dictionary|https://www.freecollocation.com/search?word=$articleName$]]
+\end
+
+\define googleDictionaryLink(articleName)
+[[Online Google Dictionary|https://googledictionary.freecollocation.com/meaning?word=$articleName$]]
+\end
+
+\define wiktionaryLink(articleName)
+[[Wiktionary, the free dictionary|https://en.wiktionary.org/wiki/$articleName$]]
+\end
+
+\define glosbeDictionaryLink(articleName)
+[[Glosbe Dictionary|https://glosbe.com/en/en/$articleName$]]
+\end
+
+\define allAcronymsDictionaryLink(articleName)
+[[All Acronyms Dictionary|https://www.allacronyms.com/$articleName$]]
+\end
+
+\define howToPronounceDictionaryLink(articleName)
+[[HowToPronounce Dictionary|https://www.howtopronounce.com/search/all/$articleName$]]
+\end
+
+\define tatoebaSentencesDictionaryLink(articleName)
+[[Tatoeba Sentences Dictionary|https://tatoeba.org/en/sentences/search?query=$articleName$]]
+\end
+
+\define yourDictionaryLink(articleName)
+\define link(_a)
+[[YourDictionary|https://www.yourdictionary.com/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[-]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define yourDictionaryThesaurusLink(articleName)
+\define link(_a)
+[[YourDictionary Thesaurus|https://thesaurus.yourdictionary.com/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[-]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define yourDictionarySentencesLink(articleName)
+\define link(_a)
+[[YourDictionary Sentences|https://sentence.yourdictionary.com/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[-]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+\define powerThesaurusLink(articleName)
+\define link(_a)
+[[Power Thesaurus|https://www.powerthesaurus.org/$_a$]]
+\end link
+<$set 
+ name=var 
+ filter="[[$articleName$]search-replace:g[ ],[_]]"
+><$transclude
+ $variable="link"
+ _a=<<var>>
+/></$set>
+\end
+
+<!-- external dictionaries links from tiddler -->
+
+\define externalDictionaryLinkFromTiddler(dictionaryLinkMacro, tiddler, field)
+<$tiddler tiddler="$tiddler$" >
+  <$transclude $variable="$dictionaryLinkMacro$" articleName={{!!$field$}} />
+</$tiddler>
+\end
+
+\define external-dictionary-link(_dictionaryLinkMacro, _spelling)
+<$transclude
+ $variable="$_dictionaryLinkMacro$"
+ articleName="$_spelling$"
+/>
+\end external-dictionary-link
+
+\define external-dictionary-links(_spelling)
+<table class="external-dictionary-links">
+  <tr>
+    <td class="enter-first-column-class-here">Dictionaries</td>
+    <td class="enter-main-column-class-here">Thesaurus</td>
+    <td class="enter-last-column-class-here">Sentences, Idioms, Collocations</td>
+  </tr>
+  <tr>
+    <td class="enter-first-column-class-here">
+    <$transclude $variable="cambridgeDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="oxfordLearnersDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="collinsDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="theFreeDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="merriamWebsterDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="googleDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="wiktionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="glosbeDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="yourDictionaryLink" articleName="$_spelling$" />
+    <br>
+    </td>
+    <td class="enter-main-column-class-here">
+    <$transclude $variable="collinsThesaurusLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="theFreeThesaurusLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="merriamWebsterThesaurusLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="yourDictionaryThesaurusLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="powerThesaurusLink" articleName="$_spelling$" />
+    <br>
+    </td>
+    <td class="enter-last-column-class-here">
+    <$transclude $variable="theFreeDictionaryIdiomsLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="oxfordCollocationDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="allAcronymsDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="sentenceDictLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="sentenceStackLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="yourDictionarySentencesLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="tatoebaSentencesDictionaryLink" articleName="$_spelling$" />
+    <br>
+    <$transclude $variable="howToPronounceDictionaryLink" articleName="$_spelling$" />
+    <br>
+    </td>
+  </tr>
+</table>
+<style>
+table.external-dictionary-links {
+  width:100%;
+  table-layout: fixed;
+  /*border-collapse: collapse;*/
+  /*border: none;*/
+}
+table.external-dictionary-links td {
+  /*border: none;*/
+}
+</style>
+\end external-dictionary-links
+
+<!----------- usages ----------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+/>
+
+<!--
+-->
+
+
+
+<!-- 
+
+<$transclude
+ $variable="cambridgeDictionaryLink"
+ articleName="issue"
+/>
+
+<$transclude
+ $variable="external-dictionary-link"
+ _dictionaryLinkMacro="cambridgeDictionaryLink"
+ _spelling="issue"
+/>
+
+<$transclude
+ $variable="external-dictionary-links"
+ _spelling="issue"
+/>
+
+<$transclude
+ $variable="external-dictionary-links"
+ _spelling="at issue"
+/>
+
+<$transclude
+ $variable="open-new-word-meaning-form-link"
+ _ref="at issue"
+ _text="at issue"
+/>
+
+<$transclude
+ $variable="open-new-word-meaning-form-link"
+ _ref="$:/lls/db/w/1712853259314"
+ _text="[open new word meaning form]"
+/>
+
+<$transclude
+ $variable="openWordEditorFormLink"
+ ref="$:/lls/db/w/1712853468611"
+/>
+<hr>
+<$transclude
+ $variable="openWordEditorFormLink"
+ ref="abuse"
+ text="abuse"
+/>
+<hr>
+<$transclude
+ $variable="openWordEditorFormLink"
+ ref="number"
+ text="number"
+/>
+<hr>
+<$transclude
+ $variable="openWordEditorFormLink"
+ ref="[sth] is the way to go"
+ text="[sth] is the way to go"
+/>
+
+<$transclude
+ $variable="open-custom-tags-form-link"
+ tagName="Some tag name"
+ text="[create tag]"
+ $mode=block
+/>
+<$transclude
+ $variable="open-custom-tags-form-link"
+ tagName="Some another tag name"
+ $mode=block
+/>
+
+
+<$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref="$:/lls/db/ut/1714738584110"
+/>
+<hr>
+<$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref="$:/lls/db/ut/1714738584110"
+ _text="[custom text]"
+/>
+
+<$transclude $variable="openExampleViewFormLink" ref="$:/lls/db/ue/1712853024346" />
+<hr>
+<$transclude $variable="openExampleViewFormLink" ref="$:/lls/db/ue/1712853024346" text="view usage example" />
+<hr>
+<$transclude $variable="openExampleViewFormLink" ref="abuse" text="abuse" />
+
+-->

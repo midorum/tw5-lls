@@ -1,0 +1,96 @@
+created: 20240430171449692
+modified: 20240719053916598
+tags: 
+title: $:/plugins/midorum/lls/sandbox/widgets
+type: text/vnd.tiddlywiki
+
+\import $:/plugins/midorum/lls/procedures/lls-search
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+ transclude="$:/temp/lls/state/PeriodPaginatorWidget"
+ transcludeAlign="bottom"
+/>
+
+<!--
+-->
+
+<$lls-period-paginator-enclosed>
+<div>
+<div>
+<$lls-set
+ $id=2 
+ name=var 
+ value=<<selectedPeriod>>
+>2 - <<var>>&nbsp;<$lls-transclude
+ $id=22 
+ $variable="var"
+/></$lls-set>
+</div><div>
+<$set
+ name=var 
+ value=<<selectedPeriod>>
+>3 - <<var>></$set>
+</div><div>
+4 - <<selectedPeriod>> - <<periodOffset>>
+ - {{{[<periodStart>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]}}}
+ - {{{[<periodEnd>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]}}}
+</div><div>
+5 - <$lls-transclude
+ $id=5
+ $variable="selectedPeriod"
+/>
+</div><div>
+<$list
+ filter="[<periodStart>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+><<currentTiddler>></$list> - <$list
+ filter="[<periodEnd>format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+><<currentTiddler>></$list>
+</div><div>
+<$transclude
+ $variable="lls-search"
+ searchOnly
+/>
+</div>
+</div>
+</$lls-period-paginator-enclosed>
+<hr>
+[[$:/temp/lls/state/PeriodPaginatorWidget]]
+<br>
+<$lls-period-paginator
+ $startIndex=start1
+ $endIndex=end1
+>
+<div>
+<div>
+<$lls-set
+ $id=1 
+ name=var 
+ tiddler="$:/temp/lls/state/PeriodPaginatorWidget"
+ index="start1"
+>1 - <<var>></$lls-set>
+</div><div>
+<$list
+ filter="[[$:/temp/lls/state/PeriodPaginatorWidget]getindex[start1]format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+><<currentTiddler>></$list> - <$list
+ filter="[[$:/temp/lls/state/PeriodPaginatorWidget]getindex[end1]format:timestamp[YYYY-0MM-0DD 0hh:0mm]]"
+><<currentTiddler>></$list>
+</div><div>
+<$transclude
+ $variable="lls-search"
+ searchOnly
+/>
+</div>
+</div>
+</$lls-period-paginator>
+<hr>
+<$lls-period-paginator>
+<$lls-period-paginator-enclosed>
+</$lls-period-paginator-enclosed>
+</$lls-period-paginator>
+<hr>
+<$lls-period-paginator-enclosed>
+<$lls-period-paginator>
+</$lls-period-paginator>
+</$lls-period-paginator-enclosed>

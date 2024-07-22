@@ -1,0 +1,397 @@
+created: 20240505134819418
+modified: 20240719041854486
+tags: $:/plugins/midorum/lls/tags/procedure
+title: $:/plugins/midorum/lls/procedures/lls-user-tag
+type: text/vnd.tiddlywiki
+
+\procedure lls-tag-pill(
+ tagRef,
+ tagName,
+ popupTemplate,
+ removeTagAction,
+ style
+) 
+\procedure _removeTagAction()
+<$transclude
+ $variable=<<removeTagAction>>
+ ref=<<tagRef>>
+/>
+\end _removeTagAction
+<$set 
+ name=palette 
+ value={{$:/palette}}
+><$set
+ name=backgroundColor
+ tiddler=<<palette>>
+ index=background
+><span
+ class="tc-tag-label lls-tag-label"
+ style=<<style>>
+><$button
+ class="lls-tag-button"
+ popup=<<popupTemplate>>
+ tag='span'
+ style.fill=<<backgroundColor>>
+><$view
+ tiddler=<<tagName>>
+ field="title"
+ format="text"
+/></$button><$list
+ filter="[<removeTagAction>!is[blank]]"
+><$button
+ class="tc-remove-tag-button lls-remove-tag-button"
+ tag='span'
+ style.fill=<<backgroundColor>>
+ actions=<<_removeTagAction>>
+>{{$:/core/images/close-button}}</$button>
+</$list></span></$set></$set>
+\end lls-tag-pill
+
+\procedure lls-tag-popup(
+ tagRef,
+ tagName,
+ popupTransclusion,
+ removeTagAction,
+ qualify,
+ style
+)
+\define popupTemplate()
+$:/state/popup/tag_$(tagName)$_$(qualify)$
+\end popupTemplate
+<span
+ class="tc-tag-list-item tc-popup-keep"
+>
+<$transclude
+ $variable="lls-tag-pill"
+ tagName=<<tagName>>
+ popupTemplate=<<popupTemplate>>
+ removeTagAction=<<removeTagAction>>
+ tagRef=<<tagRef>>
+ border=<<border>>
+ style=<<style>>
+/>
+<$reveal
+ state=<<popupTemplate>>
+ type="popup"
+ position="below"
+ animate="yes"
+ class="tc-drop-down"
+><div
+ class="tc-menu-list-item lls-drop-down-item"
+><$transclude
+ $variable="popupTransclusion"
+/></div></$reveal></span>
+\end lls-tag-popup
+
+\procedure lls-user-tag-popup(
+ ref,
+ tagRef,
+ removeTagAction,
+ tagValueTransclusion,
+ qualify
+)
+\procedure popupTransclusion()
+<$transclude
+ $tiddler=<<tagRef>>
+ $field="text"
+/><$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref=<<tagRef>>
+ _text="[other words with this tag]"
+/><$list
+ filter="[<tagValueTransclusion>!compare:string:eq[]]"
+><hr><$transclude
+ $variable=<<tagValueTransclusion>>
+ ref=<<ref>>
+ tagRef=<<tagRef>>
+/></$list>
+\end popupTransclusion
+<$set
+ name="tagName"
+ tiddler=<<tagRef>>
+ field="name"
+><$transclude
+ $variable="lls-tag-popup" 
+ tagName=<<tagName>>
+ popupTransclusion=<<popupTransclusion>>
+ removeTagAction=<<removeTagAction>>
+ tagRef=<<tagRef>>
+ qualify=<<qualify>>
+/></$set>
+\end lls-user-tag-popup
+
+\procedure lls-user-tag-list(
+ ref,
+ removeTagAction,
+ tagValueTransclusion,
+ qualify
+)
+<span 
+ class="tc-tags-wrapper"
+>
+<$list
+ filter="[<ref>tags[]tag[$:/lls/tags/userTag]]"
+ storyview="pop"
+><$transclude
+ $variable="lls-user-tag-popup"
+ ref=<<ref>>
+ tagRef=<<currentTiddler>>
+ removeTagAction=<<removeTagAction>>
+ tagValueTransclusion=<<tagValueTransclusion>>
+ qualify=<<qualify>>
+/></$list></span>
+\end lls-user-tag-list
+
+\procedure lls-search-user-tag-link(
+ text:"[find tag]",
+ searchEntryAction,
+ qualify
+)
+\import $:/plugins/midorum/lls/procedures/lls-search
+\parameters (
+ state:"$:/temp/lls/state/searchUserTag",
+ searchInputIndex:"lls-search-predicate",
+)
+\procedure popupTransclusion()
+<$transclude
+ $variable="lls-search" 
+ state=<<state>>
+ searchInputIndex=<<searchInputIndex>>
+ searchMode="getUserTags"
+ entryTransclude="searchEntryTransclusion"
+ limit=100
+/><$set
+ name=predicate
+ tiddler=<<state>>
+ index=<<searchInputIndex>>
+><$transclude
+ $variable="open-custom-tags-form-link"
+ tagName=<<predicate>>
+ text="[create tag]"
+/></$set>
+\end popupTransclusion
+\procedure searchEntryTransclusion(_ref)
+<$set
+ name=tagName
+ tiddler=<<_ref>>
+ field="name"
+><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<searchEntryAction>>
+><<no-wrap-text "$(tagName)$">></$button></$set>
+\end searchEntryTransclusion
+\define tagStyle()
+background-color: transparent;
+border: solid thin $(color)$;
+color:$(color)$;
+\end tagStyle
+<$set 
+ name=palette 
+ value={{$:/palette}}
+><$set 
+ name=color 
+ tiddler=<<palette>>
+ index=tag-background
+><$transclude
+ $variable="lls-tag-popup" 
+ tagName=<<text>>
+ popupTransclusion=<<popupTransclusion>>
+ style=<<tagStyle>>
+ qualify=<<qualify>>
+/></$set></$set>
+\end lls-search-user-tag-link
+
+\procedure lls-user-tag-value-transclusion(
+ state:"$:/temp/lls/state/tagValueEdit",
+ ref,
+ tagRef
+)
+\define openStateIndex()
+$(ref)$_$(tagRef)$
+\end openStateIndex
+\define tagValueEditIndex()
+$(ref)$_$(tagRef)$_value
+\end tagValueEditIndex
+\procedure closeForm()
+<$action-setfield
+  $tiddler=<<state>>
+  $index=<<openStateIndex>>
+/><$action-setfield
+  $tiddler=<<state>>
+  $index=<<tagValueEditIndex>>
+/>
+\end closeForm
+\procedure setTagValue()
+<$list
+ variable=tagValue
+ filter="[<state>getindex<tagValueEditIndex>]"
+><$action-sendmessage
+ $message="tm-lls-set-user-tag-value"
+ ref=<<ref>>
+ tagRef=<<tagRef>>
+ tagValue=<<tagValue>>
+/></$list><$transclude
+ $variable="closeForm"
+/>
+\end setTagValue
+\procedure deleteTagValue()
+<$action-confirm
+ $message="Do you wish to delete the tag additional description? This cannot be undone."
+><$action-sendmessage
+ $message="tm-lls-delete-user-tag-value"
+ ref=<<ref>>
+ tagRef=<<tagRef>>
+/></$action-confirm><$transclude
+ $variable="closeForm"
+/>
+\end deleteTagValue
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<openStateIndex>>
+ text="1"
+><$list
+ filter="[<ref>tagging[]tag[$:/lls/tags/userTagValue]tag<ref>tag<tagRef>]"
+><$transclude
+ $field="text"
+ $mode="block"
+/></$list><$button
+ class="lls-icon-button"
+ tag='span'
+ tooltip='Edit tag value'
+ actions="""
+ <$action-setfield
+  $tiddler=<<state>>
+  $index=<<openStateIndex>>
+  $value=1
+ />"""
+><$transclude
+ $tiddler="$:/core/images/edit-button"
+/></$button></$reveal><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<openStateIndex>>
+ text="1"
+><div><$set 
+ name=currentValue 
+ filter="[<ref>tagging[]tag[$:/lls/tags/userTagValue]tag<ref>tag<tagRef>get[text]enlist-input[]]"
+><$edit-text
+ tiddler=<<state>>
+ index=<<tagValueEditIndex>>
+ default=<<currentValue>>
+ tag=textarea
+/></$set></div><$button
+ class="lls-icon-button"
+ tag='span'
+ tooltip='Save changes'
+ actions=<<setTagValue>>
+><$transclude
+ $tiddler="$:/core/images/done-button"
+/></$button><$button
+ class="lls-icon-button"
+ tag='span'
+ tooltip='Cancel'
+ actions=<<closeForm>>
+><$transclude
+ $tiddler="$:/core/images/cancel-button"
+/></$button><$button
+ class="lls-icon-button"
+ tag='span'
+ tooltip='Delete tag value'
+ actions=<<deleteTagValue>>
+><$transclude
+ $tiddler="$:/core/images/delete-button"
+/></$button></$reveal>
+\end lls-user-tag-value-transclusion
+
+<!---------------- usages ---------------------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+ transclude="$:/temp/lls/state/search"
+ transcludeAlign="bottom"
+/>
+ 
+<!--
+-->
+
+
+
+
+<!-- 
+
+<$transclude
+ $variable="lls-tag-pill"
+/>
+
+<$transclude
+ $variable="lls-tag-pill"
+ removeTagAction="remove-tag-action"
+/>
+
+<$transclude
+ $variable="lls-tag-pill"
+ tagName="some tag"
+ popupTemplate=<<qualify "$:/state/popup/tag">>
+/>
+<$reveal
+ state=<<qualify "$:/state/popup/tag">>
+ type="popup"
+ position="below"
+ animate="yes"
+ class="tc-drop-down"
+>
+<div class="tc-menu-list-item lls-drop-down-item">
+some text
+</div>
+</$reveal>
+
+<$transclude
+ $variable="lls-tag-popup" 
+ tagName="some tag"
+ popupTransclusion="""
+some text
+ """
+/>
+
+<$transclude
+ $variable="lls-user-tag-popup"
+ tagRef="$:/lls/db/ut/1714738584110"
+/>
+<$transclude
+ $variable="lls-user-tag-popup"
+ tagRef="$:/lls/db/ut/1714745055995"
+ removeTagAction="remove-tag-action"
+/>
+
+
+<$transclude
+ $variable="lls-user-tag-list"
+ ref="$:/lls/db/wa/1712852821463"
+ qualify="$:/lls/db/wa/1712852821463"
+ removeTagAction="remove-tag-action"
+ tagValueTransclusion="lls-user-tag-value-transclusion"
+/>
+
+
+<$transclude
+ $variable="lls-search-user-tag-link"
+ text="[add tag]"
+ searchEntryAction="""<$action-log $$message="debug"/>"""
+/>
+
+<$transclude
+ $variable="lls-search-user-tag-link"
+ text="[add tag]"
+ searchEntryAction="""<$action-log $$message="debug"/>""",
+ qualify="first search"
+/>
+<$transclude
+ $variable="lls-search-user-tag-link"
+ text="[add tag]"
+ searchEntryAction="""<$action-log $$message="debug"/>"""
+ qualify="second search"
+/>
+
+-->

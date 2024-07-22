@@ -1,0 +1,31 @@
+caption: Home
+created: 20240426044326048
+list-before: $:/core/ui/SideBar/Open
+modified: 20240719054546420
+tags: $:/tags/SideBar
+title: $:/plugins/midorum/lls/ui/sidebar/quicklinks
+type: text/vnd.tiddlywiki
+
+{{LLS Home}}
+
+<$reveal
+ type="match"
+ state="$:/info/url/hostname"
+ text="localhost"
+>
+Development Tools:
+<div>[[Semantic relation types]]</div>
+<div>[[Synonym Group View]]</div>
+<div>[[Usage Example View]]</div>
+<div>[[Word Editor]]</div>
+<div>[[Word View]]</div>
+<div>[[Custom Tag View]]</div>
+<div>[[Language Rule]]</div>
+<div>[[Learning Rules]]</div>
+<div>[[LLS Database Content]]</div>
+<div>[[Corrupted and Orphan Database Content]]</div>
+<div>[[Modules List]]</div>
+
+Obsotele:
+<div>[[Learning Session (old)]]</div>
+</$reveal>

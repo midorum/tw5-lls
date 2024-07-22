@@ -1,0 +1,18 @@
+word:$:/lls/tags/word
+wordArticle:$:/lls/tags/wordArticle
+wordMeaning:$:/lls/tags/wordMeaning
+wordTranscription:$:/lls/tags/wordTranscription
+transcriptionGroup:$:/lls/tags/transcriptionGroup
+usageExample:$:/lls/tags/usageExample
+speechPart:Speech Parts
+semanticRelationType:$:/lls/tags/semanticRelationType
+synonymsGroup:$:/lls/tags/sr/synonymsGroup
+antonymsGroup:$:/lls/tags/sr/antonymsGroup
+contrastGroup:$:/lls/tags/sr/contrastGroup
+homophonesGroup:$:/lls/tags/sr/homophonesGroup
+languageStyle:$:/lls/tags/languageStyle
+srsScheduledForward:$:/srs/tags/scheduledForward
+srsScheduledBackward:$:/srs/tags/scheduledBackward
+userTag:$:/lls/tags/userTag
+userTagValue:$:/lls/tags/userTagValue
+rule:$:/lls/tags/rule

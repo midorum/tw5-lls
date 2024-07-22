@@ -1,0 +1,102 @@
+created: 20240625040645358
+modified: 20240719055125297
+tags: 
+title: $:/plugins/midorum/lls/ui/templates/language-rules
+type: text/vnd.tiddlywiki
+
+\parameters(
+    state:$:/temp/lls/state/languageRules,
+    listIndex:checkedList,
+    chooseModeIndex:chooseMode
+)
+
+\procedure navigateToLearningSession()
+<$wikify
+    name=wf
+    text="""<$list
+            filter="[<state>getindex<listIndex>enlist-input[]]"
+        >[&lt;currentTiddler&gt;tag[<<currentTiddler>>]]</$list>"""
+><$action-setfield
+    $tiddler={{Learning Rules!!state}}
+    groupFilter=<<wf>>
+/></$wikify><$action-navigate
+    $to="Learning Rules"
+/>
+\end navigateToLearningSession
+
+<$reveal
+    type="nomatch"
+    stateTitle=<<state>>
+    stateIndex=<<chooseModeIndex>>
+    text="yes"
+><div
+    class="lls-buttons-align-left"
+><$transclude
+    $variable="list-tagged-draggable"
+    tag="$:/lls/tags/rule"
+    itemTemplate="$:/plugins/midorum/lls/ui/templates/language-rule-list-item"
+    emptyMessage="There are no rules defined. Try to add some by pressing the button below."
+/></div><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    to="New language rule"
+>[create a new rule]</$button>&nbsp;<$button
+    class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<state>>
+    setIndex=<<chooseModeIndex>>
+    setTo="yes"
+>[choose rules to learn]</$button></$reveal>
+<$reveal
+    type="match"
+    stateTitle=<<state>>
+    stateIndex=<<chooseModeIndex>>
+    text="yes"
+><$list
+    filter="[tag[$:/lls/tags/rule]]"
+    join="<br>"
+><$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-list-item"
+    selectable
+    state=<<state>>
+    listIndex=<<listIndex>>
+/></$list><p><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<navigateToLearningSession>>
+>[start learning]</$button>&nbsp;<$button
+    class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<state>>
+    setIndex=<<chooseModeIndex>>
+>[cancel]</$button></p></$reveal>
+
+<!--
+<hr>
+
+state: <<state>>
+
+checked: {{{ [<state>getindex<listIndex>] }}}
+
+<$wikify
+ name=wf
+ text="""
+  <$list
+   filter="[<state>getindex<listIndex>enlist-input[]]"
+  >[&lt;currentTiddler&gt;tag[<<currentTiddler>>]]</$list>
+ """
+>filter: <$text
+ text=<<wf>>
+/></$wikify>
+
+<$wikify
+ name=wf
+ text="""
+  <$list
+   filter="[<state>getindex<listIndex>enlist-input[]]"
+  >[tag[$:/lls/tags/usageExample]tag[<<currentTiddler>>]]</$list>
+ """
+>filter: <<wf>><$list
+ filter=<<wf>>
+><$transclude
+ $field="title"
+ $mode="block"
+/></$list></$wikify>
+
+-->

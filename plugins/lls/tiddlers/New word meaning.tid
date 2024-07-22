@@ -1,0 +1,342 @@
+created: 20240315161649920
+modified: 20240720062149950
+tags: 
+title: New word meaning
+type: text/vnd.tiddlywiki
+state: $:/lls/state/newWordMeaning
+
+\import $:/plugins/midorum/lls/macros/lls-navigate
+\parameters (
+ state:"$:/temp/lls/state/newWordArticleForm",
+ history:"$:/temp/lls/history/newWordArticleForm",
+ spellingEditIndex:"spellingEdit",
+ meaningEditIndex:"meaningEdit",
+ partOfSpeechSelectIndex:"partOfSpeechSelect"
+ selectedTranscriptionGroupIndex:"selectedTranscriptionGroup",
+ transcriptionInputTag:"$:/temp/lls/newWordsArticleForm/transcriptionInputTag",
+ usageExamplesTag:"$:/temp/lls/newWordsArticleForm/usageExamplesTag",
+ usageExamplesBulkData:"$:/temp/lls/state/newWordsArticleForm/usageExamplesBulkData",
+ presetField:"preset"
+)
+
+\procedure spellingInput()
+<h3>
+Word spelling
+</h3>
+<div class="lls-new-word-article-form-spelling-input">
+<$edit-text
+ tiddler=<<state>>
+ index=<<spellingEditIndex>>
+ default=<<preset>>
+ tag="input"
+/>
+</div>
+\end spellingInput
+
+\procedure existingArticlesBlock()
+<$list 
+ variable=spelling 
+filter="[<state>getindex<spellingEditIndex>else<preset>]"
+><$list
+ variable=existWord
+ filter="[!has[draft.of]tag[$:/lls/tags/word]field:text<spelling>]"
+>
+<h3>
+Existing meanings for word
+</h3>
+<b>
+<$transclude
+ $tiddler=<<existWord>>
+ $field="text"
+ $mode="inline"
+/>
+</b> 
+<$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<existWord>>
+ text="[view full word article]"
+/>
+<p>
+<$list
+ variable=wordArticle
+ filter="[<existWord>tagging[]tag[$:/lls/tags/wordArticle]lls:absent[transcriptionGroup]]"
+><$transclude
+ $variable="existWordMeaningsWithoutTranscriptions"
+ _wordArticle=<<wordArticle>>
+/></$list><$list
+ filter="[<existWord>tagging[]tag[$:/lls/tags/transcriptionGroup]]"><$radio
+ tiddler=<<state>>
+ index=<<selectedTranscriptionGroupIndex>>
+ value={{!!title}}
+>&nbsp;use this pronunciation(s)</$radio><$transclude
+ $variable="lls-transcription-view"
+ filter="[<currentTiddler>tags[]tag[$:/lls/tags/wordTranscription]]"
+/><$transclude
+ $variable="existWordMeanings"
+ word=<<existWord>>
+ transcriptionGroup=<<currentTiddler>>
+/></$list>
+</p>
+</$list></$list>
+\end existingArticlesBlock
+
+\procedure existWordMeanings(word, transcriptionGroup)
+<ul>
+<$list
+ filter="[<word>tagging[]tag[$:/lls/tags/wordArticle]tag<transcriptionGroup>]"
+>    
+<li>
+<$list
+ filter="[<currentTiddler>tags[]tag[$:/lls/tags/wordMeaning]]"
+><$list
+ filter="[all[current]tags[]tag[Speech Parts]]"
+>(<$transclude field="title"/>)</$list>
+<$transclude field="text"/></$list>
+</li>
+</$list>
+</ul>
+\end existWordMeanings
+
+\procedure existWordMeaningsWithoutTranscriptions(_wordArticle)
+<ul>
+<li>
+<$list
+ filter="[<_wordArticle>tags[]tag[$:/lls/tags/wordMeaning]]"
+><$list
+ filter="[all[current]tags[]tag[Speech Parts]]"
+>(<$transclude field="title"/>)</$list>
+<$transclude field="text"/></$list>
+</li>
+</ul>
+\end existWordMeaningsWithoutTranscriptions
+
+\procedure newTranscriptionGroupBlock()
+<$radio
+ tiddler=<<state>>
+ index=<<selectedTranscriptionGroupIndex>>
+ value="_"
+> enter new pronunciation(s)</$radio><$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<selectedTranscriptionGroupIndex>>
+ text="_"
+><$transclude
+ $variable="lls-new-transcriptions-form"
+ tag=<<transcriptionInputTag>>
+/></$reveal>
+\end newTranscriptionGroupBlock
+
+\procedure meaningInput()
+<h3>
+New word meaning
+</h3>
+<$edit-text
+ tiddler=<<state>>
+ index=<<meaningEditIndex>>
+ default=""
+/>
+\end meaningInput
+
+\procedure partOfSpeechSelect()
+<h3>
+Part for Speech
+</h3>
+<div>
+<$select
+ tiddler=<<state>>
+ index=<<partOfSpeechSelectIndex>>
+>
+<option value="" disabled>(choose an option)</option>
+<$list
+ filter='[tag[Speech Parts]sort[created]]'
+>
+<option><$view field='title'/></option>
+</$list></$select>
+</div><div>
+<$set
+ name=var
+ tiddler=<<state>>
+ index=<<partOfSpeechSelectIndex>>
+><$tiddler
+ tiddler=<<var>>
+><$transclude
+ mode='block'
+/></$tiddler></$set>
+</div>
+\end partOfSpeechSelect
+
+\procedure usageExamplesBlock()
+<h3>
+Usage examples
+</h3>
+<$transclude
+ $variable="lls-new-usage-examples-form"
+ tag=<<usageExamplesTag>>
+ bulkData=<<usageExamplesBulkData>>
+/>
+\end usageExamplesBlock
+
+\procedure createWordArticleButton()
+<h3>
+Final step
+</h3>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<createWordArticleAction>>
+>[create word article]</$button>
+\end createWordArticleButton
+
+\procedure createWordArticleAction()
+<$list
+ variable=spelling
+ filter="[<state>getindex<spellingEditIndex>else<preset>]"
+><$set
+ name=meaning
+ tiddler=<<state>>
+ index=<<meaningEditIndex>>
+><$set
+ name=partOfSpeech
+ tiddler=<<state>>
+ index=<<partOfSpeechSelectIndex>>
+><$set
+ name=selectedTranscriptionGroup
+ tiddler=<<state>>
+ index=<<selectedTranscriptionGroupIndex>>
+><$action-sendmessage
+ $message="tm-lls-create-new-article"
+ word=<<spelling>>
+ meaning=<<meaning>>
+ speechPart=<<partOfSpeech>>
+ transcriptionGroup=<<selectedTranscriptionGroup>>
+ newTranscriptionsTag=<<transcriptionInputTag>>
+ usageExamplesTag=<<usageExamplesTag>>
+ usageExamplesBulkData=<<usageExamplesBulkData>>
+ schedule="all"
+/><$action-listops
+ $tiddler=<<history>>
+ $subfilter="[<spelling>]"
+/></$set></$set></$set></$list><$transclude
+ $variable="clearForm"
+/>
+\end createWordArticleAction
+
+\procedure clearForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<spellingEditIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<meaningEditIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<partOfSpeechSelectIndex>>
+/><$action-setfield
+ $tiddler=<<state>>
+ $index=<<selectedTranscriptionGroupIndex>>
+/><$action-setfield 
+ $tiddler={{!!state}}
+ $field=<<presetField>>
+/><$action-sendmessage
+ $message="tm-lls-delete-all-temp-tiddlers"
+ tag=<<transcriptionInputTag>>
+/><$action-sendmessage
+ $message="tm-lls-delete-all-temp-tiddlers"
+ tag=<<usageExamplesTag>>
+/><$action-sendmessage
+ $message="tm-lls-delete-temp-tiddler"
+ title=<<usageExamplesBulkData>>
+/>
+\end clearForm
+
+\procedure externalResourcesBlock()
+<h3>
+Lookup the word on external resources
+</h3>
+<$list
+ variable=spelling
+ filter="[<state>getindex<spellingEditIndex>else<preset>]"
+><$transclude
+ $variable="external-dictionary-links"
+ _spelling=<<spelling>>
+/></$list>
+\end externalResourcesBlock
+
+\procedure historyBlock()
+\procedure againAction()
+<$action-setfield 
+ $tiddler=<<this>>
+ $field=word
+ $value=<<var>>
+/><$action-navigate
+ $to=<<this>>
+/>
+\end againAction
+<h3>
+Recently added words
+</h3>
+<$scrollable
+ class='lls-new-word-article-form-history-scrollable'
+><$list
+ variable=var
+ filter="[list<history>reverse[]]"
+><div><$transclude
+ $variable="openWordEditorFormLink"
+ ref=<<var>>
+ text=<<var>>
+/>&nbsp;<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<againAction [[var]]>>
+>[again]</$button></div></$list></$scrollable>
+\end historyBlock
+
+<!----------------- content ----------------------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+ transclude=<<state>>
+ transcludeAlign="bottom"
+/>
+
+<!--
+-->
+
+<$set
+ name=this
+ value=<<currentTiddler>>
+><$set
+ name=preset
+ tiddler={{!!state}}
+ field=<<presetField>>
+>
+<div class="lls-new-word-article-form">
+<$transclude
+ $variable="spellingInput"
+ $mode="block"
+/><$transclude
+ $variable="existingArticlesBlock"
+ $mode="block"
+/><$transclude
+ $variable="newTranscriptionGroupBlock"
+ $mode="block"
+/><$transclude
+ $variable="partOfSpeechSelect"
+ $mode="block"
+/><$transclude
+ $variable="meaningInput"
+ $mode="block"
+/><$transclude
+ $variable="usageExamplesBlock"
+ $mode="block"
+/><$transclude
+ $variable="createWordArticleButton"
+ $mode="block"
+/><$transclude
+ $variable="externalResourcesBlock"
+ $mode="block"
+/><$transclude
+ $variable="historyBlock"
+ $mode="block"
+/>
+</div>
+</$set></$set>

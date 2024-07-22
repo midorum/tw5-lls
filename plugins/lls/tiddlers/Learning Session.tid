@@ -1,0 +1,19 @@
+created: 20240403042159169
+modified: 20240526115052450
+tags: 
+title: Learning Session
+type: text/vnd.tiddlywiki
+
+<$transclude
+ $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionTemplate"
+ src="$:/lls/tags/wordArticle"
+ groupFilter="[<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>tags[]tag[$:/lls/tags/word]]"
+ groupStrategy="oneFromGroup"
+ forwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleForwardQuestionCardTemplate"
+ forwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleForwardAnswerCardTemplate"
+ backwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleBackwardQuestionCardTemplate"
+ backwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleBackwardAnswerCardTemplate"
+ directions="both"
+ directionButtons="[[Start learn words]]" 
+ limit=200
+/>

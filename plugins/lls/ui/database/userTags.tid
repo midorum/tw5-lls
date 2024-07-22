@@ -1,0 +1,15 @@
+caption: User Tags
+created: 20240515144550057
+modified: 20240719040830049
+tags: 
+title: $:/plugins/midorum/lls/ui/database/userTags
+type: text/vnd.tiddlywiki
+
+<$list
+ filter="[!has[draft.of]tag[$:/lls/tags/userTag]sort[name]]"
+><div><<currentTiddler>> - <$transclude
+ $variable="open-custom-tag-view-form-link"
+ _ref=<<currentTiddler>>
+/> - <$view
+ field="text"
+/></div></$list>

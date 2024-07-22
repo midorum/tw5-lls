@@ -1,0 +1,70 @@
+created: 20240419053903673
+modified: 20240515172405459
+tags: 
+title: Styles of Language
+type: text/vnd.tiddlywiki
+
+\define language-styles-form-state() $:/temp/lls/language-styles-form-state
+
+\define language-styles-form-create-language-style-action()
+<$set
+ name="newStyleName"
+ tiddler=<<language-styles-form-state>>
+ index="language-styles-form-style-name-input"
+><$set
+ name="newStyleDescritpion"
+ tiddler=<<language-styles-form-state>>
+ index="language-styles-form-style-description-input"
+><$action-sendmessage 
+ $message="tm-new-tiddler" 
+ title=<<newStyleName>>
+ tags="$:/lls/tags/languageStyle"
+ text=<<newStyleDescritpion>>
+  />
+<$action-setfield
+ $tiddler=<<language-styles-form-state>>
+ $index="language-styles-form-style-name-input"
+ text=""/>
+<$action-setfield
+ $tiddler=<<language-styles-form-state>>
+ $index="language-styles-form-style-description-input" 
+ text=""
+/></$set></$set>
+\end
+
+<!--------------------------------------------------------->
+https://dictionary.cambridge.org/grammar/british-grammar/types-of-english
+
+https://dictionary.cambridge.org/grammar/british-grammar/formal-and-informal-language
+
+https://www.really-learn-english.com/language-register.html
+
+https://linguodan.com/en/formal-informal-en/
+
+<$list filter="[!has[draft.of]tag[$:/lls/tags/languageStyle]sort[created]]">
+
+<$link to={{!!title}}>
+<$view field="title"/>
+</$link>
+- <$view field="text"/>
+
+</$list>
+
+<!--------------------------------------------------------->
+
+<hr>
+
+!! Create new Style of Language
+
+Style of Language
+
+<$edit-text tiddler=<<language-styles-form-state>> index="language-styles-form-style-name-input" tag="input" default=""/>
+
+Description
+
+<$edit-text tiddler=<<language-styles-form-state>> index="language-styles-form-style-description-input" default="" size="50"/>
+
+
+<$button actions=<<language-styles-form-create-language-style-action>>>
+Create
+</$button>

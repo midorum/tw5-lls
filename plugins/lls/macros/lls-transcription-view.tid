@@ -1,0 +1,222 @@
+created: 20240325155215381
+modified: 20240719053956189
+tags: $:/tags/Macro
+title: $:/plugins/midorum/lls/macros/lls-transcription-view
+type: text/vnd.tiddlywiki
+
+\define lls-transcription-view-autolay-first(filter:"[all[current]]", autoplay)
+<table class="lls-transcription-view" style="border-collapse: collapse; border: none;">
+  <$list filter="$filter$" counter="index">
+    <tr style="border: none;">
+      <td style="border: none;">
+        {{!!text}}
+      </td>
+      <$list filter="[{!!src}!is[blank]]" variable=_>
+        <td style="border: none;">
+        <$list filter="[<index>compare:integer:eq[1]]" variable=_>
+          <audio controls preload="none" $autoplay$><source src={{!!src}}></audio>
+        </$list>
+        <$list filter="[<index>!compare:integer:eq[1]]" variable=_>
+          <audio controls preload="none"><source src={{!!src}}></audio>
+        </$list>
+        </td>
+      </$list>
+    </tr>    
+  </$list>
+</table>
+\end
+
+\define lls-transcription-view-autolay-random(filter:"[all[current]]", autoplay, random:0)
+<$set name=random value="$random$">
+<$set name=transcriptions filter="$filter$">
+<$set name=count filter="[<transcriptions>split[ ]!is[blank]count[]]">
+<$set name=autoplayIndex filter="[<random>multiply<count>floor[]add[1]]">
+<$set name=autoplayIndex2 filter="[<random>multiply<count>]">
+
+<!--
+<div>- filter - $filter$-</div>
+<div>- random - <<random>>-</div>
+<div>- transcriptions count - <<count>>-</div>
+<div>- transcription autoplayIndex - <<autoplayIndex>>-</div>
+<div>- transcription autoplayIndex2 - <<autoplayIndex2>>-</div>
+-->
+
+<table class="lls-transcription-view" style="border-collapse: collapse; border: none;">
+  <$list filter="[<transcriptions>split[ ]]" counter="index">
+    <tr style="border: none;">
+      <td style="border: none;">
+        {{!!text}}
+      </td>
+      <$list filter="[{!!src}!is[blank]]" variable=_>
+        <td style="border: none;">
+        <$list filter="[<index>compare:integer:eq<autoplayIndex>]" variable=_>
+          <audio controls preload="none" $autoplay$><source src={{!!src}}></audio>
+        </$list>
+        <$list filter="[<index>!compare:integer:eq<autoplayIndex>]" variable=_>
+          <audio controls preload="none"><source src={{!!src}}></audio>
+        </$list>
+        </td>
+      </$list>
+    </tr>    
+  </$list>
+</table>
+
+</$set>
+</$set>
+</$set>
+</$set>
+</$set>
+\end
+
+
+\define lls-transcription-view(filter, autoplay, random)
+<$transclude
+ $variable="lls-transcription-view-autolay-random"
+ filter="$filter$"
+ autoplay="$autoplay$"
+ random="$random$"
+/>
+\end
+
+\define lls-transcription-group-compose(
+ transcriptionGroup,
+ state:"$:/temp/lls/state/lls-transcription-group-compose",
+ checkedListIndex:"lls-transcription-group-compose-checked",
+ selectedGroupIndex:"lls-transcription-group-compose-selected-group",
+ onDoneAction
+)
+\define composeTranscriptionGroupAction(mode)
+<$set
+ name="targetGroup"
+ tiddler="$state$"
+ index="$selectedGroupIndex$"
+><$set
+ name="transcriptions"
+ tiddler="$state$"
+ index="$checkedListIndex$"
+><$action-log
+ message="tm-lls-compose-transcription-group"
+ transcriptionGroup="$transcriptionGroup$"
+ targetGroup=<<targetGroup>>
+ transcriptions=<<transcriptions>>
+ mode="$mode$"
+/><$action-sendmessage
+ $message="tm-lls-compose-transcription-group"
+ transcriptionGroup="$transcriptionGroup$"
+ targetGroup=<<targetGroup>>
+ transcriptions=<<transcriptions>>
+ mode="$mode$"
+/></$set></$set><$action-setfield
+ $tiddler="$state$"
+ $index="$selectedGroupIndex$"
+/><$action-setfield
+ $tiddler="$state$"
+ $index="$checkedListIndex$"
+/><$transclude
+ $variable="$onDoneAction$"
+/>
+\end composeTranscriptionGroupAction
+<table
+ class="lls-transcription-view"
+ style="border-collapse: collapse; border: none;"
+><$list
+ variable=transcription
+ filter="[[$transcriptionGroup$]tags[]tag[$:/lls/tags/wordTranscription]]"
+><tr
+ style="border: none;"
+><td
+ style="border: none;"
+><$checkbox
+ tiddler="$state$"
+ listIndex="$checkedListIndex$"
+ checked=<<transcription>>
+></$checkbox></td><td
+ style="border: none;"
+><$transclude
+ $tiddler=<<transcription>>
+ $field="text"
+/></td><$tiddler
+ tiddler=<<transcription>>
+><$list
+ filter="[{!!src}!is[blank]]"
+ variable=_
+><td
+ style="border: none;"
+><audio
+ controls
+ preload="none"
+><source
+ src={{!!src}}
+></audio></td></$list></$tiddler></tr></$list></table>
+<$list
+ variable=word
+ filter="[[$transcriptionGroup$]tags[]tag[$:/lls/tags/word]]"
+><$transclude
+ $tiddler=<<word>>
+ $field="text"
+ $mode=block
+/><$list
+ filter="[<word>tagging[]tag[$:/lls/tags/transcriptionGroup]!compare:string:eq[$transcriptionGroup$]]"
+><$radio
+ tiddler="$state$"
+ index="$selectedGroupIndex$"
+ value={{!!title}}
+><$text
+ text="put into this pronunciations group"
+/></$radio><$transclude
+ $variable="lls-transcription-view"
+ filter="[<currentTiddler>tags[]tag[$:/lls/tags/wordTranscription]]"
+/></$list></$list><$radio
+ tiddler="$state$"
+ index="$selectedGroupIndex$"
+ value="_"
+><$text
+ text="create new pronunciations group"
+/></$radio>
+<div><$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<composeTranscriptionGroupAction mode:move>>
+>[move selected transcriptions]</$button>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<composeTranscriptionGroupAction mode:copy>>
+>[copy selected transcriptions]</$button></div>
+\end lls-transcription-group-compose
+
+<!------------------ usages ----------------->
+
+<$transclude
+ $variable="spring-stub"
+ factor=3
+/>
+
+
+
+<!-- 
+<<lls-transcription-view "$:/lls/db/wt/1711433774268">>
+
+<<lls-transcription-view "$:/lls/db/wt/1711433774268" autoplay>>
+
+<<lls-transcription-view "$:/lls/db/wt/1711433774268" autoplay 0.9999999999999999>>
+
+<<lls-transcription-view "[[$:/lls/db/tg/1711433774268]tags[]tag[$:/lls/tags/wordTranscription]]" autoplay>>
+
+
+<<lls-transcription-view "[[$:/lls/db/tg/1711433774268]tags[]tag[$:/lls/tags/wordTranscription]]" autoplay 0.9971034404364596>>
+
+<<lls-transcription-view "[[$:/lls/db/tg/1711433774268]tags[]tag[$:/lls/tags/wordTranscription]]" autoplay 0.9999999999999999>>
+
+<$transclude
+ $variable="lls-transcription-group-compose"
+ transcriptionGroup="$:/lls/db/tg/1711433973511"
+  onDoneAction="closeComposeTranscriptionsForm"
+/>
+
+<$transclude
+ $variable="lls-transcription-view"
+ filter="[[$:/lls/db/tg/1712853024365]tags[]tag[$:/lls/tags/wordTranscription]]"
+ autoplay="-autoplay"
+ random=0.7079114805601204
+/>
+
+-->

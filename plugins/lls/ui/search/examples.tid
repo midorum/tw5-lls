@@ -1,0 +1,33 @@
+caption: Usage Examples
+created: 20240331065409792
+list-after: $:/plugins/midorum/lls/ui/search/words
+modified: 20240719035505258
+tags: $:/plugins/midorum/lls/tags/Search
+title: $:/plugins/midorum/lls/ui/search/examples
+type: text/vnd.tiddlywiki
+
+\define state() $:/temp/lls/state/search/examples
+
+\define exampleEntry()
+<$transclude $variable="lls-usage-example-table" actions=<<lls-usage-example-view-action>>/>
+\end
+
+<!--------------------------------------------------------->
+
+<$edit-text tiddler=<<state>> index="predicate" tag="input" default=""/>
+
+<!--------------------------------------------------------->
+
+<$list filter="[<state>getindex[predicate]]">
+  <$list filter="[!has[draft.of]lls:search:getExamples:limit=100<currentTiddler>]">
+    <<exampleEntry>>
+  </$list>
+</$list>
+
+<!--
+<$list filter="[<state>getindex[predicate]else[-]compare:string:eq[-]]">
+  <$list filter="[!has[draft.of]tag[$:/lls/tags/usageExample]!sort[created]limit[100]]">
+    <<exampleEntry>>
+  </$list>
+</$list>
+-->

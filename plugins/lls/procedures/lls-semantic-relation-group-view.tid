@@ -1,0 +1,244 @@
+created: 20240422165052667
+modified: 20240719041740133
+tags: $:/plugins/midorum/lls/tags/procedure
+title: $:/plugins/midorum/lls/procedures/lls-semantic-relation-group-view
+type: text/vnd.tiddlywiki
+
+\procedure lls-semantic-relation-group-view()
+\parameters (
+ semanticRelation,
+ exclude,
+ mode:"brief",
+ overallGroupActions,
+ hideDescription
+)
+\import $:/plugins/midorum/lls/procedures/lls-semantic-relation-language-style-view
+
+\procedure wordDecoration(w)
+<b><<w>></b>
+\end wordDecoration
+
+\procedure descriptionBlock()
+<$list
+ filter="[<hideDescription>!compare:string:eq[true]]"
+><$list
+ filter="[<semanticRelation>get[text]!is[blank]]"
+>(<<currentTiddler>>)</$list></$list><$text
+ text=": "
+/>
+\end descriptionBlock
+
+\procedure briefInfoBlock()
+<$transclude
+ $variable="descriptionBlock"
+/><$list
+ filter="[<semanticRelation>get[semanticRelationList]enlist-input[]!compare:string:eq<exclude>]"
+ join=", "
+><$list
+ filter="[<currentTiddler>tag[$:/lls/tags/wordArticle]]"
+><$transclude
+ $variable="wordArticleBriefInfoEntry"
+ entry=<<currentTiddler>>
+ $mode="inline"
+/></$list><$list
+ filter="[<currentTiddler>!is[tiddler]]"
+><$transclude
+ $variable="unknownWordBriefInfoEntry"
+ entry=<<currentTiddler>>
+ $mode="inline"
+/></$list></$list><$text
+ text=" "
+/><$transclude
+ $variable=<<overallGroupActions>>
+ semanticRelation=<<semanticRelation>>
+ exclude=<<exclude>>
+/>
+\end briefInfoBlock
+
+\procedure wordArticleBriefInfoEntry(entry)
+<$list
+ filter="[<entry>tags[]tag[$:/lls/tags/word]]"
+><$set
+ name=spelling
+ tiddler=<<currentTiddler>>
+ field="text"
+><$transclude
+ $variable="wordDecoration"
+ w=<<spelling>>
+/></$set></$list><$transclude
+ $variable="lls-semantic-relation-language-style-view"
+ semanticRelation=<<semanticRelation>>
+ word=<<entry>>
+ $mode="inline"
+/>
+\end wordArticleBriefInfoEntry
+
+\procedure unknownWordBriefInfoEntry(entry)
+<$transclude
+ $variable="wordDecoration"
+ w=<<entry>>
+/><$transclude
+ $variable="lls-semantic-relation-language-style-view"
+ semanticRelation=<<semanticRelation>>
+ word=<<entry>>
+ $mode="inline"
+/>
+\end unknownWordBriefInfoEntry
+
+\procedure fullInfoBlock()
+<$transclude
+ $variable="descriptionBlock"
+/><$transclude
+ $variable=<<overallGroupActions>>
+ semanticRelation=<<semanticRelation>>
+ exclude=<<exclude>>
+/><$list
+ filter="[<semanticRelation>get[semanticRelationList]enlist-input[]!compare:string:eq<exclude>]"
+><$list
+ filter="[<currentTiddler>tag[$:/lls/tags/wordArticle]]"
+><$transclude
+ $variable="wordArticleFullInfoEntry"
+ entry=<<currentTiddler>>
+ $mode="block"
+/></$list><$list
+ filter="[<currentTiddler>!is[tiddler]]"
+><$transclude
+ $variable="unknownWordFullInfoEntry"
+ entry=<<currentTiddler>>
+ $mode="block"
+/></$list></$list>
+\end fullInfoBlock
+
+\procedure wordArticleFullInfoEntry(entry)
+<$transclude
+ $variable="wordArticleBriefInfoEntry"
+ entry=<<entry>>
+ $mode="inline"
+/><$text
+ text=" - "
+/><$list
+ filter="[<entry>tags[]tag[$:/lls/tags/wordMeaning]]"
+><$transclude
+ $field="text"
+/></$list>
+\end wordArticleFullInfoEntry
+
+\procedure unknownWordFullInfoEntry(entry)
+<$transclude
+ $variable="unknownWordBriefInfoEntry"
+ entry=<<entry>>
+ $mode="inline"
+/><$text
+ text=" - (this word does not have own article yet)"
+/>
+\end unknownWordFullInfoEntry
+
+<!---------- content ------------>
+
+<span class="lls-semantic-relation-group-view">
+<$list
+ filter="[<mode>!compare:string:eq[full]]"
+>
+<span class="lls-semantic-relation-group-view-brief">
+<$transclude
+ $variable="briefInfoBlock"
+ $mode="inline"
+/>
+</span>
+</$list><$list
+ filter="[<mode>compare:string:eq[full]]"
+>
+<span class="lls-semantic-relation-group-view-full">
+<$transclude
+ $variable="fullInfoBlock"
+ $mode="inline"
+/>
+</span>
+</$list>
+</span>
+\end lls-semantic-relation-group-view
+
+<!----------- usages ------------->
+
+
+<!--
+<$transclude
+ $variable="spring-stub"
+ factor=3
+/>
+
+-->
+
+
+
+<!----
+brief view
+<hr>
+<br>Synonyms <$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+/>
+<hr>
+<br>Synonyms <$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+ exclude="$:/lls/db/wa/1712853024348"
+ mode="brief"
+/>
+<hr>
+full view
+<hr>
+<br>Synonyms <$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+ mode="full"
+/>
+<hr>
+<br>Synonyms <$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+ exclude="$:/lls/db/wa/1712853024348"
+ mode="full"
+/>
+<hr>
+
+without description
+<hr>
+<br>Synonyms<$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1715169156946"
+ hideDescription
+/>
+<hr>
+<br>Synonyms<$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1715169156946"
+ mode="full"
+ hideDescription
+/>
+<hr>
+
+<<spring-stub>>
+<$set 
+ name=button 
+ value="<$button>[view group on a separate form]</$button>"
+><hr>
+overallGroupActions
+<br>Synonyms <$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+ exclude="$:/lls/db/wa/1712853024348"
+ mode="brief"
+ overallGroupActions="button"
+/>
+<hr>
+<br>Synonyms <$transclude
+ $variable="lls-semantic-relation-group-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+ exclude="$:/lls/db/wa/1712853024348"
+ mode="full"
+ overallGroupActions="button"
+/></$set>
+<hr>
+
+---->

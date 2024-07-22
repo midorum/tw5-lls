@@ -1,0 +1,42 @@
+created: 20240423094911192
+modified: 20240719041739967
+tags: $:/plugins/midorum/lls/tags/procedure
+title: $:/plugins/midorum/lls/procedures/lls-semantic-relation-language-style-view
+type: text/vnd.tiddlywiki
+
+\procedure lls-semantic-relation-language-style-view()
+\parameters (
+ semanticRelation,
+ word
+)
+
+\procedure srlsFieldName()
+srls-<<word>>
+\end srlsFieldName
+
+<$wikify
+ name=wikifiedFieldName
+ text=<<srlsFieldName>>
+><$list
+ filter="[<semanticRelation>get<wikifiedFieldName>split[ ]join[, ]addprefix[ (]addsuffix[)]]"
+><$transclude
+ $field="title"
+/></$list></$wikify>
+\end lls-semantic-relation-language-style-view
+
+<!----------- usages ------------->
+
+
+
+<!----
+\import [all[shadows+tiddlers]tag[$:/lls/tags/procedure]]
+
+<<spring-stub>>
+<hr>
+<$transclude
+ $variable="lls-semantic-relation-language-style-view"
+ semanticRelation="$:/lls/db/sr/1713721489270"
+ word="$:/lls/db/wa/1712853024348"
+/>
+<hr>
+---->

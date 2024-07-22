@@ -1,0 +1,48 @@
+created: 20240504180502189
+modified: 20240719053933713
+tags: 
+title: $:/plugins/midorum/lls/sandbox/currentPalette
+type: text/vnd.tiddlywiki
+
+\define _color-pill(n, f, b)
+<span
+ style.color={{$(palette)$##$f$}}
+ style.background-color={{$(palette)$##$b$}}
+>$n$: {{$(palette)$##$n$}}</span> 
+\end _color-pill
+
+\define _color(color)
+<div><$set 
+ name=background 
+ value={{$(palette)$##background}}
+><$set 
+ name=v 
+ filter="[[$(palette)$]getindex[$color$]]"
+><$set 
+ name=f 
+ filter="[<v>compare:string:eq[transparent]then[foreground]else[$color$]]"
+><$set 
+ name=b 
+ filter="[<v>compare:string:eq<background>then[foreground]]"
+><$transclude
+ $variable="_color-pill"
+ n=$color$
+ f=<<f>>
+ b=<<b>>
+/></$set></$set></$set></$set></div>
+\end _color
+
+<$set 
+ name=palette 
+ value={{$:/palette}}
+>
+Current palette: <<palette>>
+<hr>
+Colors:
+<$list
+ filter="[<palette>indexes[]]"
+><$transclude
+ $variable="_color"
+ color=<<currentTiddler>>
+/></$list>
+</$set>

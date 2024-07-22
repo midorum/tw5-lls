@@ -1,0 +1,47 @@
+created: 20240323062835821
+modified: 20240720040120159
+tags: 
+title: Word View
+type: text/vnd.tiddlywiki
+state: $:/lls/state/wordView
+
+<$set
+ name="word"
+ tiddler={{!!state}}
+>
+
+! <<word>>
+
+<$list variable=ref filter="[!has[draft.of]tag[$:/lls/tags/word]field:text<word>]">
+
+  <$list filter="[<ref>tagging[]tag[$:/lls/tags/transcriptionGroup]]">
+        
+    <<lls-transcription-view "[<currentTiddler>tags[]tag[$:/lls/tags/wordTranscription]]">>
+
+    <ul>
+    <$list filter="[<ref>tagging[]tag[$:/lls/tags/wordArticle]tag<currentTiddler>]"> 
+      <li>   
+      <$list filter="[<currentTiddler>tags[]tag[$:/lls/tags/wordMeaning]]">
+        <$list filter="[all[current]tags[]tag[Speech Parts]]">
+          (<<currentTiddler>>)
+        </$list>
+        {{!!text}}
+      </$list>
+      <$transclude
+       $variable="lls-usage-examples-view"
+       filter="[tag[$:/lls/tags/usageExample]tag<currentTiddler>]"
+       number=3
+       actions=<<lls-usage-example-view-action>>
+      />
+      </li>
+    </$list>
+    </ul>
+
+  </$list>
+
+</$list>
+
+<!--------------------------------------------------------->
+
+<$transclude $variable="openWordEditorFormLink" ref=<<word>> text="[edit word]" />
+</$set>
