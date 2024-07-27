@@ -263,11 +263,14 @@ Lookup the word on external resources
 
 \procedure historyBlock()
 \procedure againAction()
-<$action-setfield 
- $tiddler=<<this>>
- $field=word
+<$tiddler
+ tiddler=<<this>>
+><$action-setfield 
+ $tiddler={{!!state}}
+ $field=<<presetField>>
  $value=<<var>>
-/><$action-navigate
+/></$tiddler>
+<$action-navigate
  $to=<<this>>
 />
 \end againAction
