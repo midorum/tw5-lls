@@ -13,10 +13,9 @@ state: $:/lls/state/customTags
 )
 
 \procedure createUserTagAction()
-<$set
- name="userTagName"
- tiddler=<<state>>
- index=<<tagNameEditIndex>>
+<$list
+ variable=userTagName
+ filter="[<state>getindex<tagNameEditIndex>else<preset>]"
 ><$set
  name="userTagDescritpion"
  tiddler=<<state>>
@@ -25,7 +24,7 @@ state: $:/lls/state/customTags
  $message="tm-lls-create-user-tag" 
  name=<<userTagName>>
  description=<<userTagDescritpion>>
-/></$set></$set><$transclude
+/></$set></$list><$transclude
  $variable="clearFormAction"
 />
 \end createUserTagAction
