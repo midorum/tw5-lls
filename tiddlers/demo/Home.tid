@@ -3,6 +3,13 @@ modified: 20240722050614131
 title: Home
 type: text/vnd.tiddlywiki
 
+! {{$:/plugins/midorum/lls!!description}}
+
+|Plugin version |{{$:/plugins/midorum/lls!!version}} |
+|Core version |{{$:/plugins/midorum/lls!!core-version}} |
+|Sources |{{$:/plugins/midorum/lls!!source}} |
+|Demo page |{{$:/plugins/midorum/lls!!demo}} |
+
 <div class="tc-error">
 Plugin is not ready for use! Please do not import it!
 </div>

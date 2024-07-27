@@ -109,7 +109,12 @@ state: $:/lls/state/wordEditor
   newSpelling=<<newSpellingValue>>
   />
 <$action-setfield $tiddler=<<newSpelling>> $field="text" $value=""/>
-<$action-setfield $tiddler=<<this>> $field="word" $value=<<newSpellingValue>>/>
+<$tiddler
+  tiddler=<<this>>
+><$action-setfield
+  $tiddler={{!!state}}
+  text=<<newSpellingValue>>
+/></$tiddler>
 </$wikify>
 \end
 
@@ -845,9 +850,9 @@ synonymsInfoMode-<<wordArticle>>
   <$button class="tc-btn-invisible tc-tiddlylink" set=<<newSpellingText>> setTo=<<wordSpelling>>>[edit]</$button>
 </$reveal>
 <$reveal type="nomatch" state=<<newSpellingText>> text="">
-  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<saveSpelling>>>Done</$button>
+  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<saveSpelling>>>[done]</$button>
   <br>
-  <$button class="tc-btn-invisible tc-tiddlylink" set=<<newSpellingText>> setTo="">Cancel</$button>
+  <$button class="tc-btn-invisible tc-tiddlylink" set=<<newSpellingText>> setTo="">[cancel]</$button>
 </$reveal>
 </$wikify>
 \end
