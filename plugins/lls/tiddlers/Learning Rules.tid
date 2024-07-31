@@ -6,14 +6,28 @@ type: text/vnd.tiddlywiki
 state: $:/lls/state/learningRules
 
 <$set
+    name="groupStrategy"
+    tiddler={{!!state}}
+    field="groupStrategy"
+><$set
+    name="groupListFilter"
+    tiddler={{!!state}}
+    field="groupListFilter"
+><$set
     name="groupFilter"
     tiddler={{!!state}}
     field="groupFilter"
+><$set
+    name="groupLimit"
+    tiddler={{!!state}}
+    field="groupLimit"
 ><$transclude
     $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionTemplate"
     src="$:/lls/tags/usageExample"
     groupFilter=<<groupFilter>>
-    groupStrategy="groupOnly"
+    groupStrategy=<<groupStrategy>>
+    groupListFilter=<<groupListFilter>>
+    groupLimit=<<groupLimit>>
     forwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleForwardQuestionCardTemplate"
     forwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleForwardAnswerCardTemplate"
     backwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleBackwardQuestionCardTemplate"
@@ -21,4 +35,4 @@ state: $:/lls/state/learningRules
     directions="backward"
     directionButtons="[[Start learn rules]]" 
     limit=200
-/></$set>
+/></$set></$set></$set></$set>
