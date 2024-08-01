@@ -9,6 +9,7 @@ type: text/vnd.tiddlywiki
 |Core version |{{$:/plugins/midorum/lls!!core-version}} |
 |Sources |{{$:/plugins/midorum/lls!!source}} |
 |Demo page |{{$:/plugins/midorum/lls!!demo}} |
+|Dependents |{{$:/plugins/midorum/lls!!dependents}} |
 
 <div class="tc-error">
 Plugin is not ready for use! Please do not import it!

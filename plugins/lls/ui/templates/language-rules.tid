@@ -6,23 +6,53 @@ type: text/vnd.tiddlywiki
 
 \parameters(
     state:$:/temp/lls/state/languageRules,
+    retainedState:$:/lls/state/languageRules,
     listIndex:checkedList,
-    chooseModeIndex:chooseMode
+    chooseModeIndex:chooseMode,
+    learningModeIndex:learningMode,
+    groupLimitIndex:groupLimit
 )
 
 \procedure navigateToLearningSession()
 <$wikify
     name=wf
     text="""<$list
-            filter="[<state>getindex<listIndex>enlist-input[]]"
+            filter="[<retainedState>getindex<listIndex>enlist-input[]]"
         >[&lt;currentTiddler&gt;tag[<<currentTiddler>>]]</$list>"""
 ><$action-setfield
     $tiddler={{Learning Rules!!state}}
+    groupStrategy="groupOnly"
     groupFilter=<<wf>>
 /></$wikify><$action-navigate
     $to="Learning Rules"
+/><$action-setfield
+    $tiddler=<<state>>
+    $index=<<chooseModeIndex>>
 />
 \end navigateToLearningSession
+
+\procedure navigateToRepeatingSession()
+<$set
+    name="groupList"
+    tiddler=<<retainedState>>
+    index=<<listIndex>>
+><$set
+    name="groupLimit"
+    tiddler=<<retainedState>>
+    index=<<groupLimitIndex>>
+><$action-setfield
+    $tiddler={{Learning Rules!!state}}
+    groupStrategy="nFromGroup"
+    groupListFilter=<<groupList>>
+    groupFilter="[<currentTiddler>tag<groupTitle>]"
+    groupLimit=<<groupLimit>>
+/></$set></$set><$action-navigate
+    $to="Learning Rules"
+/><$action-setfield
+    $tiddler=<<state>>
+    $index=<<chooseModeIndex>>
+/>
+\end navigateToRepeatingSession
 
 <$reveal
     type="nomatch"
@@ -45,6 +75,7 @@ type: text/vnd.tiddlywiki
     setIndex=<<chooseModeIndex>>
     setTo="yes"
 >[choose rules to learn]</$button></$reveal>
+
 <$reveal
     type="match"
     stateTitle=<<state>>
@@ -56,29 +87,61 @@ type: text/vnd.tiddlywiki
 ><$transclude
     $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-list-item"
     selectable
-    state=<<state>>
+    state=<<retainedState>>
     listIndex=<<listIndex>>
-/></$list><p><$button
+/></$list><p><$select
+    tiddler=<<retainedState>>
+    index=<<learningModeIndex>>
+    default="learning"
+><option
+    value="learning"
+>learning</option><option
+    value="repeating"
+>repeating</option></$select></p><$reveal
+    type="match"
+    stateTitle=<<retainedState>>
+    stateIndex=<<learningModeIndex>>
+    text="learning"
+><p>In this mode, you will have to answer all rule questions before you can pass to the next rule</p><p><$button
     class="tc-btn-invisible tc-tiddlylink"
     actions=<<navigateToLearningSession>>
 >[start learning]</$button>&nbsp;<$button
     class="tc-btn-invisible tc-tiddlylink"
     setTitle=<<state>>
     setIndex=<<chooseModeIndex>>
->[cancel]</$button></p></$reveal>
+>[cancel]</$button></p></$reveal><$reveal
+    type="match"
+    stateTitle=<<retainedState>>
+    stateIndex=<<learningModeIndex>>
+    text="repeating"
+><p>In this mode, you will be asked only a few questions for each selected rule</p><p>Number of questions for each rule (0 - no limit)&nbsp;<$edit-text
+    tiddler=<<retainedState>>
+    index=<<groupLimitIndex>>
+    tag=input
+    type=integer
+    size=3
+    default=0
+/></p><p><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<navigateToRepeatingSession>>
+>[start learning]</$button>&nbsp;<$button
+    class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<state>>
+    setIndex=<<chooseModeIndex>>
+>[cancel]</$button></p></$reveal></$reveal>
 
 <!--
 <hr>
 
-state: <<state>>
+state: <<retainedState>>
 
-checked: {{{ [<state>getindex<listIndex>] }}}
+checked: {{{ [<retainedState>getindex<listIndex>] }}}
 
 <$wikify
  name=wf
  text="""
   <$list
-   filter="[<state>getindex<listIndex>enlist-input[]]"
+   filter="[<retainedState>getindex<listIndex>enlist-input[]]"
   >[&lt;currentTiddler&gt;tag[<<currentTiddler>>]]</$list>
  """
 >filter: <$text
@@ -89,7 +152,7 @@ checked: {{{ [<state>getindex<listIndex>] }}}
  name=wf
  text="""
   <$list
-   filter="[<state>getindex<listIndex>enlist-input[]]"
+   filter="[<retainedState>getindex<listIndex>enlist-input[]]"
   >[tag[$:/lls/tags/usageExample]tag[<<currentTiddler>>]]</$list>
  """
 >filter: <<wf>><$list
