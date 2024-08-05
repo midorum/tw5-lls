@@ -1,6 +1,10 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.1
+
+* improved search output for language rules
+
 !! 0.2.0
 
 * language rules form goes back to normal view after start learning rules session

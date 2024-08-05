@@ -51,7 +51,7 @@ Full text search through lls database
 
 	function getWords(predicate, searchPeriod, searchOptions, source, context) {
 		const exactMatch = [];
-		const startWith = [];
+		const startsWith = [];
 		const inWordMatch = [];
 		const inMeaningMatch = [];
 		const restWords = [];
@@ -82,7 +82,7 @@ Full text search through lls database
 					return;
 				}
 				if (tiddler.fields.text.startsWith(predicate)) {
-					startWith.push(tiddler);
+					startsWith.push(tiddler);
 					counter.inc();
 					return;
 				}
@@ -112,10 +112,10 @@ Full text search through lls database
 				}
 			});
 		}
-		const results = exactMatch.concat(startWith).concat(inWordMatch).concat(inMeaningMatch).map(tiddler => tiddler.fields.title);
+		const results = exactMatch.concat(startsWith).concat(inWordMatch).concat(inMeaningMatch).map(tiddler => tiddler.fields.title);
 		if (searchOptions.log) {
 			console.log("exactMatch", exactMatch);
-			console.log("startWith", startWith);
+			console.log("startsWith", startsWith);
 			console.log("inWordMatch", inWordMatch);
 			console.log("inMeaningMatch", inMeaningMatch);
 			console.log("restWords", restWords);
@@ -175,7 +175,9 @@ Full text search through lls database
 	}
 
 	function getRules(predicate, searchPeriod, searchOptions, source, context) {
-		const match = [];
+		const startsWith = [];
+		const contains = [];
+		const textContains = [];
 		const counter = createCounter(searchOptions.limit);
 		const lo = predicate.toLowerCase();
 		source(function (tiddler, title) {
@@ -183,18 +185,32 @@ Full text search through lls database
 			if (!tiddler) return;
 			if (!tiddler.fields.tags) return;
 			const tiddlerTags = tiddler.fields.tags;
-			if (tiddlerTags.includes(context.tags.rule)) {
-				if ((tiddler.fields.brief && tiddler.fields.brief.toLowerCase().includes(lo))
-					|| (tiddler.fields.text && tiddler.fields.text.toLowerCase().includes(lo))) {
-					match.push(tiddler);
+			if (!tiddlerTags.includes(context.tags.rule)) return;
+			if (tiddler.fields.brief) {
+				const brief = tiddler.fields.brief.toLowerCase();
+				if (brief.startsWith(lo)) {
+					startsWith.push(tiddler);
+					counter.inc();
+					return;
+				}
+				if (brief.includes(lo)) {
+					contains.push(tiddler);
 					counter.inc();
 					return;
 				}
 			}
+			if (tiddler.fields.text && tiddler.fields.text.toLowerCase().includes(lo)) {
+				textContains.push(tiddler);
+				counter.inc();
+				return;
+			}
 		});
-		const results = match.map(tiddler => tiddler.fields.title);
+		const results = startsWith.concat(contains).concat(textContains).map(tiddler => tiddler.fields.title);
 		if (searchOptions.log) {
-			console.log("match", match);
+			console.log("startsWith", startsWith,
+				"\ncontains", contains,
+				"\ntextContains", textContains
+			);
 		}
 		return results;
 	}
