@@ -4,6 +4,7 @@ type: text/vnd.tiddlywiki
 !! 0.2.2
 
 * fix: added empty option to the rules learning mode selector
+* improved: timer-less learning session for language rules (the session does not refill unless you have done all tests) (req. SRS plugin >=0.1.5)
 
 !! 0.2.1
 

@@ -8,6 +8,6 @@
 	"source": "https://github.com/midorum/tw5-lls",
 	"demo": "https://tw5-lls.tiddlyhost.com/",
 	"list": "readme configuration license",
-	"dependents": "SRS >=0.1.3 (https://github.com/midorum/tw5-srs)",
+	"dependents": "SRS >=0.1.5 (https://github.com/midorum/tw5-srs)",
 	"plugin-type": "plugin"
 }

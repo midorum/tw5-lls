@@ -34,5 +34,6 @@ state: $:/lls/state/learningRules
     backwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/usageExampleBackwardAnswerCardTemplate"
     directions="backward"
     directionButtons="[[Start learn rules]]" 
+    resetAfter=-1
     limit=200
 /></$set></$set></$set></$set>
