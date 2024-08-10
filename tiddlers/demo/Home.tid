@@ -10,6 +10,7 @@ type: text/vnd.tiddlywiki
 |Sources |{{$:/plugins/midorum/lls!!source}} |
 |Demo page |{{$:/plugins/midorum/lls!!demo}} |
 |Dependents |{{$:/plugins/midorum/lls!!dependents}} |
+|SRS version |{{$:/plugins/midorum/srs!!version}} |
 
 <div class="tc-error">
 Plugin is not ready for use! Please do not import it!
