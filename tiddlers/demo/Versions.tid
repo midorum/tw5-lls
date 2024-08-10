@@ -1,6 +1,10 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.3
+
+* new: mixing in examples that are not related to any rule to a rule review session
+
 !! 0.2.2
 
 * fix: added empty option to the rules learning mode selector
@@ -14,7 +18,7 @@ type: text/vnd.tiddlywiki
 
 * language rules form goes back to normal view after start learning rules session
 * retain checked state for rules selected to learn
-* added rules repeating mode
+* added rules review session mode
 
 !! 0.1.0
 
