@@ -97,58 +97,28 @@ state: $:/lls/state/usageExampleView
   />
 \end
 
-\define notLinkedWord(text)
-We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text={{!!text}} /> in our database, but it does not linked with this usage example.
-\end
-
-\define editExampleButton()
-<$button class="tc-btn-invisible tc-tiddlylink"
-  actions=<<openEditExampleForm>> >[edit]</$button>
-\end
-
-\define doneEditExampleButton()
-<$button class="tc-btn-invisible tc-tiddlylink"
-  actions=<<saveEditExampleForm>> >[done]</$button>
-\end
-
-\define cancelEditExampleButton()
-<$button class="tc-btn-invisible tc-tiddlylink"
-  actions=<<closeEditExampleForm>> >[cancel]</$button>
-\end
-
-\define deleteExampleButton()
-<$button class="tc-btn-invisible tc-tiddlylink"
-  actions=<<deleteExampleAction>> >[delete]</$button>
-\end
-
-\define editNotesButton()
-<$button class="tc-btn-invisible tc-tiddlylink"
-  setTitle=<<usageExampleViewState>>
-  setIndex=editNotes 
-  setTo="yes">[edit]</$button>
-\end
-
-\define doneEditNotesButton()
-<$button class="tc-btn-invisible tc-tiddlylink"
-  setTitle=<<usageExampleViewState>>
-  setIndex=editNotes 
-  setTo="">[done]</$button>
-\end
-
-\define srsScheduleButton()
+\procedure srsScheduleButtons()
 <$list filter="[<ref>!tag[$:/srs/tags/scheduledForward]]">
-  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<scheduleUsageExample forward>>>[schedule forward]</$button>
+  <$button class="lls-icon-button" tag='span' style.fill="red" tooltip="Schedule forward" actions=<<scheduleUsageExample forward>>>
+    <$transclude $tiddler="$:/lls/ui/images/translate"/>
+  </$button>
 </$list>
 <$list filter="[<ref>tag[$:/srs/tags/scheduledForward]]">
-  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<unscheduleUsageExample forward>>>[unschedule forward]</$button>
+  <$button class="lls-icon-button" tag='span' style.fill="green" tooltip="Unschedule forward" actions=<<unscheduleUsageExample forward>>>
+    <$transclude $tiddler="$:/lls/ui/images/translate"/>
+  </$button>
 </$list>
 <$list filter="[<ref>!tag[$:/srs/tags/scheduledBackward]]">
-  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<scheduleUsageExample backward>>>[schedule backward]</$button>
+  <$button class="lls-icon-button" tag='span' style.fill="red" tooltip="Schedule backward" actions=<<scheduleUsageExample backward>>>
+    <$transclude $tiddler="$:/lls/ui/images/translate-back"/>
+  </$button>
 </$list>
 <$list filter="[<ref>tag[$:/srs/tags/scheduledBackward]]">
-  <$button class="tc-btn-invisible tc-tiddlylink" actions=<<unscheduleUsageExample backward>>>[unschedule backward]</$button>
+  <$button class="lls-icon-button" tag='span' style.fill="green" tooltip="Unschedule backward" actions=<<unscheduleUsageExample backward>>>
+    <$transclude $tiddler="$:/lls/ui/images/translate-back"/>
+  </$button>
 </$list>
-\end
+\end srsScheduleButtons
 
 \define choose-word-meaning-form-button()
 <$button class="tc-btn-invisible tc-tiddlylink" actions=<<linkWordArticle>>><<no-wrap-text "[link]">></$button>
@@ -156,10 +126,12 @@ We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text
 
 \define originalCell()
 <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <h3>
   <<getExampleTiddlerField original>>
+  </h3>
 </$reveal>
 <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
-  <div class="editor-area">
+  <div class="lls-wide-input">
    <$edit-text tiddler=<<usageExampleViewState>> index="original" minHeight="10px" tag=textarea/>
   </div>
 </$reveal>
@@ -167,10 +139,12 @@ We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text
 
 \define translationCell()
 <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+  <h3>
   <<getExampleTiddlerField translation>>
+  </h3>
 </$reveal>
 <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
-  <div class="editor-area">
+  <div class="lls-wide-input">
    <$edit-text tiddler=<<usageExampleViewState>> index="translation" minHeight="10px" tag=textarea/>
   </div>
 </$reveal>
@@ -181,33 +155,9 @@ We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text
   <<getExampleTiddlerField text>>
 </$reveal>
 <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-  <div class="editor-area">
+  <div class="lls-wide-input">
    <$edit-text tiddler=<<ref>> field="text" minHeight="10px" tag=textarea/>
   </div>
-</$reveal>
-\end
-
-\define exampleActionsCell()
-<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
-  <<editExampleButton>>
-  <br>
-  <<srsScheduleButton>>
-</$reveal>
-<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
-  <<doneEditExampleButton>>
-  <br>
-  <<cancelEditExampleButton>>
-  <br>
-  <<deleteExampleButton>>
-</$reveal>
-\end
-
-\define notesActionsCell()
-<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-  <<editNotesButton>>
-</$reveal>
-<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-  <<doneEditNotesButton>>
 </$reveal>
 \end
 
@@ -228,29 +178,66 @@ We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text
 </$list>
 \end
 
-\define exampleTable()
-<table class="lls-fixed-table">
-  <tr>
-    <td class="lls-borderless-cell lls-wide-input original-cell"><<originalCell>></td>
-    <td class="lls-borderless-cell lls-wide-input translation-cell"><<translationCell>></td>
-    <td class="lls-borderless-cell actions-cell"><<exampleActionsCell>></td>
-  </tr>
-  <tr>
-    <td class="lls-borderless-cell" colspan="3">
-      <<srsDataCell>>
-    </td>
-  </tr>
-</table>
-\end
+\procedure exampleSection()
+<span style="float: right">
+  <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+    <$button class="lls-icon-button" tag='span' tooltip="Edit usage example" actions=<<openEditExampleForm>>>
+      <$transclude $tiddler="$:/core/images/edit-button"/>
+    </$button>
+    <<srsScheduleButtons>>
+  </$reveal>
+  <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
+    <$button class="lls-icon-button" tag='span' tooltip="Save usage example" actions=<<saveEditExampleForm>>>
+      <$transclude $tiddler="$:/core/images/done-button"/>
+    </$button>
+    <$button class="lls-icon-button" tag='span' tooltip="Cancel" actions=<<closeEditExampleForm>>>
+      <$transclude $tiddler="$:/core/images/close-button"/>
+    </$button>
+    <$button class="lls-icon-button" tag='span' tooltip="Delete usage example" actions=<<deleteExampleAction>>>
+      <$transclude $tiddler="$:/core/images/delete-button"/>
+    </$button>
+  </$reveal>
+</span>
+<span>
+  <h2>
+    Usage Example
+  </h2>
+</span>
+<$transclude
+ $variable="originalCell"
+ $mode=block
+/><$transclude
+ $variable="translationCell"
+ $mode=block
+/><$transclude
+ $variable="srsDataCell"
+ $mode=block
+/>
+\end exampleSection
 
-\define notesTable()
-<table class="lls-fixed-table">
-  <tr>
-    <td class="lls-borderless-cell lls-wide-input notes-cell"><<notesCell>></td>
-    <td class="lls-borderless-cell actions-cell"><<notesActionsCell>></td>
-  </tr>
-</table>
-\end
+\procedure notesSection()
+<span style="float: right">
+  <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
+    <$button class="lls-icon-button" tag='span' tooltip="Edit usage example notes" setTitle=<<usageExampleViewState>> setIndex=editNotes setTo="yes">
+      <$transclude $tiddler="$:/core/images/edit-button"/>
+    </$button>
+  </$reveal>
+  <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
+    <$button class="lls-icon-button" tag='span' tooltip="Save usage example notes" setTitle=<<usageExampleViewState>> setIndex=editNotes setTo="">
+      <$transclude $tiddler="$:/core/images/done-button"/>
+    </$button>
+  </$reveal>
+</span>
+<span>
+  <h2>
+    Notes
+  </h2>
+</span>
+<$transclude
+ $variable="notesCell"
+ $mode=block
+/>
+\end notesSection
 
 \define addWordMeaningSection()
 <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=addWordFormOpen text="yes">
@@ -405,45 +392,15 @@ We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text
 <$vars this=<<currentTiddler>>>
 <div class="lls-table-view lls-usage-example-view-form">
 
-!! Usage Example
-<<exampleTable>>
+<<exampleSection>>
 
-!! Notes
-<<notesTable>>
+<<notesSection>>
 
 !! Words
 <<linkedWordsSection>>
 
 !! Rules
 <<linkedRulesSection>>
-
-<!--
-
-!! Words Meanings
-
-<$wikify name=f text=<<getExampleTiddlerField original>> >
-<$list filter="[<f>splitregexp[\s|\.|,|:|;]!is[blank]]">
-<$set name=token value=<<currentTiddler>> >
-  <<currentTiddler>> - 
-  <$list filter="[tag[$:/lls/tags/word]]">
-  <$set name=word value=<<currentTiddler>> >
-    <$list filter="[<word>get[text]match<token>]">
-      <$transclude $variable="notLinkedWord" text=<<currentTiddler>> />
-    </$list>
-  </$set>
-  </$list>
-  <br>
-</$set>
-</$list>
-</$wikify>
-
-----------
-
-<$list filter="[lls:tokens<ref>]">
-  <<currentTiddler>>
-</$list>
- 
--->
 
 </div>
 </$vars>
