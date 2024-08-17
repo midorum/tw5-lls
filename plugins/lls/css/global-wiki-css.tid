@@ -1,0 +1,19 @@
+title: $:/plugins/midorum/lls/css/global-wiki-css
+type: text/vnd.tiddlywiki
+tags: $:/tags/Stylesheet
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline html
+
+.lls-scrollable,
+.lls-word-article-forward-question-card-scrollable,
+.lls-word-article-backward-question-card-scrollable,
+.lls-word-article-backward-answer-card-scrollable,
+.lls-word-editor-scrollable, 
+.lls-new-word-article-form .lls-new-word-article-form-history-scrollable {
+ /* border: 1px solid <<colour message-border>>; */
+ /* background-color: <<colour message-background>>; */
+}
+
+span.lls-icon-button:hover svg {
+	fill: <<colour tiddler-controls-foreground-hover>>;
+}

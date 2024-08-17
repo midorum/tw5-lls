@@ -56,8 +56,6 @@ table.lls-borderless-table td.lls-borderless-cell,
   margin: 0;
 }
 .lls-new-word-article-form .lls-new-word-article-form-history-scrollable {
- border: 1px solid <<colour message-border>>;
- background-color: <<colour message-background>>;
  padding: 1em;
  height: 200px;
  position: relative;
@@ -75,8 +73,6 @@ table.lls-borderless-table td.lls-borderless-cell,
 .lls-word-article-backward-question-card-scrollable,
 .lls-word-article-backward-answer-card-scrollable,
 .lls-word-editor-scrollable {
- border: 1px solid <<colour message-border>>;
- background-color: <<colour message-background>>;
  max-height: 200px;
  position: relative;
 }
@@ -108,4 +104,8 @@ span.lls-icon-button {
 span.lls-icon-button svg {
   width: 22px;
   vertical-align: middle;
+}
+
+span.lls-form-section-caption {
+  font-size: 28px;
 }

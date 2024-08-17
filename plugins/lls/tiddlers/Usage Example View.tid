@@ -179,7 +179,10 @@ state: $:/lls/state/usageExampleView
 \end
 
 \procedure exampleSection()
-<span style="float: right">
+<span class="lls-form-section-caption">
+  Usage Example
+</span>
+<span>
   <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
     <$button class="lls-icon-button" tag='span' tooltip="Edit usage example" actions=<<openEditExampleForm>>>
       <$transclude $tiddler="$:/core/images/edit-button"/>
@@ -198,11 +201,6 @@ state: $:/lls/state/usageExampleView
     </$button>
   </$reveal>
 </span>
-<span>
-  <h2>
-    Usage Example
-  </h2>
-</span>
 <$transclude
  $variable="originalCell"
  $mode=block
@@ -216,7 +214,10 @@ state: $:/lls/state/usageExampleView
 \end exampleSection
 
 \procedure notesSection()
-<span style="float: right">
+<span class="lls-form-section-caption">
+  Notes
+</span>
+<span>
   <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
     <$button class="lls-icon-button" tag='span' tooltip="Edit usage example notes" setTitle=<<usageExampleViewState>> setIndex=editNotes setTo="yes">
       <$transclude $tiddler="$:/core/images/edit-button"/>
@@ -227,11 +228,6 @@ state: $:/lls/state/usageExampleView
       <$transclude $tiddler="$:/core/images/done-button"/>
     </$button>
   </$reveal>
-</span>
-<span>
-  <h2>
-    Notes
-  </h2>
 </span>
 <$transclude
  $variable="notesCell"
