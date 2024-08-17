@@ -103,9 +103,9 @@ span.lls-remove-tag-button svg {
 
 span.lls-icon-button {
   cursor: pointer;
-  padding-left: 4px;
+  padding-left: 8px;
 }
 span.lls-icon-button svg {
-  width: 1em;
+  width: 22px;
   vertical-align: middle;
 }
