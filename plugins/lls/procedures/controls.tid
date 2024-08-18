@@ -1,0 +1,30 @@
+title: $:/plugins/midorum/lls/procedures/lls-controls
+tags: $:/plugins/midorum/lls/tags/procedure
+type: text/vnd.tiddlywiki
+
+\procedure lls-icon-button(
+    tooltip,
+    actions,
+    setTitle,
+    setIndex,
+    setField,
+    setTo,
+    icon,
+    class,
+    style
+)
+\define cl() lls-icon-button $(class)$
+<$button
+    class=<<cl>>
+    style=<<style>>
+    tag='span'
+    tooltip=<<tooltip>>
+    actions=<<actions>>
+    setTitle=<<setTitle>>
+    setIndex=<<setIndex>>
+    setField=<<setField>>
+    setTo=<<setTo>>
+><$transclude
+    $tiddler=<<icon>>
+/></$button>
+\end lls-icon-button

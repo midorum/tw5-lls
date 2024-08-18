@@ -1,7 +1,5 @@
-created: 20240505134819418
-modified: 20240719041854486
-tags: $:/plugins/midorum/lls/tags/procedure
 title: $:/plugins/midorum/lls/procedures/lls-user-tag
+tags: $:/plugins/midorum/lls/tags/procedure
 type: text/vnd.tiddlywiki
 
 \procedure lls-tag-pill(

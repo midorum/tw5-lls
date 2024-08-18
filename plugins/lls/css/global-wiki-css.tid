@@ -2,6 +2,13 @@ title: $:/plugins/midorum/lls/css/global-wiki-css
 type: text/vnd.tiddlywiki
 tags: $:/tags/Stylesheet
 
+\parameters(
+	lls-toggle-off:"#CC0000",
+	lls-toggle-off-hover:"#FF0000",
+	lls-toggle-on:"#00AA00",
+	lls-toggle-on-hover:"#00FF00",
+)
+
 \rules only filteredtranscludeinline transcludeinline macrodef macrocallinline html
 
 .lls-scrollable,
@@ -16,4 +23,16 @@ tags: $:/tags/Stylesheet
 
 span.lls-icon-button:hover svg {
 	fill: <<colour tiddler-controls-foreground-hover>>;
+}
+span.lls-toggle-button-off svg {
+	fill: <<lls-toggle-off>>;
+}
+span.lls-toggle-button-off:hover svg {
+	fill: <<lls-toggle-off-hover>>;
+}
+span.lls-toggle-button-on svg {
+	fill: <<lls-toggle-on>>;
+}
+span.lls-toggle-button-on:hover svg {
+	fill: <<lls-toggle-on-hover>>;
 }

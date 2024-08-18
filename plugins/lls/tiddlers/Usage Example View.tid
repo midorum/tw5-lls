@@ -2,6 +2,8 @@ title: Usage Example View
 type: text/vnd.tiddlywiki
 state: $:/lls/state/usageExampleView
 
+\import $:/plugins/midorum/lls/procedures/lls-controls
+
 \define usageExampleViewState() $:/temp/lls/state/usageExampleView
 \define getExampleTiddlerField(field) {{$(ref)$!!$field$}}
 \define filterExampleTiddlerField(field) {$(ref)$!!$field$}
@@ -99,24 +101,40 @@ state: $:/lls/state/usageExampleView
 
 \procedure srsScheduleButtons()
 <$list filter="[<ref>!tag[$:/srs/tags/scheduledForward]]">
-  <$button class="lls-icon-button" tag='span' style.fill="red" tooltip="Schedule forward" actions=<<scheduleUsageExample forward>>>
-    <$transclude $tiddler="$:/lls/ui/images/translate"/>
-  </$button>
+  <$transclude
+    $variable="lls-icon-button"
+    tooltip="Schedule forward"
+    actions=<<scheduleUsageExample forward>>
+    icon="$:/lls/ui/images/translate"
+    class="lls-toggle-button-off"
+  />
 </$list>
 <$list filter="[<ref>tag[$:/srs/tags/scheduledForward]]">
-  <$button class="lls-icon-button" tag='span' style.fill="green" tooltip="Unschedule forward" actions=<<unscheduleUsageExample forward>>>
-    <$transclude $tiddler="$:/lls/ui/images/translate"/>
-  </$button>
+  <$transclude
+    $variable="lls-icon-button"
+    tooltip="Unschedule forward"
+    actions=<<unscheduleUsageExample forward>>
+    icon="$:/lls/ui/images/translate"
+    class="lls-toggle-button-on"
+  />
 </$list>
 <$list filter="[<ref>!tag[$:/srs/tags/scheduledBackward]]">
-  <$button class="lls-icon-button" tag='span' style.fill="red" tooltip="Schedule backward" actions=<<scheduleUsageExample backward>>>
-    <$transclude $tiddler="$:/lls/ui/images/translate-back"/>
-  </$button>
+  <$transclude
+    $variable="lls-icon-button"
+    tooltip="Schedule backward"
+    actions=<<scheduleUsageExample backward>>
+    icon="$:/lls/ui/images/translate-back"
+    class="lls-toggle-button-off"
+  />
 </$list>
 <$list filter="[<ref>tag[$:/srs/tags/scheduledBackward]]">
-  <$button class="lls-icon-button" tag='span' style.fill="green" tooltip="Unschedule backward" actions=<<unscheduleUsageExample backward>>>
-    <$transclude $tiddler="$:/lls/ui/images/translate-back"/>
-  </$button>
+  <$transclude
+    $variable="lls-icon-button"
+    tooltip="Unschedule backward"
+    actions=<<unscheduleUsageExample backward>>
+    icon="$:/lls/ui/images/translate-back"
+    class="lls-toggle-button-on"
+  />
 </$list>
 \end srsScheduleButtons
 
@@ -184,32 +202,48 @@ state: $:/lls/state/usageExampleView
 </span>
 <span>
   <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
-    <$button class="lls-icon-button" tag='span' tooltip="Edit usage example" actions=<<openEditExampleForm>>>
-      <$transclude $tiddler="$:/core/images/edit-button"/>
-    </$button>
-    <<srsScheduleButtons>>
+    <$transclude
+      $variable="lls-icon-button"
+      tooltip="Edit usage example"
+      actions=<<openEditExampleForm>>
+      icon="$:/core/images/edit-button"
+    />
+    <$transclude
+      $variable="srsScheduleButtons"
+    />
   </$reveal>
   <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editExample text="yes">
-    <$button class="lls-icon-button" tag='span' tooltip="Save usage example" actions=<<saveEditExampleForm>>>
-      <$transclude $tiddler="$:/core/images/done-button"/>
-    </$button>
-    <$button class="lls-icon-button" tag='span' tooltip="Cancel" actions=<<closeEditExampleForm>>>
-      <$transclude $tiddler="$:/core/images/close-button"/>
-    </$button>
-    <$button class="lls-icon-button" tag='span' tooltip="Delete usage example" actions=<<deleteExampleAction>>>
-      <$transclude $tiddler="$:/core/images/delete-button"/>
-    </$button>
+    <$transclude
+      $variable="lls-icon-button"
+      tooltip="Save usage example"
+      actions=<<saveEditExampleForm>>
+      icon="$:/core/images/done-button"
+    />
+    <$transclude
+      $variable="lls-icon-button"
+      tooltip="Cancel"
+      actions=<<closeEditExampleForm>>
+      icon="$:/core/images/close-button"
+    />
+    <$transclude
+      $variable="lls-icon-button"
+      tooltip="Delete usage example"
+      actions=<<deleteExampleAction>>
+      icon="$:/core/images/delete-button"
+    />
   </$reveal>
 </span>
 <$transclude
- $variable="originalCell"
- $mode=block
-/><$transclude
- $variable="translationCell"
- $mode=block
-/><$transclude
- $variable="srsDataCell"
- $mode=block
+  $variable="originalCell"
+  $mode=block
+/>
+<$transclude
+  $variable="translationCell"
+  $mode=block
+/>
+<$transclude
+  $variable="srsDataCell"
+  $mode=block
 />
 \end exampleSection
 
@@ -219,14 +253,24 @@ state: $:/lls/state/usageExampleView
 </span>
 <span>
   <$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-    <$button class="lls-icon-button" tag='span' tooltip="Edit usage example notes" setTitle=<<usageExampleViewState>> setIndex=editNotes setTo="yes">
-      <$transclude $tiddler="$:/core/images/edit-button"/>
-    </$button>
+    <$transclude
+      $variable="lls-icon-button"
+      tooltip="Edit usage example notes"
+      setTitle=<<usageExampleViewState>>
+      setIndex="editNotes"
+      setTo="yes"
+      icon="$:/core/images/edit-button"
+    />
   </$reveal>
   <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-    <$button class="lls-icon-button" tag='span' tooltip="Save usage example notes" setTitle=<<usageExampleViewState>> setIndex=editNotes setTo="">
-      <$transclude $tiddler="$:/core/images/done-button"/>
-    </$button>
+    <$transclude
+      $variable="lls-icon-button"
+      tooltip="Save usage example notes"
+      setTitle=<<usageExampleViewState>>
+      setIndex="editNotes"
+      setTo=""
+      icon="$:/core/images/done-button"
+    />
   </$reveal>
 </span>
 <$transclude

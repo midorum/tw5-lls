@@ -5,10 +5,10 @@ title: $:/plugins/midorum/lls/sandbox/currentPalette
 type: text/vnd.tiddlywiki
 
 \define _color-pill(n, f, b)
-<span
+<span>$n$:&nbsp;<span
  style.color={{$(palette)$##$f$}}
  style.background-color={{$(palette)$##$b$}}
->$n$: {{$(palette)$##$n$}}</span> 
+>{{$(palette)$##$n$}}</span></span>
 \end _color-pill
 
 \define _color(color)
