@@ -39,9 +39,9 @@ type: text/vnd.tiddlywiki
     index=<<groupLimitIndex>>
 ><$action-setfield
     $tiddler={{Learning Rules!!state}}
-    groupStrategy="nFromGroup"
+    groupStrategy="taggedAny"
     groupListFilter=<<groupList>>
-    groupFilter="[<currentTiddler>tag<groupTitle>]"
+    groupFilter=""
     groupLimit=<<groupLimit>>
 /></$set></$set><$action-navigate
     $to="Learning Rules"
@@ -51,31 +51,20 @@ type: text/vnd.tiddlywiki
 />
 \end navigateToReviewSession
 
-\procedure navigateToReviewSessionWithOutOfScopeExamples()
-<$set
-    name="groups"
-    tiddler=<<retainedState>>
-    index=<<listIndex>>
-><$set
- name="groupList"
- filter="[enlist<groups>append[$:/lls/db/r/_]]"
-><$set
-    name="groupLimit"
-    tiddler=<<retainedState>>
-    index=<<groupLimitIndex>>
-><$action-setfield
+\procedure navigateToChallengeSession()
+<$action-setfield
     $tiddler={{Learning Rules!!state}}
-    groupStrategy="nFromGroup"
-    groupListFilter=<<groupList>>
-    groupFilter="[<currentTiddler>tag<groupTitle>] :or[<groupTitle>is[missing]then<currentTiddler>lls:absent[rule]]"
-    groupLimit=<<groupLimit>>
-/></$set></$set></$set><$action-navigate
+    groupStrategy="groupOnly"
+    groupListFilter=""
+    groupFilter="[<currentTiddler>lls:absent[rule]]"
+    groupLimit=-1
+/><$action-navigate
     $to="Learning Rules"
 /><$action-setfield
     $tiddler=<<state>>
     $index=<<chooseModeIndex>>
 />
-\end navigateToReviewSessionWithOutOfScopeExamples
+\end navigateToChallengeSession
 
 <$reveal
     type="nomatch"
@@ -119,7 +108,10 @@ type: text/vnd.tiddlywiki
     value="learning"
 >learning</option><option
     value="review"
->review</option></$select></p><$reveal
+>review</option><option
+    value="challenge"
+>challenge</option></$select></p>
+<$reveal
     type="match"
     stateTitle=<<retainedState>>
     stateIndex=<<learningModeIndex>>
@@ -128,7 +120,9 @@ type: text/vnd.tiddlywiki
     class="tc-btn-invisible tc-tiddlylink"
     setTitle=<<state>>
     setIndex=<<chooseModeIndex>>
->[cancel]</$button></p></$reveal><$reveal
+>[cancel]</$button></p>
+</$reveal>
+<$reveal
     type="match"
     stateTitle=<<retainedState>>
     stateIndex=<<learningModeIndex>>
@@ -140,7 +134,9 @@ type: text/vnd.tiddlywiki
     class="tc-btn-invisible tc-tiddlylink"
     setTitle=<<state>>
     setIndex=<<chooseModeIndex>>
->[cancel]</$button></p></$reveal><$reveal
+>[cancel]</$button></p>
+</$reveal>
+<$reveal
     type="match"
     stateTitle=<<retainedState>>
     stateIndex=<<learningModeIndex>>
@@ -154,12 +150,29 @@ type: text/vnd.tiddlywiki
     default=0
 /></p><p><$button
     class="tc-btn-invisible tc-tiddlylink"
-    actions=<<navigateToReviewSessionWithOutOfScopeExamples>>
+    actions=<<navigateToReviewSession>>
 >[start learning]</$button>&nbsp;<$button
     class="tc-btn-invisible tc-tiddlylink"
     setTitle=<<state>>
     setIndex=<<chooseModeIndex>>
->[cancel]</$button></p></$reveal></$reveal>
+>[cancel]</$button></p>
+</$reveal>
+<$reveal
+    type="match"
+    stateTitle=<<retainedState>>
+    stateIndex=<<learningModeIndex>>
+    text="challenge"
+><p>In this mode, you will be asked questions that are not related to any rule. Try to guess the right answer.</p>
+<p><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<navigateToChallengeSession>>
+>[start learning]</$button>&nbsp;<$button
+    class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<state>>
+    setIndex=<<chooseModeIndex>>
+>[cancel]</$button></p>
+</$reveal>
+</$reveal>
 
 <!--
 <hr>
@@ -247,4 +260,19 @@ groupTitle: <<groupTitle>>
 </$set>
 
 <hr/>
+
+<$list
+ filter="[tag[$:/lls/tags/usageExample]]"
+>
+
+
+<$list
+ filter="[<currentTiddler>lls:absent[rule]]"
+>
+
+<<currentTiddler>> - {{!!original}}
+
+</$list>
+</$list>
+
 -->

@@ -3,11 +3,11 @@
 	"title": "$:/plugins/midorum/lls",
 	"description": "TiddlyWiki system for self learning language",
 	"author": "midorum",
-	"version": "0.2.3++single-column-design.0",
+	"version": "0.2.4++single-column-design.0",
 	"core-version": ">=5.3.3",
 	"source": "https://github.com/midorum/tw5-lls",
 	"demo": "https://tw5-lls.tiddlyhost.com/",
 	"list": "readme configuration license",
-	"dependents": "SRS >=0.1.5 (https://github.com/midorum/tw5-srs)",
+	"dependents": "SRS >=0.1.7 (https://github.com/midorum/tw5-srs)",
 	"plugin-type": "plugin"
 }
