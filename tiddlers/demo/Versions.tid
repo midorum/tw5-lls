@@ -1,6 +1,10 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.5
+
+* new: tree-like representation of language rules 
+
 !! 0.2.4
 
 * changed `review` mode when learn rules; added `challenge` mode

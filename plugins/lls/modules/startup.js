@@ -226,6 +226,17 @@ Adds listeners for lls messages.
       messageHandler.detachRuleFromWordArticle(params.article, params.rule, params.idle, widget);
     });
 
+    $tw.rootWidget.addEventListener("tm-lls-attach-parent-rule", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.attachParentRule(params.rule, params.parentRule, params.idle, widget);
+    });
+
+    $tw.rootWidget.addEventListener("tm-lls-detach-parent-rule", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.detachParentRule(params.rule, params.parentRule, params.idle, widget);
+    });
 
 
   };

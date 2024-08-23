@@ -1,0 +1,134 @@
+title: $:/plugins/midorum/lls/ui/templates/language-rules-tree
+type: text/vnd.tiddlywiki
+
+\parameters(
+    state:$:/temp/lls/state/languageRules,
+    retainedState:$:/lls/state/languageRules,
+    listIndex:checkedList,
+    chooseModeIndex:chooseMode,
+    learningModeIndex:learningMode,
+    groupLimitIndex:groupLimit
+)
+
+\procedure navigateToLearningSession()
+<$wikify
+    name=wf
+    text="""<$list
+            filter="[<retainedState>getindex<listIndex>enlist-input[]]"
+        >[&lt;currentTiddler&gt;tag[<<currentTiddler>>]]</$list>"""
+><$action-setfield
+    $tiddler={{Learning Rules!!state}}
+    groupStrategy="groupOnly"
+    groupFilter=<<wf>>
+/></$wikify><$action-navigate
+    $to="Learning Rules"
+/><$action-setfield
+    $tiddler=<<state>>
+    $index=<<chooseModeIndex>>
+/>
+\end navigateToLearningSession
+
+\procedure navigateToReviewSession()
+<$set
+    name="groupList"
+    tiddler=<<retainedState>>
+    index=<<listIndex>>
+><$set
+    name="groupLimit"
+    tiddler=<<retainedState>>
+    index=<<groupLimitIndex>>
+><$action-setfield
+    $tiddler={{Learning Rules!!state}}
+    groupStrategy="taggedAny"
+    groupListFilter=<<groupList>>
+    groupFilter=""
+    groupLimit=<<groupLimit>>
+/></$set></$set><$action-navigate
+    $to="Learning Rules"
+/><$action-setfield
+    $tiddler=<<state>>
+    $index=<<chooseModeIndex>>
+/>
+\end navigateToReviewSession
+
+\procedure navigateToChallengeSession()
+<$action-setfield
+    $tiddler={{Learning Rules!!state}}
+    groupStrategy="groupOnly"
+    groupListFilter=""
+    groupFilter="[<currentTiddler>lls:absent[rule]]"
+    groupLimit=-1
+/><$action-navigate
+    $to="Learning Rules"
+/><$action-setfield
+    $tiddler=<<state>>
+    $index=<<chooseModeIndex>>
+/>
+\end navigateToChallengeSession
+
+<$reveal type="nomatch" stateTitle=<<state>> stateIndex=<<chooseModeIndex>> text="yes" >
+    <p>
+        <div class="lls-buttons-align-left" >
+            <$list filter="[tag[$:/lls/tags/rule]lls:absent[rule]]" emptyMessage="There are no rules defined. Try to add some by pressing the button below." >
+                <$transclude $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-tree-item" state=<<retainedState>> />
+            </$list>
+        </div>
+    </p>
+    <p>
+        <$button class="tc-btn-invisible tc-tiddlylink" to="New language rule" >[create a new rule]</$button>
+        &nbsp;
+        <$button class="tc-btn-invisible tc-tiddlylink" setTitle=<<state>> setIndex=<<chooseModeIndex>> setTo="yes" >[choose rules to learn]</$button>
+    </p>
+</$reveal>
+
+<$reveal type="match" stateTitle=<<state>> stateIndex=<<chooseModeIndex>> text="yes" >
+    <p>
+        <div class="lls-buttons-align-left" >
+            <$list filter="[tag[$:/lls/tags/rule]lls:absent[rule]]" emptyMessage="There are no rules defined. Try to add some by pressing the button below." >
+                <$transclude $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-tree-item" selectable state=<<retainedState>> listIndex=<<listIndex>> />
+            </$list>
+        </div>
+    </p>
+    <p>
+        <$select tiddler=<<retainedState>> index=<<learningModeIndex>> >
+            <option value="learning" >learning</option>
+            <option value="review" >review</option>
+            <option value="challenge" >challenge</option>
+        </$select>
+    </p>
+    <$reveal type="match" stateTitle=<<retainedState>> stateIndex=<<learningModeIndex>> text="" >
+        <p>Please, select a mode</p>
+        <p>
+            <$button class="tc-btn-invisible tc-tiddlylink" setTitle=<<state>> setIndex=<<chooseModeIndex>> >[cancel]</$button>
+        </p>
+    </$reveal>
+    <$reveal type="match" stateTitle=<<retainedState>> stateIndex=<<learningModeIndex>> text="learning" >
+        <p>In this mode, you will have to answer all rule questions before you can pass to the next rule</p>
+        <p>
+            <$button class="tc-btn-invisible tc-tiddlylink" actions=<<navigateToLearningSession>> >[start learning]</$button>
+            &nbsp;
+            <$button class="tc-btn-invisible tc-tiddlylink" setTitle=<<state>> setIndex=<<chooseModeIndex>> >[cancel]</$button>
+        </p>
+    </$reveal>
+    <$reveal type="match" stateTitle=<<retainedState>> stateIndex=<<learningModeIndex>> text="review" >
+        <p>In this mode, you will be asked only a few questions for each selected rule</p>
+        <p>
+            Number of questions for each rule (0 - no limit)
+            &nbsp;
+            <$edit-text tiddler=<<retainedState>> index=<<groupLimitIndex>> tag=input type=integer size=3 default=0 />
+        </p>
+        <p>
+            <$button class="tc-btn-invisible tc-tiddlylink" actions=<<navigateToReviewSession>> >[start learning]</$button>
+            &nbsp;
+            <$button class="tc-btn-invisible tc-tiddlylink" setTitle=<<state>> setIndex=<<chooseModeIndex>> >[cancel]</$button>
+        </p>
+    </$reveal>
+    <$reveal type="match" stateTitle=<<retainedState>> stateIndex=<<learningModeIndex>> text="challenge" >
+        <p>In this mode, you will be asked questions that are not related to any rule. Try to guess the right answer.</p>
+        <p>
+            <$button class="tc-btn-invisible tc-tiddlylink" actions=<<navigateToChallengeSession>> >[start learning]</$button>
+            &nbsp;
+            <$button class="tc-btn-invisible tc-tiddlylink" setTitle=<<state>> setIndex=<<chooseModeIndex>> >[cancel]</$button>
+        </p>
+    </$reveal>
+</$reveal>
