@@ -1,0 +1,46 @@
+title: $:/plugins/midorum/lls/ui/templates/language-rule-content
+type: text/vnd.tiddlywiki
+
+\parameters (
+    rule
+)
+
+\procedure parentControls(
+    _rule,
+    _parentRule
+)
+\define unlinkRule()
+<$action-confirm $message="Do you wish to detach the low-level rule from this rule" >
+    <$action-sendmessage $message="tm-lls-detach-parent-rule" rule=<<_rule>> parentRule=<<_parentRule>> />
+</$action-confirm>
+\end unlinkRule
+<$transclude $variable="open-rule-view-form-link" _ref=<<_rule>> _text="[view this rule separately]" $mode=inline />
+<$button class="tc-btn-invisible tc-tiddlylink" actions=<<unlinkRule>> >[unlink this rule]</$button>
+\end parentControls
+
+<div>
+    <span style="font-size:xx-large">
+        <$transclude $tiddler=<<rule>> $field="brief" />
+    </span>
+    <span>
+        <$slot $name="parentControls" />
+    </span>
+</div>
+<div>
+    <$tiddler tiddler=<<rule>> >
+        <$wikify name="wikified" text={{!!text}} output="html" >
+            <<wikified>>
+        </$wikify>
+    </$tiddler>
+</div>
+<div>
+    <$set name="parentRule" value=<<rule>> >
+        <$list variable=lowLevelRule filter="[<rule>tagging[]tag[$:/lls/tags/rule]]" >
+            <$transclude $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-content" rule=<<lowLevelRule>> $mode=block >
+                <$fill $name="parentControls" >
+                    <$transclude $variable="parentControls" _rule=<<lowLevelRule>> _parentRule=<<parentRule>> />
+                </$fill>
+            </$transclude>
+        </$list>
+    </$set>
+</div>

@@ -2,5 +2,8 @@ title: Language Rules
 type: text/vnd.tiddlywiki
 
 <$transclude
- $tiddler="$:/plugins/midorum/lls/ui/templates/language-rules"
+    $tiddler="$:/plugins/midorum/lls/ui/templates/language-rules-tree"
 />
+<!-- <$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/language-rules"
+/> -->
