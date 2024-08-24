@@ -241,12 +241,12 @@ function createSynonymsGroup(title, tags) {
     };
 }
 
-function getRule(title){
+function getRule(title, tags){
     if (!title) throw new Error("title is required");
     const context = llsContextCache.get();
     return {
         title: context.prefixes.rule + title,
-        tags: [context.tags.rule],
+        tags: [context.tags.rule].concat(tags ? tags : []),
         brief: title + "_brief",
         text: title + "_description"
     };

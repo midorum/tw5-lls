@@ -1,0 +1,35 @@
+title: $:/plugins/midorum/lls/ui/templates/language-rule-tree-item
+type: text/vnd.tiddlywiki
+
+\parameters(
+    state:$:/temp/lls/state/languageRuleListItem,
+    selectable,
+    listIndex:checkedList
+)
+
+\procedure ruleRow()
+<$list filter="[<selectable>match[true]]" variable=_ >
+    <$checkbox tiddler=<<state>> listIndex=<<listIndex>> checked=<<currentTiddler>> />
+</$list>
+<$transclude $variable="open-rule-view-form-link" _ref=<<currentTiddler>> $mode=inline />
+\end ruleRow
+
+<div>
+<$reveal type="nomatch" stateTitle=<<state>> stateIndex=<<currentTiddler>> text="open" >
+    <$button class="lls-icon-button" tag="span" tooltip="Expand" setTitle=<<state>> setIndex=<<currentTiddler>> setTo="open" >
+        <$transclude $tiddler="$:/core/images/right-arrow" />
+    </$button>
+    <$transclude $variable="ruleRow" _ref=<<currentTiddler>> $mode=inline />
+</$reveal>
+<$reveal type="match" stateTitle=<<state>> stateIndex=<<currentTiddler>> text="open" >
+    <$button class="lls-icon-button" tag="span" tooltip="Collapse" setTitle=<<state>> setIndex=<<currentTiddler>> >
+        <$transclude $tiddler="$:/core/images/down-arrow" />
+    </$button>
+    <$transclude $variable="ruleRow" _ref=<<currentTiddler>> $mode=inline />
+    <div style="margin-left:10px;">
+        <$list filter="[tag[$:/lls/tags/rule]tag<currentTiddler>]">
+            <$transclude $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-tree-item" state=<<state>> selectable=<<selectable>> listIndex=<<listIndex>> />
+        </$list>
+    </div>
+</$reveal>
+</div>

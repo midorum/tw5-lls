@@ -183,6 +183,18 @@ Handling lls messages.
     }
   }
 
+  function isChildRule(candidateInstance, ruleInstance, context) {
+    if (!candidateInstance || !ruleInstance || !candidateInstance.exists() || !ruleInstance.exists()) return false;
+    if (candidateInstance.getTiddlerField("title") === ruleInstance.getTiddlerField("title")) return true;
+    const tags = candidateInstance.getTiddlerTagsShallowCopy();
+    for (let i = 0; i < tags.length; i++) {
+      const tag = tags[i];
+      if (!tag.startsWith(context.prefixes.rule)) continue;
+      if (isChildRule(context.wikiUtils.withTiddler(tag), ruleInstance, context)) return true;
+    }
+    return false;
+  }
+
   /**
    * Creates new word article
    * @param {String} word - word representation
@@ -391,8 +403,6 @@ Handling lls messages.
     context.wikiUtils.withTiddler(ref).doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
   }
 
-  // it modifies article only once
-  // it does not modify transcriptionGroup
   // tested
   exports.attachTranscriptions = function (article, transcriptionGroup, newTranscriptionsTag, idle, widget) {
     const alertMsg = "%1 cannot be empty";
@@ -429,7 +439,6 @@ Handling lls messages.
     }
   }
 
-  // it modifies transcriptionGroup only once
   // tested
   exports.modifyTranscriptionGroup = function (transcriptionGroup, newTranscriptionsTag, idle, widget) {
     const alertMsg = "%1 cannot be empty";
@@ -469,9 +478,6 @@ Handling lls messages.
     });
   }
 
-  // it modifies transcriptionGroup only once
-  // it modifies targetGroup only once
-  // it does not modify transcriptions
   // tested
   exports.composeTranscriptionGroup = function (transcriptionGroup, targetGroup, transcriptions, mode, idle, widget) {
     const alertMsg = "%1 cannot be empty";
@@ -1909,6 +1915,97 @@ Handling lls messages.
       return;
     }
     instance.doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler([rule]);
+  }
+
+  // tested
+  exports.attachParentRule = function (rule, parentRule, idle, widget) {
+    const alertMsg = "%1 cannot be empty";
+    const logger = new $tw.utils.Logger("attachParentRule");
+    const context = {
+      prefixes: cache.getPrefixes([]),
+      tags: cache.getTags([]),
+      wikiUtils: utils.getWikiUtils(widget.wiki)
+    };
+    rule = utils.trimToUndefined(rule);
+    if (!rule) {
+      logger.alert(utils.format(alertMsg, "rule"));
+      return;
+    }
+    if (!rule.startsWith(context.prefixes.rule)) {
+      logger.alert("Wrong rule reference: " + rule);
+      return;
+    }
+    parentRule = utils.trimToUndefined(parentRule);
+    if (!parentRule) {
+      logger.alert(utils.format(alertMsg, "parentRule"));
+      return;
+    }
+    if (!parentRule.startsWith(context.prefixes.rule)) {
+      logger.alert("Wrong parentRule reference: " + parentRule);
+      return;
+    }
+    const ruleInstance = context.wikiUtils.withTiddler(rule);
+    if (!ruleInstance.exists()) {
+      logger.alert("Rule not found: " + rule);
+      return;
+    }
+    const parentRuleInstance = context.wikiUtils.withTiddler(parentRule);
+    if (!parentRuleInstance.exists()) {
+      logger.alert("Parent rule not found: " + parentRule);
+      return;
+    }
+    if (ruleInstance.getTiddlerField("title") === parentRuleInstance.getTiddlerField("title")) {
+      logger.alert("The rule " + parentRule + " is same as the target rule");
+      return;
+    }
+    if (isChildRule(parentRuleInstance, ruleInstance, context)) {
+      logger.alert("The rule " + parentRule + " is already a child of the rule " + rule);
+      return;
+    }
+    if (idle) {
+      console.log("attachParentRule", idle, rule, parentRule);
+      return;
+    }
+    ruleInstance.doNotInvokeSequentiallyOnSameTiddler.addTagsToTiddler([parentRule]);
+  }
+
+  // tested
+  exports.detachParentRule = function (rule, parentRule, idle, widget) {
+    const alertMsg = "%1 cannot be empty";
+    const logger = new $tw.utils.Logger("detachParentRule");
+    const context = {
+      prefixes: cache.getPrefixes([]),
+      tags: cache.getTags([]),
+      wikiUtils: utils.getWikiUtils(widget.wiki)
+    };
+    rule = utils.trimToUndefined(rule);
+    if (!rule) {
+      logger.alert(utils.format(alertMsg, "rule"));
+      return;
+    }
+    if (!rule.startsWith(context.prefixes.rule)) {
+      logger.alert("Wrong rule reference: " + rule);
+      return;
+    }
+    parentRule = utils.trimToUndefined(parentRule);
+    if (!parentRule) {
+      logger.alert(utils.format(alertMsg, "parentRule"));
+      return;
+    }
+    if (!parentRule.startsWith(context.prefixes.rule)) {
+      logger.alert("Wrong parentRule reference: " + parentRule);
+      return;
+    }
+    const ruleInstance = context.wikiUtils.withTiddler(rule);
+    if (!ruleInstance.exists()) {
+      logger.alert("Rule not found: " + rule);
+      return;
+    }
+    if (idle) {
+      console.log("detachParentRule", idle, rule, parentRule);
+      return;
+    }
+    ruleInstance.doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler([parentRule]);
   }
 
 })();

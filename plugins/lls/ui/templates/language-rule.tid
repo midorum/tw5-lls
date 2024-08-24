@@ -4,15 +4,21 @@ title: $:/plugins/midorum/lls/ui/templates/language-rule
 type: text/vnd.tiddlywiki
 
 \parameters(
- rule,
- state:$:/temp/lls/state/language-rule,
- editIndex:editRule,
- briefEditIndex:briefEdit,
- descriptionEditIndex:descriptionEdit,
- addWordFormOpenIndex:addWordFormOpen,
- addExamplesFormOpenIndex:addExamplesFormOpen,
- usageExamplesTag:$:/temp/lls/languageRuleForm/usageExamplesTag,
- usageExamplesBulkData:$:/temp/lls/languageRuleForm/usageExamplesBulkData,
+  rule,
+  state:$:/temp/lls/state/language-rule,
+  editIndex:editRule,
+  briefEditIndex:briefEdit,
+  descriptionEditIndex:descriptionEdit,
+  addTopLevelRuleFormOpenIndex:addTopLevelRuleFormOpen,
+  addLowLevelRuleFormOpenIndex:addLowLevelRuleFormOpen,
+  addWordFormOpenIndex:addWordFormOpen,
+  addExamplesFormOpenIndex:addExamplesFormOpen,
+  selectedTopLevelRuleIndex:selectedTopLevelRule,
+  topLevelRuleSearchInputIndex:topLevelRuleSearchInput,
+  selectedLowLevelRuleIndex:selectedLowLevelRule,
+  lowLevelRuleSearchInputIndex:lowLevelRuleSearchInput,
+  usageExamplesTag:$:/temp/lls/languageRuleForm/usageExamplesTag,
+  usageExamplesBulkData:$:/temp/lls/languageRuleForm/usageExamplesBulkData,
 )
 
 \procedure openEditRuleForm()
@@ -101,53 +107,37 @@ type: text/vnd.tiddlywiki
 >[delete]</$button>
 \end deleteRuleButton
 
-\procedure briefCell()
+\procedure ruleContentSection()
 <$reveal
- type="nomatch"
- stateTitle=<<state>>
- stateIndex=<<editIndex>>
- text="yes"
-><h2><$transclude
- $tiddler=<<rule>>
- $field="brief"
-/></h2></$reveal><$reveal
- type="match"
- stateTitle=<<state>>
- stateIndex=<<editIndex>>
- text="yes"
-><div><$edit-text
- tiddler=<<state>>
- index=<<briefEditIndex>>
- tag="input"
-/></div>
+  type="nomatch"
+  stateTitle=<<state>>
+  stateIndex=<<editIndex>>
+  text="yes"
+>
+  <$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/language-rule-content"
+    rule=<<rule>>
+  />
 </$reveal>
-\end briefCell
-
-\procedure descriptionCell()
 <$reveal
- type="nomatch"
- stateTitle=<<state>>
- stateIndex=<<editIndex>>
- text="yes"
-><$tiddler
- tiddler=<<rule>>
-><$wikify
- name="wikified"
- text={{!!text}}
- output="html"
-><<wikified>></$wikify></$tiddler></$reveal><$reveal
- type="match"
- stateTitle=<<state>>
- stateIndex=<<editIndex>>
- text="yes"
-><div><$edit-text
- tiddler=<<state>>
- index=<<descriptionEditIndex>>
- minHeight="10px"
- tag="textarea"
-/></div>
+  type="match"
+  stateTitle=<<state>>
+  stateIndex=<<editIndex>>
+  text="yes"
+>
+  <div><$edit-text
+    tiddler=<<state>>
+    index=<<briefEditIndex>>
+    tag="input"
+  /></div>
+  <div><$edit-text
+    tiddler=<<state>>
+    index=<<descriptionEditIndex>>
+    minHeight="10px"
+    tag="textarea"
+  /></div>
 </$reveal>
-\end descriptionCell
+\end ruleContentSection
 
 \procedure actionsCell()
 <$reveal
@@ -163,39 +153,200 @@ type: text/vnd.tiddlywiki
 ><<doneEditRuleButton>><br><<cancelEditRuleButton>><br><<deleteRuleButton>></$reveal>
 \end actionsCell
 
-<!-- \procedure srsDataCell()
-<$list filter="[<rule>tag[$:/srs/tags/scheduledForward]]">
-  <div>
-    <$list filter="[<rule>get[srs-forward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
-      Forward check due at: <$text text=<<currentTiddler>> />
-    </$list>
-  </div>
-</$list>
-<$list filter="[<rule>tag[$:/srs/tags/scheduledBackward]]">
-  <div>
-    <$list filter="[<rule>get[srs-backward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
-      Backward check due at: <$text text=<<currentTiddler>> />
-    </$list>
-  </div>
-</$list>
-\end srsDataCell -->
-
 \procedure ruleTable()
 <table class="lls-borderless lls-rule-table">
   <tr>
-    <td class="lls-borderless lls-wide-input brief-cell"><<briefCell>></td>
-    <td class="lls-borderless lls-v-top actions-cell" rowspan="3"><<actionsCell>></td>
+    <td class="lls-borderless lls-wide-input brief-cell"><<ruleContentSection>></td>
+    <td class="lls-borderless lls-v-top actions-cell"><<actionsCell>></td>
   </tr>
-  <tr>
-    <td class="lls-borderless lls-wide-input description-cell"><<descriptionCell>></td>
-  </tr>
-<!--
-  <tr>
-    <td class="lls-borderless srs-data-cell"><<srsDataCell>></td>
-  </tr>
--->
 </table>
 \end ruleTable
+
+\procedure addTopLevelRuleSection()
+\procedure closeAddTopLevelRuleForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<selectedTopLevelRuleIndex>>
+/>
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<topLevelRuleSearchInputIndex>>
+/>
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<addTopLevelRuleFormOpenIndex>>
+/>
+\end closeAddTopLevelRuleForm
+\procedure attachTopLevelRule()
+<$set
+  name="selectedRule"
+  tiddler=<<state>>
+  index=<<selectedTopLevelRuleIndex>>
+><$action-sendmessage
+  $message="tm-lls-attach-parent-rule"
+  rule=<<rule>>
+  parentRule=<<selectedRule>>
+/></$set><$transclude
+  $variable="closeAddTopLevelRuleForm"
+/>
+\end attachTopLevelRule
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<addTopLevelRuleFormOpenIndex>>
+ text="yes"
+>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ setTitle=<<state>>
+ setIndex=<<addTopLevelRuleFormOpenIndex>>
+ setTo="yes"
+>[add top-level rule]</$button>
+</$reveal>
+<$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<addTopLevelRuleFormOpenIndex>>
+ text="yes"
+>
+<h3>Search and choose appropriate grammar rule</h3>
+<$transclude
+  $tiddler="$:/plugins/midorum/lls/ui/templates/choose-language-rule-form"
+  state=<<state>>
+  selectedRuleIndex=<<selectedTopLevelRuleIndex>>
+  searchInputIndex=<<topLevelRuleSearchInputIndex>>
+  $mode=block
+><$fill
+  $name="actions"
+><$button
+  class="tc-btn-invisible tc-tiddlylink"
+  actions=<<attachTopLevelRule>>
+><<no-wrap-text "[link]">></$button></$fill></$transclude>
+<$button
+  class="tc-btn-invisible tc-tiddlylink"
+  actions=<<closeAddTopLevelRuleForm>>
+>[cancel]</$button>
+</$reveal>
+\end addTopLevelRuleSection
+
+\procedure topLevelRulesSection()
+\define unlinkRule()
+<$action-confirm
+ $message="Do you wish to detach the top-level rule from this rule"
+><$action-sendmessage
+ $message="tm-lls-detach-parent-rule"
+ rule=<<rule>>
+ parentRule="$(topLevelRule)$"
+/></$action-confirm>
+\end unlinkRule
+<$list
+ variable=topLevelRule
+ filter="[<rule>tags[]tag[$:/lls/tags/rule]]"
+><p><$transclude
+ $variable="open-rule-view-form-link"
+ _ref=<<topLevelRule>>
+ $mode=inline
+/> - <$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<unlinkRule>>
+>[unlink]</$button></p></$list>
+<$transclude
+ $variable="addTopLevelRuleSection"
+/>
+\end topLevelRulesSection
+
+\procedure addLowLevelRuleSection()
+\procedure closeAddLowLevelRuleForm()
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<selectedLowLevelRuleIndex>>
+/>
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<lowLevelRuleSearchInputIndex>>
+/>
+<$action-setfield
+ $tiddler=<<state>>
+ $index=<<addLowLevelRuleFormOpenIndex>>
+/>
+\end closeAddLowLevelRuleForm
+\procedure attachLowLevelRule()
+<$set
+  name="selectedRule"
+  tiddler=<<state>>
+  index=<<selectedLowLevelRuleIndex>>
+><$action-sendmessage
+  $message="tm-lls-attach-parent-rule"
+  rule=<<selectedRule>>
+  parentRule=<<rule>>
+/></$set><$transclude
+  $variable="closeAddLowLevelRuleForm"
+/>
+\end attachLowLevelRule
+<$reveal
+ type="nomatch"
+ stateTitle=<<state>>
+ stateIndex=<<addLowLevelRuleFormOpenIndex>>
+ text="yes"
+>
+<$button
+ class="tc-btn-invisible tc-tiddlylink"
+ setTitle=<<state>>
+ setIndex=<<addLowLevelRuleFormOpenIndex>>
+ setTo="yes"
+>[add low-level rule]</$button>
+</$reveal>
+<$reveal
+ type="match"
+ stateTitle=<<state>>
+ stateIndex=<<addLowLevelRuleFormOpenIndex>>
+ text="yes"
+>
+<h3>Search and choose appropriate grammar rule</h3>
+<$transclude
+  $tiddler="$:/plugins/midorum/lls/ui/templates/choose-language-rule-form"
+  state=<<state>>
+  selectedRuleIndex=<<selectedLowLevelRuleIndex>>
+  searchInputIndex=<<lowLevelRuleSearchInputIndex>>
+  $mode=block
+><$fill
+  $name="actions"
+><$button
+  class="tc-btn-invisible tc-tiddlylink"
+  actions=<<attachLowLevelRule>>
+><<no-wrap-text "[link]">></$button></$fill></$transclude>
+<$button
+  class="tc-btn-invisible tc-tiddlylink"
+  actions=<<closeAddLowLevelRuleForm>>
+>[cancel]</$button>
+</$reveal>
+\end addLowLevelRuleSection
+
+\procedure lowLevelRulesSection()
+\define unlinkRule()
+<$action-confirm
+ $message="Do you wish to detach the low-level rule from this rule"
+><$action-sendmessage
+ $message="tm-lls-detach-parent-rule"
+ rule="$(lowLevelRule)$"
+ parentRule=<<rule>>
+/></$action-confirm>
+\end unlinkRule
+<$list
+ variable=lowLevelRule
+ filter="[<rule>tagging[]tag[$:/lls/tags/rule]]"
+><p><$transclude
+ $variable="open-rule-view-form-link"
+ _ref=<<lowLevelRule>>
+ $mode=inline
+/> - <$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<unlinkRule>>
+>[unlink]</$button></p></$list>
+<$transclude
+ $variable="addLowLevelRuleSection"
+/>
+\end lowLevelRulesSection
 
 \procedure addWordMeaningSection()
 \procedure closeAddWordForm()
@@ -293,7 +444,8 @@ type: text/vnd.tiddlywiki
 >{{!!text}}</$list><$button
  class="tc-btn-invisible tc-tiddlylink"
  actions=<<unlinkWordArticle>>
->[unlink]</$button></p></$vars></$list><$transclude
+>[unlink]</$button></p></$vars></$list>
+<$transclude
  $variable="addWordMeaningSection"
 />
 \end linkedWordsSection
@@ -370,6 +522,12 @@ type: text/vnd.tiddlywiki
 <div class="lls-table-view lls-language-rule-view-form">
 
 <<ruleTable>>
+
+!! Top-level Rules
+<<topLevelRulesSection>>
+
+!! Low-level Rules
+<<lowLevelRulesSection>>
 
 !! Related Words
 <<linkedWordsSection>>
