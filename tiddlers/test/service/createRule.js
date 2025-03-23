@@ -52,6 +52,29 @@ describe("The createRule service", () => {
     })
 
     it("should create a new rule"
+        + " and schedule it in the SRS system when the 'schedule' parameter is 'all'", () => {
+        const options = utils.setupWiki();
+        const context = utils.getLlsContext();
+        const brief = "some rule";
+        const description = "some description";
+        const usageExamplesTag = undefined;
+        const usageExamplesBulkData = undefined;
+        const schedule = 'all';
+        const idle = false;
+        loggerSpy.and.callThrough();
+        expect(messageHandler.createRule(brief, description, usageExamplesTag, usageExamplesBulkData, schedule, idle, options.widget)).nothing();
+        expect(Logger.alert).toHaveBeenCalledTimes(0);
+        const createdRules = options.widget.wiki.filterTiddlers("[tag[" + context.tags.rule + "]]");
+        expect(createdRules.length).toEqual(1);
+        const createdRule = options.widget.wiki.getTiddler(createdRules[0]);
+        expect(createdRule).toBeDefined();
+        expect(createdRule.fields.brief).toEqual(brief);
+        expect(createdRule.fields.text).toEqual(description);
+        expect(createdRule.fields.tags.includes("$:/srs/tags/scheduledForward")).toBeTruthy();
+        expect(createdRule.fields.tags.includes("$:/srs/tags/scheduledBackward")).toBeTruthy();
+    })
+
+    it("should create a new rule"
         + " and should create usage examples by the newExamplesTag if they are not exist"
         + " and link both new and existed usage examples with the new rule"
         + " when newExamplesTag is passed", () => {

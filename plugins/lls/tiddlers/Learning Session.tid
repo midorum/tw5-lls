@@ -2,6 +2,16 @@ title: Learning Session
 type: text/vnd.tiddlywiki
 
 <$transclude
+ $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionDynamicTemplate"
+ listProvider="lls-session-data-provider"
+ limit=100
+ resetAfter=-1
+ newFirst=true
+ directions="forward backward both"
+ directionButtons="[[Practice Understanding]] [[Practice Applying]] [[Practice Both Understanding And Applying]]" 
+/>
+
+<!--<$transclude
  $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionTemplate"
  src="$:/lls/tags/wordArticle"
  groupFilter="[<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>tags[]tag[$:/lls/tags/word]]"
@@ -13,4 +23,11 @@ type: text/vnd.tiddlywiki
  directions="both"
  directionButtons="[[Start learn words]]" 
  limit=200
-/>
+/>-->
+<!--
+[[$:/temp/srs/state/session]]
+
+[[$:/plugins/midorum/srs/templates/SrsLearningSessionDynamicTemplate]]
+
+[[$:/plugins/midorum/srs/modules/message-handler.js]]
+-->

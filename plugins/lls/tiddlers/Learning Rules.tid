@@ -19,7 +19,7 @@ state: $:/lls/state/learningRules
     tiddler={{!!state}}
     field="groupLimit"
 ><$transclude
-    $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionTemplate"
+    $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionDynamicTemplate"
     src="$:/lls/tags/usageExample"
     groupFilter=<<groupFilter>>
     groupStrategy=<<groupStrategy>>

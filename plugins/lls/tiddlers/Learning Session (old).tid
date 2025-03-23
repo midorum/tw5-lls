@@ -1,5 +1,7 @@
 title: Learning Session (old)
 type: text/vnd.tiddlywiki
+tags: 
+deprecated: Currently isn't used
 
 \define session() $:/temp/srs/state/session
 \define volatileState() $:/temp/lls/learningSession/buttonsDisabled

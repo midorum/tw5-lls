@@ -3,6 +3,7 @@ type: text/vnd.tiddlywiki
 state: $:/lls/state/usageExampleView
 
 \import $:/plugins/midorum/lls/procedures/lls-controls
+\import $:/plugins/midorum/lls/procedures/srs-info
 
 \define usageExampleViewState() $:/temp/lls/state/usageExampleView
 \define getExampleTiddlerField(field) {{$(ref)$!!$field$}}
@@ -179,23 +180,6 @@ state: $:/lls/state/usageExampleView
 </$reveal>
 \end
 
-\define srsDataCell()
-<$list filter="[<ref>tag[$:/srs/tags/scheduledForward]]">
-  <div>
-    <$list filter="[<ref>get[srs-forward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
-      Forward check due at: <$text text=<<currentTiddler>> />
-    </$list>
-  </div>
-</$list>
-<$list filter="[<ref>tag[$:/srs/tags/scheduledBackward]]">
-  <div>
-    <$list filter="[<ref>get[srs-backward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]">
-      Backward check due at: <$text text=<<currentTiddler>> />
-    </$list>
-  </div>
-</$list>
-\end
-
 \procedure exampleSection()
 <span class="lls-form-section-caption">
   Usage Example
@@ -242,8 +226,8 @@ state: $:/lls/state/usageExampleView
   $mode=block
 />
 <$transclude
-  $variable="srsDataCell"
-  $mode=block
+  $variable="srs-info"
+  ref=<<ref>>
 />
 \end exampleSection
 

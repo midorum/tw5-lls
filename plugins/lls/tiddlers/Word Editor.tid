@@ -444,26 +444,6 @@ state: $:/lls/state/wordEditor
 /></$button></$list>
 \end
 
-\define srsCheckTimeInfo()
-<$list
- filter="[<wordArticle>tag[$:/srs/tags/scheduledForward]]"
-><div><$list
- filter="[<wordArticle>get[srs-forward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]"
-><$text
- text="Forward check due at: "
-/><$text
- text=<<currentTiddler>>
-/></$list></div></$list><$list
- filter="[<wordArticle>tag[$:/srs/tags/scheduledBackward]]"
-><div><$list
- filter="[<wordArticle>get[srs-backward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]"
-><$text
- text="Backward check due at: "
-/><$text
- text=<<currentTiddler>>
-/></$list></div></$list>
-\end
-
 \define speechPartCell()
 <$reveal
  type="nomatch"
@@ -624,7 +604,8 @@ synonymsInfoMode-<<wordArticle>>
  word=<<wordArticle>>
  $mode="block"
 /></$list><$transclude
- $variable="srsCheckTimeInfo"
+ $variable="srs-info"
+ ref=<<wordArticle>>
 /></$set></$reveal><$reveal
  type="match"
  stateTitle=<<wordEditorState>>
