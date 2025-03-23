@@ -1,11 +1,10 @@
-created: 20240407125759525
-modified: 20240719054410455
-tags: $:/tags/Macro
 title: $:/plugins/midorum/lls/macros/lls-usage-example-backward-question-card
 type: text/vnd.tiddlywiki
+tags-disabled: $:/tags/Macro
+deprecated: Currently isn't used. A global macro has bad impact on performance.
 
 \define lls-usage-example-backward-question-card(src, random)
-What is the translation of the following sentence?
+Translate the following sentence:
 <h2>
 {{$src$!!translation}}
 </h2>

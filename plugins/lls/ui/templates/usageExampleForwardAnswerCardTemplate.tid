@@ -1,16 +1,27 @@
-created: 20240526114000425
-modified: 20240719054929391
-tags: 
 title: $:/plugins/midorum/lls/ui/templates/usageExampleForwardAnswerCardTemplate
 type: text/vnd.tiddlywiki
+tags: $:/srs/tags/forwardAnswerCard
+srs-current-type: $:/lls/tags/usageExample
+srs-answer-related-filter: [<currentTiddler>tags[]tag[$:/lls/tags/wordArticle]] [<currentTiddler>tags[]tag[$:/lls/tags/rule]]
 
 \parameters (
  src,
  random
 )
 
-<$transclude 
- $variable="lls-usage-example-forward-answer-card" 
- src=<<src>> 
- random=<<random>>
+The answer is:
+
+<h2><$tiddler
+    tiddler=<<src>>
+>{{!!translation}}</$tiddler></h2>
+
+<$transclude
+    $variable="openExampleViewFormLink"
+    ref=<<src>>
+    text="[view more about example]"
+/>
+
+<$transclude
+    $tiddler="$:/plugins/midorum/lls/ui/templates/usageExampleAnswerCardAdditionalInfo"
+    src=<<src>>
 />

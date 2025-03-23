@@ -3,6 +3,7 @@ modified: 20240719055058999
 title: $:/plugins/midorum/lls/ui/templates/language-rule
 type: text/vnd.tiddlywiki
 
+\import $:/plugins/midorum/lls/procedures/srs-info
 \parameters(
   rule,
   state:$:/temp/lls/state/language-rule,
@@ -79,6 +80,20 @@ type: text/vnd.tiddlywiki
 />
 \end deleteRuleAction
 
+\procedure scheduleRuleAction()
+<$action-sendmessage $message="tm-srs-schedule"
+  ref=<<rule>>
+  direction=<<direction>>
+/>
+\end
+
+\procedure unscheduleRuleAction()
+<$action-sendmessage $message="tm-srs-unschedule"
+  ref=<<rule>>
+  direction=<<direction>>
+/>
+\end
+
 \procedure cancelEditRuleButton()
 <$button
  class="tc-btn-invisible tc-tiddlylink"
@@ -106,6 +121,42 @@ type: text/vnd.tiddlywiki
  actions=<<deleteRuleAction>>
 >[delete]</$button>
 \end deleteRuleButton
+
+\procedure srsScheduleButton()
+<$list
+  filter="[<rule>!tag<tag>]"
+><$button
+  class="tc-btn-invisible tc-tiddlylink"
+  actions=<<scheduleRuleAction>>
+><$transclude
+  $variable="no-wrap-text"
+  text="[schedule $(direction)$]"
+/></$button></$list><$list
+  filter="[<rule>tag<tag>]"
+><$button
+  class="tc-btn-invisible tc-tiddlylink"
+  actions=<<unscheduleRuleAction>>
+><$transclude
+  $variable="no-wrap-text"
+  text="[unschedule $(direction)$]"
+/></$button></$list>
+\end
+
+\procedure srsScheduleButtons()
+<$let
+  direction="forward"
+  tag="$:/srs/tags/scheduledForward"
+><$transclude
+  $variable="srsScheduleButton"
+/></$let>
+<br/>
+<$let
+  direction="backward"
+  tag="$:/srs/tags/scheduledBackward"
+><$transclude
+  $variable="srsScheduleButton"
+/></$let>
+\end
 
 \procedure ruleContentSection()
 <$reveal
@@ -145,7 +196,7 @@ type: text/vnd.tiddlywiki
  stateTitle=<<state>>
  stateIndex=<<editIndex>>
  text="yes"
-><<editRuleButton>><br><<srsScheduleButton>></$reveal><$reveal
+><<editRuleButton>><br><<srsScheduleButtons>></$reveal><$reveal
  type="match"
  stateTitle=<<state>>
  stateIndex=<<editIndex>>
@@ -522,6 +573,11 @@ type: text/vnd.tiddlywiki
 <div class="lls-table-view lls-language-rule-view-form">
 
 <<ruleTable>>
+
+<$transclude
+  $variable="srs-info"
+  ref=<<rule>>
+/>
 
 !! Top-level Rules
 <<topLevelRulesSection>>

@@ -1683,10 +1683,21 @@ Handling lls messages.
       console.log("createRule", idle, brief, description, usageExamplesTag, usageExamplesBulkData, schedule);
       return;
     }
+    const tags = [context.tags.rule];
+    if (schedule) {
+      if (schedule.includes("all")) {
+        tags.push(context.tags.srsScheduledForward);
+        tags.push(context.tags.srsScheduledBackward);
+      } else if (schedule.includes("forward")) {
+        tags.push(context.tags.srsScheduledForward);
+      } else {
+        tags.push(context.tags.srsScheduledBackward);
+      }
+    }
     const ruleTitle = context.wikiUtils.generateNewInternalTitle(context.prefixes.rule);
     context.wikiUtils.addTiddler({
       title: ruleTitle,
-      tags: [context.tags.rule],
+      tags: tags,
       brief: brief,
       text: description
     });

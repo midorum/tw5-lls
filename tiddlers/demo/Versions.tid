@@ -1,6 +1,10 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.6
+
+* changed: new learning session algorithm that considers both words and grammar rules
+
 !! 0.2.5
 
 * new: tree-like representation of language rules 
