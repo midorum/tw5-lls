@@ -1,8 +1,7 @@
-created: 20240526112913982
-modified: 20240719054806674
-tags: 
 title: $:/plugins/midorum/lls/ui/templates/wordArticleForwardAnswerCardTemplate
 type: text/vnd.tiddlywiki
+tags: $:/srs/tags/forwardAnswerCard
+srs-current-type: $:/lls/tags/wordArticle
 
 \parameters (
  src,

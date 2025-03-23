@@ -1,0 +1,48 @@
+title: $:/plugins/midorum/lls/procedures/srs-info
+type: text/vnd.tiddlywiki
+tags: $:/plugins/midorum/lls/tags/procedure
+
+\procedure srs-info()
+\parameters (
+    ref:<<currentTiddler>>
+)
+<$wikify name="_r" text=<<ref>>>
+<div>
+<$list filter="[<_r>tag[$:/srs/tags/scheduledForward]]" emptyMessage="This item is not scheduled in the forward direction">
+    <$list filter="[<_r>get[srs-forward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]" emptyMessage="This item isn't checked in forward direction yet">
+Forward check due at: <$text text=<<currentTiddler>> />
+    </$list>
+</$list>
+</div>
+<div>
+<$list filter="[<_r>tag[$:/srs/tags/scheduledBackward]]" emptyMessage="This item is not scheduled in the backward direction">
+    <$list filter="[<_r>get[srs-backward-due]format:timestamp[YY/0MM/0DD 0hh:0mm]]" emptyMessage="This item isn't checked in backward direction yet">
+Backward check due at: <$text text=<<currentTiddler>> />
+    </$list>
+</$list>
+</div>
+</$wikify>
+\end
+
+<!---------------- usages ---------------------->
+
+
+
+<!-- 
+<$tiddler tiddler="$:/lls/db/ue/1722396493815">
+<$transclude
+ $variable="srs-info"
+/>
+</$tiddler>
+
+<$transclude
+ $variable="srs-info"
+ ref="$:/lls/db/ue/1722396493815"
+/>
+
+<$transclude
+ $variable="srs-info"
+ ref="$:/lls/db/w/1722397478773"
+/>
+
+-->
