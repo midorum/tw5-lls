@@ -36,9 +36,128 @@ function setupWiki(wikiOptions) {
     return {
         wiki: wiki,
         widget: widgetNode,
-        contaienr: container
+        contaienr: container,
+        push: new Pusher(wiki)
     };
 }
+
+const Pusher = function (wiki) {
+    return {
+        /*
+        options: {
+            transriptions: ["t1", ...],
+            scheduledForward: {
+                due: 1585688400000,
+                last: 1585688390000
+            },
+            scheduledBackward: {
+                due: 1585688400000,
+                last: 1585688390000
+            }
+        }
+        */
+        wordArticleGroup: function (name, options) {
+            if (!name) throw new Error("name is required");
+            options = options || {};
+            const word = createWord(name + "_w");
+            const transcriptionTitles = options.transriptions || [name + "_t"];
+            const transcriptions = transcriptionTitles.map(t => createTranscription(t));
+            const transcriptionGroup = createTranscriptionGroup(name + "_tg", [word.title], transcriptionTitles);
+            const wordArticle = createWordArticle(name + "_wa", word.title, [transcriptionGroup.title]);
+            if (options.scheduledForward) {
+                wordArticle.tags.push("$:/srs/tags/scheduledForward");
+                if (options.scheduledForward.due) wordArticle["srs-forward-due"] = options.scheduledForward.due;
+                if (options.scheduledForward.last) wordArticle["srs-forward-last"] = options.scheduledForward.last;
+            }
+            if (options.scheduledBackward) {
+                wordArticle.tags.push("$:/srs/tags/scheduledBackward");
+                if (options.scheduledBackward.due) wordArticle["srs-backward-due"] = options.scheduledBackward.due;
+                if (options.scheduledBackward.last) wordArticle["srs-backward-last"] = options.scheduledBackward.last;
+            }
+            wiki.addTiddler(word);
+            transcriptions.forEach(t => wiki.addTiddler(t));
+            wiki.addTiddler(transcriptionGroup);
+            wiki.addTiddler(wordArticle);
+            return {
+                word: word,
+                transcriptions: transcriptions,
+                transcriptionGroup: transcriptionGroup,
+                wordArticle: wordArticle
+            };
+        },
+        /*
+        options: {
+            tags: ["t1", ...],
+            scheduledForward: {
+                due: 1585688400000,
+                last: 1585688390000
+            },
+            scheduledBackward: {
+                due: 1585688400000,
+                last: 1585688390000
+            }
+        }
+        */
+        rule: function (name, options) {
+            if (!name) throw new Error("name is required");
+            options = options || {};
+            const rule = getRule(name + "_r", options.tags || []);
+            if (options.scheduledForward) {
+                rule.tags.push("$:/srs/tags/scheduledForward");
+                if (options.scheduledForward.due) rule["srs-forward-due"] = options.scheduledForward.due;
+                if (options.scheduledForward.last) rule["srs-forward-last"] = options.scheduledForward.last;
+            }
+            if (options.scheduledBackward) {
+                rule.tags.push("$:/srs/tags/scheduledBackward");
+                if (options.scheduledBackward.due) rule["srs-backward-due"] = options.scheduledBackward.due;
+                if (options.scheduledBackward.last) rule["srs-backward-last"] = options.scheduledBackward.last;
+            }
+            wiki.addTiddler(rule);
+            return {
+                rule: rule
+            }
+        },
+        /*
+        options: {
+            tags: ["t1", ...],
+            scheduledForward: {
+                due: 1585688400000,
+                last: 1585688390000
+            },
+            scheduledBackward: {
+                due: 1585688400000,
+                last: 1585688390000
+            },
+            originalText: "text",
+            translationText: "text"
+        }
+        */
+        usageExample: function (name, options) {
+            if (!name) throw new Error("name is required");
+            options = options || {};
+            const title = name + "_ue";
+            const tags = options.tags || [];
+            const ue = options.originalText || options.translationText
+                ? createUsageExampleWithContent(title, options.originalText, options.translationText, tags)
+                : createUsageExample(title, tags);
+            if (options.scheduledForward) {
+                ue.tags.push("$:/srs/tags/scheduledForward");
+                if (options.scheduledForward.due) ue["srs-forward-due"] = options.scheduledForward.due;
+                if (options.scheduledForward.last) ue["srs-forward-last"] = options.scheduledForward.last;
+            }
+            if (options.scheduledBackward) {
+                ue.tags.push("$:/srs/tags/scheduledBackward");
+                if (options.scheduledBackward.due) ue["srs-backward-due"] = options.scheduledBackward.due;
+                if (options.scheduledBackward.last) ue["srs-backward-last"] = options.scheduledBackward.last;
+            }
+            wiki.addTiddler(ue);
+            return {
+                usageExample: ue
+            }
+        }
+    };
+};
+
 
 function getLlsContext() {
     return llsContextCache.get();
@@ -241,7 +360,7 @@ function createSynonymsGroup(title, tags) {
     };
 }
 
-function getRule(title, tags){
+function getRule(title, tags) {
     if (!title) throw new Error("title is required");
     const context = llsContextCache.get();
     return {
@@ -254,6 +373,42 @@ function getRule(title, tags){
 
 function stringifyValuesToList(valueOrValues) {
     return $tw.utils.stringifyList(valueOrValues);
+}
+
+function getSrsProxyWiki(wiki) {
+    if (!wiki) throw new Error("wiki is required");
+    const utils = require("$:/plugins/midorum/srs/modules/utils.js").srsUtils;
+    const cache = require("$:/plugins/midorum/srs/modules/cache.js");
+    if (!utils || !cache) throw new Error("It seems that SRS plugin is missed");
+    const wikiUtils = utils.getWikiUtils(wiki);
+    const srsTags = cache.getTags(["scheduledForward", "scheduledBackward"]);
+    const getSrsData = function (tiddler) { // taken from $:/plugins/midorum/srs/modules/message-handler.js
+        const title = tiddler.getTitle();
+        const tags = tiddler.getTiddlerTagsShallowCopy();
+        return {
+            forward: tags.includes(srsTags.scheduledForward) ? {
+                due: utils.parseInteger(tiddler.getTiddlerField(utils.SRS_FORWARD_DUE_FIELD)),
+                direction: utils.FORWARD_DIRECTION,
+                src: title
+            } : undefined,
+            backward: tags.includes(srsTags.scheduledBackward) ? {
+                due: utils.parseInteger(tiddler.getTiddlerField(utils.SRS_BACKWARD_DUE_FIELD)),
+                direction: utils.BACKWARD_DIRECTION,
+                src: title
+            } : undefined
+        };
+    }
+    return { // taken from $:/plugins/midorum/srs/modules/message-handler.js
+        SRS_BASE_TIME: utils.SRS_BASE_TIME,
+        getTitlesWithTag: (tag) => wiki.getTiddlersWithTag(tag),
+        filterTitles: (filterString) => wiki.filterTiddlers(filterString),
+        allTitles: () => wiki.allTitles(),
+        allShadowTitles: () => wiki.allShadowTitles(),
+        tiddlerExists: (title) => wiki.tiddlerExists(title),
+        isShadowTiddler: (title) => wiki.isShadowTiddler(title),
+        getTiddler: (title) => wiki.getTiddler(title),
+        getSrsData: (titleOrTiddler) => getSrsData(wikiUtils.withTiddler(titleOrTiddler))
+    };
 }
 
 exports.llsTestUtils = {
@@ -279,4 +434,5 @@ exports.llsTestUtils = {
     createSynonymsGroup: createSynonymsGroup,
     stringifyValuesToList: stringifyValuesToList,
     getRule: getRule,
+    getSrsProxyWiki: getSrsProxyWiki
 }
