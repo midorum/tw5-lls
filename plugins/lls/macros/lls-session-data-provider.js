@@ -48,13 +48,18 @@ Produces custom data for SRS learning session
       // .map(el => {console.warn("word", el);return el;})
       .forEach(word => {
         const article = wiki.filterTitles("[tag[" + word + "]tag[$:/lls/tags/wordArticle]]")
+          // .map(el => {console.warn("0", el);return el;})
           .map(wa => wiki.getSrsData(wa))
+          // .map(el => {console.warn("1", el);return el;})
           .filter(itemFitsDirection)
+          // .map(el => {console.warn("2", el);return el;})
           .map(deleteInappropriateDirection)
+          // .map(el => {console.warn("3", el);return el;})
           .sort(bothDirectionsDueDateComparator)
+          // .map(el => {console.warn("4", el);return el;})
           .slice(0, 1)
           .map(toMinimalDirection)
-          // .map(el => {console.warn("1", el);return el;})
+          // .map(el => {console.warn("5", el);return el;})
           .filter(el => !el.due || el.due < time)
           .at(0);
         // console.warn("article", article)
@@ -101,6 +106,7 @@ Produces custom data for SRS learning session
       .forEach(ruleEl => {
         return wiki.filterTitles("[tag[" + ruleEl.src + "]tag[$:/lls/tags/usageExample]]")
           // .map(el => { console.warn("usage example for ", ruleEl.src, el); return el; })
+          .filter(el => !articleMap[el])
           .map(ue => {
             const srsData = wiki.getSrsData(ue)
             return ruleEl.direction === "forward" ? srsData.forward : srsData.backward;
