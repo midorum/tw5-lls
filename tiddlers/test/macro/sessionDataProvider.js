@@ -55,6 +55,11 @@ describe("The lls-session-data-provider macro", () => {
         const rule2 = options.push.rule("rule2", {// should be taken as an example ue2
             scheduledForward: {}
         });
+        const rule5 = options.push.rule("rule5", {// should not be taken because it isn't overdue
+            scheduledForward: {
+                due: inFutureTime
+            }
+        });
         const ue2 = options.push.usageExample("ue2", {// should be taken for wag2 and rule2
             tags: [wag2.wordArticle.title, rule2.rule.title],
             scheduledForward: {}
@@ -69,6 +74,10 @@ describe("The lls-session-data-provider macro", () => {
                 due: inFutureTime
             }
         });
+        const ue5 = options.push.usageExample("ue5", {// should not be taken because the linked rule isn't overdue
+            tags: [ rule5.rule.title],
+            scheduledForward: {}
+        });
         const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
         console.debug("data", data)
         expect(Array.isArray(data)).toBeTruthy();
@@ -80,9 +89,11 @@ describe("The lls-session-data-provider macro", () => {
         expect(srcs.includes(wag4.wordArticle.title)).toBeFalsy();
         expect(srcs.includes(rule1.rule.title)).toBeFalsy();
         expect(srcs.includes(rule2.rule.title)).toBeFalsy();
+        expect(srcs.includes(rule5.rule.title)).toBeFalsy();
         expect(srcs.includes(ue2.usageExample.title)).toBeTruthy();
         expect(srcs.includes(ue3.usageExample.title)).toBeFalsy();
         expect(srcs.includes(ue4.usageExample.title)).toBeTruthy();
+        expect(srcs.includes(ue5.usageExample.title)).toBeFalsy();
     })
 
 });
