@@ -33,6 +33,7 @@ Produces custom data for SRS learning session
       return due1 - due2;
     };
     const dueDateComparator = (o1, o2) => (o1.due || wiki.SRS_BASE_TIME) - (o2.due || wiki.SRS_BASE_TIME);
+    const overdueComparator = el => !el.due || el.due < time;
     const toMinimalDirection = el => {
       if (!el.forward) return el.backward;
       if (!el.backward) return el.forward;
@@ -60,7 +61,7 @@ Produces custom data for SRS learning session
           .slice(0, 1)
           .map(toMinimalDirection)
           // .map(el => {console.warn("5", el);return el;})
-          .filter(el => !el.due || el.due < time)
+          .filter(overdueComparator)
           .at(0);
         // console.warn("article", article)
         if (!article) return;
@@ -96,13 +97,19 @@ Produces custom data for SRS learning session
     const rules = wiki.getTitlesWithTag("$:/lls/tags/rule");
     rules
       // .slice(0, 1)
-      // .map(el => { console.warn("rule 1", el); return el; })
+      // .map(el => { console.warn("rule 1", el, wiki.getTiddler(el).fields.brief); return el; })
       .map(rule => wiki.getSrsData(rule))
-      .filter(itemFitsDirection)
-      .map(deleteInappropriateDirection)
-      .sort(bothDirectionsDueDateComparator)
-      .map(toMinimalDirection)
       // .map(el => { console.warn("rule 2", el); return el; })
+      .filter(itemFitsDirection)
+      // .map(el => { console.warn("rule 3", el); return el; })
+      .map(deleteInappropriateDirection)
+      // .map(el => { console.warn("rule 4", el); return el; })
+      .sort(bothDirectionsDueDateComparator)
+      // .map(el => { console.warn("rule 5", el); return el; })
+      .map(toMinimalDirection)
+      // .map(el => { console.warn("rule 6", el); return el; })
+      .filter(overdueComparator)
+      // .map(el => { console.warn("rule 7", el); return el; })
       .forEach(ruleEl => {
         return wiki.filterTitles("[tag[" + ruleEl.src + "]tag[$:/lls/tags/usageExample]]")
           // .map(el => { console.warn("usage example for ", ruleEl.src, el); return el; })
