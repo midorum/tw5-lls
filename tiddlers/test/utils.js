@@ -45,6 +45,101 @@ const Pusher = function (wiki) {
     return {
         /*
         options: {
+            tg: [
+                {
+                    transriptions: ["t1", ...],
+                    wag: [
+                        {
+                            scheduledForward: {
+                                due: 1585688400000,
+                                last: 1585688390000
+                            },
+                            scheduledBackward: {
+                                due: 1585688400000,
+                                last: 1585688390000
+                            }
+                        }, ...
+                    ]
+                }, ...
+            ],
+            wag: [
+                {
+                    scheduledForward: {
+                        due: 1585688400000,
+                        last: 1585688390000
+                    },
+                    scheduledBackward: {
+                        due: 1585688400000,
+                        last: 1585688390000
+                    }
+                }, ...
+            ]
+        }
+        */
+        wordArticleGroup: function (name, options) {
+            if (!name) throw new Error("name is required");
+            options = options || {};
+            if (!options.tg && !options.wag) throw new Error("either tg or wag array is required");
+            const result = {};
+            const word = createWord(name + "_w");
+            wiki.addTiddler(word);
+            result.word = word;
+            if (options.tg) {
+                result.tg = {};
+                options.tg.forEach((tg, i) => {
+                    const tgName = name + "_tg" + i;
+                    result.tg[tgName] = {};
+                    const transcriptionTitles = tg.transriptions || [tgName + "_t"];
+                    const transcriptions = transcriptionTitles.map(t => createTranscription(t));
+                    transcriptions.forEach(t => wiki.addTiddler(t));
+                    result.tg[tgName].transcriptions = transcriptions;
+                    const transcriptionGroup = createTranscriptionGroup(tgName, [word.title], transcriptionTitles);
+                    wiki.addTiddler(transcriptionGroup);
+                    result.tg[tgName].transcriptionGroup = transcriptionGroup;
+                    if (tg.wag) {
+                        result.tg[tgName].wag = {};
+                        tg.wag.forEach((wa, j) => {
+                            const waName = wa.title || tgName + "_wa" + j;
+                            const wordArticle = createWordArticle(waName, word.title, [transcriptionGroup.title]);
+                            if (wa.scheduledForward) {
+                                wordArticle.tags.push("$:/srs/tags/scheduledForward");
+                                if (wa.scheduledForward.due) wordArticle["srs-forward-due"] = wa.scheduledForward.due;
+                                if (wa.scheduledForward.last) wordArticle["srs-forward-last"] = wa.scheduledForward.last;
+                            }
+                            if (wa.scheduledBackward) {
+                                wordArticle.tags.push("$:/srs/tags/scheduledBackward");
+                                if (wa.scheduledBackward.due) wordArticle["srs-backward-due"] = wa.scheduledBackward.due;
+                                if (wa.scheduledBackward.last) wordArticle["srs-backward-last"] = wa.scheduledBackward.last;
+                            }
+                            wiki.addTiddler(wordArticle);
+                            result.tg[tgName].wag[waName] = wordArticle;
+                        });
+                    }
+                });
+            }
+            if (options.wag) {
+                result.wag = {};
+                options.wag.forEach((wa, j) => {
+                    const waName = wa.title || name + "_wa" + j;
+                    const wordArticle = createWordArticle(waName, word.title, []);
+                    if (wa.scheduledForward) {
+                        wordArticle.tags.push("$:/srs/tags/scheduledForward");
+                        if (wa.scheduledForward.due) wordArticle["srs-forward-due"] = wa.scheduledForward.due;
+                        if (wa.scheduledForward.last) wordArticle["srs-forward-last"] = wa.scheduledForward.last;
+                    }
+                    if (wa.scheduledBackward) {
+                        wordArticle.tags.push("$:/srs/tags/scheduledBackward");
+                        if (wa.scheduledBackward.due) wordArticle["srs-backward-due"] = wa.scheduledBackward.due;
+                        if (wa.scheduledBackward.last) wordArticle["srs-backward-last"] = wa.scheduledBackward.last;
+                    }
+                    wiki.addTiddler(wordArticle);
+                    result.wag[waName] = wordArticle;
+                });
+            }
+            return result;
+        },
+        /*
+        options: {
             transriptions: ["t1", ...],
             scheduledForward: {
                 due: 1585688400000,
@@ -56,7 +151,7 @@ const Pusher = function (wiki) {
             }
         }
         */
-        wordArticleGroup: function (name, options) {
+        wordArticle: function (name, options) {
             if (!name) throw new Error("name is required");
             options = options || {};
             const word = createWord(name + "_w");
