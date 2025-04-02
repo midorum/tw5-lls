@@ -31,20 +31,20 @@ describe("The lls-session-data-provider macro", () => {
         const inFutureTime = new Date().getTime() + offset_24h;
         // consoleDebugSpy.and.callThrough();
         // consoleSpy.and.callThrough();
-        const wag1 = options.push.wordArticleGroup("wag1", {// should be taken as an article
+        const wa1 = options.push.wordArticle("wa1", {// should be taken as an article
             scheduledForward: {
                 due: overdueTime
             }
         });
-        const wag2 = options.push.wordArticleGroup("wag2", {// should be taken as an example ue2
+        const wa2 = options.push.wordArticle("wa2", {// should be taken as an example ue2
             scheduledForward: {}
         });
-        const wag3 = options.push.wordArticleGroup("wag3", {// should not be taken because it isn't overdue
+        const wa3 = options.push.wordArticle("wa3", {// should not be taken because it isn't overdue
             scheduledForward: {
                 due: inFutureTime
             }
         });
-        const wag4 = options.push.wordArticleGroup("wag4", {// should be taken as an example ue4
+        const wa4 = options.push.wordArticle("wa4", {// should be taken as an example ue4
             scheduledForward: {
                 due: overdueTime
             }
@@ -60,22 +60,22 @@ describe("The lls-session-data-provider macro", () => {
                 due: inFutureTime
             }
         });
-        const ue2 = options.push.usageExample("ue2", {// should be taken for wag2 and rule2
-            tags: [wag2.wordArticle.title, rule2.rule.title],
+        const ue2 = options.push.usageExample("ue2", {// should be taken for wa2 and rule2
+            tags: [wa2.wordArticle.title, rule2.rule.title],
             scheduledForward: {}
         });
         const ue3 = options.push.usageExample("ue3", {// should not be taken because the linked article isn't overdue
-            tags: [wag3.wordArticle.title],
+            tags: [wa3.wordArticle.title],
             scheduledForward: {}
         });
         const ue4 = options.push.usageExample("ue4", {// should be taken because the linked article is overdue
-            tags: [wag4.wordArticle.title],
+            tags: [wa4.wordArticle.title],
             scheduledForward: {
                 due: inFutureTime
             }
         });
         const ue5 = options.push.usageExample("ue5", {// should not be taken because the linked rule isn't overdue
-            tags: [ rule5.rule.title],
+            tags: [rule5.rule.title],
             scheduledForward: {}
         });
         const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
@@ -83,10 +83,10 @@ describe("The lls-session-data-provider macro", () => {
         expect(Array.isArray(data)).toBeTruthy();
         expect(data.length).toEqual(3);
         const srcs = data.map(el => el.src);
-        expect(srcs.includes(wag1.wordArticle.title)).toBeTruthy();
-        expect(srcs.includes(wag2.wordArticle.title)).toBeFalsy();
-        expect(srcs.includes(wag3.wordArticle.title)).toBeFalsy();
-        expect(srcs.includes(wag4.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(wa1.wordArticle.title)).toBeTruthy();
+        expect(srcs.includes(wa2.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(wa3.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(wa4.wordArticle.title)).toBeFalsy();
         expect(srcs.includes(rule1.rule.title)).toBeFalsy();
         expect(srcs.includes(rule2.rule.title)).toBeFalsy();
         expect(srcs.includes(rule5.rule.title)).toBeFalsy();
@@ -94,6 +94,72 @@ describe("The lls-session-data-provider macro", () => {
         expect(srcs.includes(ue3.usageExample.title)).toBeFalsy();
         expect(srcs.includes(ue4.usageExample.title)).toBeTruthy();
         expect(srcs.includes(ue5.usageExample.title)).toBeFalsy();
+    })
+
+    it("should select new word articles prior to overdue ones", () => {
+        const options = utils.setupWiki();
+        const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+        const direction = "forward";
+        const limit = 4;
+        const time = new Date().getTime();
+        const overdueTime = new Date().getTime() - offset_24h;
+        // consoleDebugSpy.and.callThrough();
+        // consoleSpy.and.callThrough();
+        const wag1 = options.push.wordArticleGroup("wag1", {
+            wag: [
+                {
+                    title: "wag1_wa0", // should not be taken because it's not new and it has been checked later than others
+                    scheduledForward: {
+                        due: overdueTime + 1
+                    }
+                },
+                {
+                    title: "wag1_wa1", // should be taken as an article
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                }
+            ]
+        });
+        const wag2 = options.push.wordArticle("wag2", {// should be taken as an example ue2
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const wag3 = options.push.wordArticle("wag3", {// should not be taken because it's not new and it has been checked later than others
+            scheduledForward: {
+                due: overdueTime + 1
+            }
+        });
+        const wag4 = options.push.wordArticle("wag4", {// should be taken as an example ue4 because it's new
+            scheduledForward: {
+            }
+        });
+        const wag5 = options.push.wordArticle("wag5", {// should be taken as an article because it's new
+            scheduledForward: {
+            }
+        });
+        const ue2 = options.push.usageExample("ue2", {// should be taken for wag2
+            tags: [wag2.wordArticle.title],
+            scheduledForward: {}
+        });
+        const ue4 = options.push.usageExample("ue4", {// should be taken for wag4
+            tags: [wag4.wordArticle.title],
+            scheduledForward: {
+            }
+        });
+        const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+        console.debug("data", data)
+        expect(Array.isArray(data)).toBeTruthy();
+        expect(data.length).toEqual(4);
+        const srcs = data.map(el => el.src);
+        expect(srcs.includes(wag1.wag["wag1_wa1"].title)).toBeTruthy();
+        expect(srcs.includes(wag2.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(wag3.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(wag4.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(wag5.wordArticle.title)).toBeTruthy();
+        expect(srcs.includes(ue2.usageExample.title)).toBeTruthy();
+        expect(srcs.includes(ue4.usageExample.title)).toBeTruthy();
     })
 
 });
