@@ -5,10 +5,12 @@ const Logger = $tw.utils.Logger.prototype;
 
 describe("The composeTranscriptionGroup service", () => {
     var consoleSpy;
+    var consoleDebugSpy;
     var loggerSpy;
 
     beforeEach(function () {
         consoleSpy = spyOn(console, 'log');
+        consoleDebugSpy = spyOn(console, 'debug');
         loggerSpy = spyOn(Logger, 'alert');
     });
 
@@ -187,6 +189,8 @@ describe("The composeTranscriptionGroup service", () => {
             const mode = "copy";
             const idle = false;
             const wordArticle = utils.createWordArticle("fakeWordArticle", word.title, [transcriptionGroup.title]);
+            // consoleSpy.and.callThrough();
+            // consoleDebugSpy.and.callThrough();
             loggerSpy.and.callThrough();
             options.widget.wiki.addTiddler(word);
             options.widget.wiki.addTiddler(wordArticle);
@@ -195,16 +199,17 @@ describe("The composeTranscriptionGroup service", () => {
             options.widget.wiki.addTiddler(transcription2);
             options.widget.wiki.addTiddler(transcription3);
             options.widget.wiki.addTiddler(transcription4);
+            console.debug("old transcription group before composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             expect(messageHandler.composeTranscriptionGroup(transcriptionGroup.title, targetGroup, transcriptions, mode, idle, options.widget)).nothing();
             expect(Logger.alert).toHaveBeenCalledTimes(0);
             // word article should stay linked with old transcription group
-            // console.warn(options.widget.wiki.getTiddler(wordArticle.title));
+            console.debug("word article", options.widget.wiki.getTiddler(wordArticle.title));
             const articleTranscriptions = options.widget.wiki.getTiddler(wordArticle.title).fields.tags
                 .filter(tag => tag.startsWith(context.prefixes.transcriptionGroup));
             expect(articleTranscriptions.length).toEqual(1);
             expect(articleTranscriptions[0]).toEqual(transcriptionGroup.title);
             // the old transcription group should stay linked with all transcriptions
-            // console.warn(options.widget.wiki.getTiddler(transcriptionGroup.title));
+            console.debug("old transcription group after composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             const oldTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(transcriptionGroup.title).fields.tags
                 .filter(tag => transcriptionsListC.includes(tag));
             expect(oldTranscriptionGroupTranscriptions.length).toEqual(4);
@@ -214,7 +219,7 @@ describe("The composeTranscriptionGroup service", () => {
             expect(oldTranscriptionGroupTranscriptions.includes(transcription4.title));
             // the new transcription group should refer to the same word
             const newTranscriptionGroup = options.widget.wiki.filterTiddlers("[[" + word.title + "]tagging[]tag[" + context.tags.transcriptionGroup + "]!compare:string:eq[" + transcriptionGroup.title + "]]")[0];
-            // console.warn("newTranscriptionGroup",newTranscriptionGroup);
+            console.debug("old transcription group after composing", options.widget.wiki.getTiddler(newTranscriptionGroup));
             expect(newTranscriptionGroup).toBeDefined();
             // the new trancsription group shoud refer to the copied tags for 'transcriptions' list
             const newTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(newTranscriptionGroup).fields.tags
@@ -254,6 +259,8 @@ describe("The composeTranscriptionGroup service", () => {
             const mode = "copy";
             const idle = false;
             const wordArticle = utils.createWordArticle("fakeWordArticle", word.title, [transcriptionGroup.title]);
+            // consoleSpy.and.callThrough();
+            // consoleDebugSpy.and.callThrough();
             loggerSpy.and.callThrough();
             options.widget.wiki.addTiddler(word);
             options.widget.wiki.addTiddler(wordArticle);
@@ -263,16 +270,17 @@ describe("The composeTranscriptionGroup service", () => {
             options.widget.wiki.addTiddler(transcription3);
             options.widget.wiki.addTiddler(transcription4);
             options.widget.wiki.addTiddler(targetGroup);
+            console.debug("old transcription group before composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             expect(messageHandler.composeTranscriptionGroup(transcriptionGroup.title, targetGroup.title, transcriptions, mode, idle, options.widget)).nothing();
             expect(Logger.alert).toHaveBeenCalledTimes(0);
             // word article should stay linked with old transcription group
-            // console.warn(options.widget.wiki.getTiddler(wordArticle.title));
+            console.debug("word article", options.widget.wiki.getTiddler(wordArticle.title));
             const articleTranscriptions = options.widget.wiki.getTiddler(wordArticle.title).fields.tags
                 .filter(tag => tag.startsWith(context.prefixes.transcriptionGroup));
             expect(articleTranscriptions.length).toEqual(1);
             expect(articleTranscriptions[0]).toEqual(transcriptionGroup.title);
             // the old transcription group should stay linked with all transcriptions
-            // console.warn(options.widget.wiki.getTiddler(transcriptionGroup.title));
+            console.debug("old transcription group after composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             const oldTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(transcriptionGroup.title).fields.tags
                 .filter(tag => transcriptionsListC.includes(tag));
             expect(oldTranscriptionGroupTranscriptions.length).toEqual(4);
@@ -281,6 +289,7 @@ describe("The composeTranscriptionGroup service", () => {
             expect(oldTranscriptionGroupTranscriptions.includes(transcription3.title));
             expect(oldTranscriptionGroupTranscriptions.includes(transcription4.title));
             // the target trancsription group shoud refer to the copied tags for 'transcriptions' list
+            console.debug("target transcription group after composing", options.widget.wiki.getTiddler(targetGroup.title));
             const targetTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(targetGroup.title).fields.tags
                 .filter(tag => tag.startsWith(context.prefixes.wordTranscription));
             expect(targetTranscriptionGroupTranscriptions.length).toEqual(2);
@@ -319,6 +328,8 @@ describe("The composeTranscriptionGroup service", () => {
             const mode = "move";
             const idle = false;
             const wordArticle = utils.createWordArticle("fakeWordArticle", word.title, [transcriptionGroup.title]);
+            // consoleSpy.and.callThrough();
+            // consoleDebugSpy.and.callThrough();
             loggerSpy.and.callThrough();
             options.widget.wiki.addTiddler(word);
             options.widget.wiki.addTiddler(wordArticle);
@@ -327,16 +338,17 @@ describe("The composeTranscriptionGroup service", () => {
             options.widget.wiki.addTiddler(transcription2);
             options.widget.wiki.addTiddler(transcription3);
             options.widget.wiki.addTiddler(transcription4);
+            console.debug("old transcription group before composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             expect(messageHandler.composeTranscriptionGroup(transcriptionGroup.title, targetGroup, transcriptions, mode, idle, options.widget)).nothing();
             expect(Logger.alert).toHaveBeenCalledTimes(0);
             // word article should stay linked with old transcription group
-            // console.warn(options.widget.wiki.getTiddler(wordArticle.title));
+            console.debug("wordArticle", options.widget.wiki.getTiddler(wordArticle.title));
             const articleTranscriptions = options.widget.wiki.getTiddler(wordArticle.title).fields.tags
                 .filter(tag => tag.startsWith(context.prefixes.transcriptionGroup));
             expect(articleTranscriptions.length).toEqual(1);
             expect(articleTranscriptions[0]).toEqual(transcriptionGroup.title);
             // the old transcription group should stay linked with transcriptions outside the 'transcriptions' list
-            // console.warn(options.widget.wiki.getTiddler(transcriptionGroup.title));
+            console.debug("old transcription group after composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             const oldTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(transcriptionGroup.title).fields.tags
                 .filter(tag => transcriptionsListC.includes(tag));
             expect(oldTranscriptionGroupTranscriptions.length).toEqual(2);
@@ -344,7 +356,7 @@ describe("The composeTranscriptionGroup service", () => {
             expect(oldTranscriptionGroupTranscriptions.includes(transcription3.title));
             // the new transcription group should refer to the same word
             const newTranscriptionGroup = options.widget.wiki.filterTiddlers("[[" + word.title + "]tagging[]tag[" + context.tags.transcriptionGroup + "]!compare:string:eq[" + transcriptionGroup.title + "]]")[0];
-            // console.warn(newTranscriptionGroup);
+            console.debug("new transcription group", options.widget.wiki.getTiddler(newTranscriptionGroup));
             expect(newTranscriptionGroup).toBeDefined();
             // the new trancsription group shoud refer to the copied tags for 'transcriptions' list
             const newTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(newTranscriptionGroup).fields.tags
@@ -384,6 +396,8 @@ describe("The composeTranscriptionGroup service", () => {
             const mode = "move";
             const idle = false;
             const wordArticle = utils.createWordArticle("fakeWordArticle", word.title, [transcriptionGroup.title]);
+            // consoleSpy.and.callThrough();
+            // consoleDebugSpy.and.callThrough();
             loggerSpy.and.callThrough();
             options.widget.wiki.addTiddler(word);
             options.widget.wiki.addTiddler(wordArticle);
@@ -393,22 +407,24 @@ describe("The composeTranscriptionGroup service", () => {
             options.widget.wiki.addTiddler(transcription3);
             options.widget.wiki.addTiddler(transcription4);
             options.widget.wiki.addTiddler(targetGroup);
+            console.debug("old transcription group before composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             expect(messageHandler.composeTranscriptionGroup(transcriptionGroup.title, targetGroup.title, transcriptions, mode, idle, options.widget)).nothing();
             expect(Logger.alert).toHaveBeenCalledTimes(0);
             // word article should stay linked with old transcription group
-            // console.warn(options.widget.wiki.getTiddler(wordArticle.title));
+            console.debug("word article", options.widget.wiki.getTiddler(wordArticle.title));
             const articleTranscriptions = options.widget.wiki.getTiddler(wordArticle.title).fields.tags
                 .filter(tag => tag.startsWith(context.prefixes.transcriptionGroup));
             expect(articleTranscriptions.length).toEqual(1);
             expect(articleTranscriptions[0]).toEqual(transcriptionGroup.title);
             // the old transcription group should stay linked with all transcriptions
-            // console.warn(options.widget.wiki.getTiddler(transcriptionGroup.title));
+            console.debug("old transcription group after composing", options.widget.wiki.getTiddler(transcriptionGroup.title));
             const oldTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(transcriptionGroup.title).fields.tags
                 .filter(tag => transcriptionsListC.includes(tag));
             expect(oldTranscriptionGroupTranscriptions.length).toEqual(2);
             expect(oldTranscriptionGroupTranscriptions.includes(transcription1.title));
             expect(oldTranscriptionGroupTranscriptions.includes(transcription3.title));
             // the target trancsription group shoud refer to the copied tags for 'transcriptions' list
+            console.debug("target transcription group after composing", options.widget.wiki.getTiddler(targetGroup.title));
             const targetTranscriptionGroupTranscriptions = options.widget.wiki.getTiddler(targetGroup.title).fields.tags
                 .filter(tag => tag.startsWith(context.prefixes.wordTranscription));
             expect(targetTranscriptionGroupTranscriptions.length).toEqual(2);
