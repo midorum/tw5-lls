@@ -6,10 +6,12 @@ const Logger = $tw.utils.Logger.prototype;
 
 describe("The modifyTranscriptionGroup service", () => {
     var consoleSpy;
+    var consoleDebugSpy;
     var loggerSpy;
 
     beforeEach(function () {
         consoleSpy = spyOn(console, 'log');
+        consoleDebugSpy = spyOn(console, 'debug');
         loggerSpy = spyOn(Logger, 'alert');
     });
 
@@ -74,12 +76,14 @@ describe("The modifyTranscriptionGroup service", () => {
             options.widget.wiki.addTiddler({ title: transcriptionGroup, tags: [context.tags.transcriptionGroup, oldTranscription1, oldTranscription2] });
             options.widget.wiki.addTiddler({ "title": newTranscription1, tags: [newTranscriptionsTag], text: newTranscription1Text, src: newTranscription1Src });
             options.widget.wiki.addTiddler({ "title": newTranscription2, tags: [newTranscriptionsTag], text: newTranscription2Text, src: newTranscription2Src });
+            // consoleSpy.and.callThrough();
+            // consoleDebugSpy.and.callThrough();
             loggerSpy.and.callThrough();
-            // console.warn(options.widget.wiki.getTiddler(transcriptionGroup))
+            console.debug("transcription group before modifying", options.widget.wiki.getTiddler(transcriptionGroup))
             expect(messageHandler.modifyTranscriptionGroup(transcriptionGroup, newTranscriptionsTag, idle, options.widget)).nothing();
-            // console.warn(options.widget.wiki.getTiddler(transcriptionGroup))
             expect(Logger.alert).toHaveBeenCalledTimes(0);
             const transcriptionGroupTiddler = options.widget.wiki.getTiddler(transcriptionGroup);
+            console.debug("transcription group after modifying", transcriptionGroupTiddler)
             const transcriptionGroupTranscriptions = transcriptionGroupTiddler.fields.tags.filter(tag => tag.startsWith(context.prefixes.wordTranscription));
             expect(transcriptionGroupTranscriptions.length).toEqual(2);
             transcriptionGroupTranscriptions.forEach(tag => {
