@@ -9,25 +9,24 @@ type: text/vnd.tiddlywiki
  newFirst=true
  directions="forward backward both"
  directionButtons="[[Practice Understanding]] [[Practice Applying]] [[Practice Both Understanding And Applying]]" 
+ preCreateHook="lls-pre-create-hook"
+ postAnswerHook="lls-post-answer-hook"
 />
 
-<!--<$transclude
- $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionTemplate"
- src="$:/lls/tags/wordArticle"
- groupFilter="[<currentTiddler>tags[]tag[$:/lls/tags/transcriptionGroup]] ~[<currentTiddler>tags[]tag[$:/lls/tags/word]]"
- groupStrategy="oneFromGroup"
- forwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleForwardQuestionCardTemplate"
- forwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleForwardAnswerCardTemplate"
- backwardQuestionTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleBackwardQuestionCardTemplate"
- backwardAnswerTemplate="$:/plugins/midorum/lls/ui/templates/wordArticleBackwardAnswerCardTemplate"
- directions="both"
- directionButtons="[[Start learn words]]" 
- limit=200
-/>-->
 <!--
 [[$:/temp/srs/state/session]]
 
 [[$:/plugins/midorum/srs/templates/SrsLearningSessionDynamicTemplate]]
 
 [[$:/plugins/midorum/srs/modules/message-handler.js]]
+
+[[$:/plugins/midorum/lls/macros/lls-post-answer-hook.js]]
+
+[[$:/lls/state/lastAnswerTime]]
+
+[[$:/lls/logs/statistic/wordArticle]]
+
+[[$:/lls/logs/statistic/rule]]
+
+[[$:/lls/logs/statistic/usageExample]]
 -->

@@ -18,6 +18,7 @@ module-type: macro
     wiki.addTiddler(new $tw.Tiddler(
       {
         title: stateTitle,
+        type: "text/plain",
         text: params.time
       },
       wiki.getModificationFields()));
