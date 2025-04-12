@@ -42,6 +42,14 @@ Utility functions.
     return def;
   }
 
+  function parseJson(jsonString) {
+    try {
+      const o = JSON.parse(jsonString);
+      if (o && typeof o === "object") return o;
+    } catch (e) { }
+    return undefined;
+  };
+
   function parseWikiDate(d) {
     var value = $tw.utils.parseDate(d);
     if (value && $tw.utils.isDate(value) && value.toString() !== "Invalid Date") {
@@ -254,6 +262,7 @@ Utility functions.
     trimToNull: trimToNull,
     trimToUndefined: trimToUndefined,
     parseInteger: parseInteger,
+    parseJson: parseJson,
     parseWikiDate: parseWikiDate,
     purgeArray: purgeArray,
     parseStringList: parseStringList,

@@ -13,13 +13,14 @@ module-type: macro
   exports.name = "lls-calculate-statistic";
   exports.params = [
     { name: "filter" },
+    { name: "time" },
     { name: "wiki" }
   ];
-  exports.run = function (filter, wiki) {
+  exports.run = function (filter, time, wiki) {
     if (!filter) return "Error: The 'filter' attribute should be defined";
     wiki = wiki || $tw.rootWidget.wiki;
     const wikiUtils = utils.getWikiUtils(wiki);
-    const time = utils.parseInteger(wikiUtils.withTiddler(stateTitle).getTiddlerField("text"), new Date().getTime());
+    time = time || utils.parseInteger(wikiUtils.withTiddler(stateTitle).getTiddlerField("text"), new Date().getTime());
     const basetime = new Date(2000, 0, 1).getTime();
     const c = utils.statistic;
     // console.debug("lls-calculate-statistic", filter, wiki, time)

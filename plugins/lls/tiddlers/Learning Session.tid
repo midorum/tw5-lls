@@ -22,6 +22,8 @@ type: text/vnd.tiddlywiki
 
 [[$:/plugins/midorum/lls/macros/lls-post-answer-hook.js]]
 
+[[$:/plugins/midorum/lls/macros/lls-format-statistic.js]]
+
 [[$:/lls/state/lastAnswerTime]]
 
 [[$:/lls/logs/statistic/wordArticle]]

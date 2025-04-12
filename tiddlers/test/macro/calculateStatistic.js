@@ -76,7 +76,7 @@ describe("The lls-calculate-statistic macro", () => {
             options.push.wordArticle("greater than 1 day in backward" + i, { scheduledBackward: { due: time + c.D1 * c.DAY_MS + 1 + i } }));
         llsUtils.range(0, 20, 1).forEach(i =>
             options.push.wordArticle("overdue in backward" + i, { scheduledBackward: { due: time + 1 + i } }));
-        const result = calculateStaticticMacro.run(filter, options.wiki);
+        const result = calculateStaticticMacro.run(filter, undefined, options.wiki);
         console.debug("result", result);
         expect(typeof result === 'string' || result instanceof String).toBeTruthy();
         const chanks = result.split(";");

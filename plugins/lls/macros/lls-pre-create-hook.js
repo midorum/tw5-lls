@@ -34,7 +34,7 @@ module-type: macro
     const logContent = logTiddler.getTiddlerField("text");
     const lastRecordTime = getLastRecordTime(logContent);
     if (isSameDay(lastRecordTime, time)) return; // do not write extra log for the same day
-    const statistic = calculateStaticticMacro.run("[tag[" + tag + "]]", wikiUtils.wiki);
+    const statistic = calculateStaticticMacro.run("[tag[" + tag + "]]", undefined, wikiUtils.wiki);
     logTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({
       type: "text/plain",
       text: (logContent ? (logContent + "\n") : "") + statistic

@@ -1,0 +1,168 @@
+title: $:/plugins/midorum/lls/ui/templates/statistic-history
+type: text/vnd.tiddlywiki
+
+\parameters(
+ state:$:/temp/lls/state/statistic,
+ detailsIndex:details,
+ historyState:$:/lls/state/statisticHistory
+ historyCountIndex:historyCount
+)
+\procedure details(obj)
+<$text text={{{ 
+    [<obj>jsonget[d1]]
+   =[<obj>jsonget[d2]]
+   =[<obj>jsonget[d3]]
+   =[<obj>jsonget[w1]]
+   =[<obj>jsonget[w2]]
+   =[<obj>jsonget[m1]]
+   =[<obj>jsonget[m3]]
+   =[<obj>jsonget[m6]]
+   =[<obj>jsonget[y1]]
+   +[join[,]]
+}}} />
+\end details
+
+\procedure detailsBlock(obj)
+<$reveal
+    type="nomatch"
+    stateTitle=<<state>>
+    stateIndex=<<detailsIndex>>
+    text="yes"
+><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<state>>
+    setIndex=<<detailsIndex>>
+    setTo="yes"
+><<no-wrap-text "[v]">></$button></$reveal>
+<$reveal
+    type="match"
+    stateTitle=<<state>>
+    stateIndex=<<detailsIndex>>
+    text="yes"
+><$button
+    class="tc-btn-invisible tc-tiddlylink"
+    setTitle=<<state>>
+    setIndex=<<detailsIndex>>
+    setTo="no"
+><<no-wrap-text "[^]">></$button><br/><$transclude
+    $variable="details"
+    obj=<<obj>>
+/></$reveal>
+\end detailsBlock
+
+\procedure recordRow()
+<tr>
+<td><$text text={{{ [<logRecord>jsonget[time]] }}} /></td>
+<td><$text text={{{ [<logRecord>jsonget[total]] }}} /></td>
+<td><$text text={{{ [<forward>jsonget[new]] }}} /> (<$text text={{{ [<forward>jsonget[newP]] }}} /> %)</td>
+<td><$text text={{{ [<forward>jsonget[overdue]] }}} /> (<$text text={{{ [<forward>jsonget[overdueP]] }}} /> %)</td>
+<td><$text text={{{ [<forward>jsonget[passed]] }}} /> (<$text text={{{ [<forward>jsonget[passedP]] }}} /> %)<$transclude
+ $variable="detailsBlock"
+ obj=<<forward>>
+/></td>
+<td><b><$text text={{{ [<forward>jsonget[wamP]] }}} /> %</b></td>
+<td><$text text={{{ [<backward>jsonget[new]] }}} /> (<$text text={{{ [<backward>jsonget[newP]] }}} /> %)</td>
+<td><$text text={{{ [<backward>jsonget[overdue]] }}} /> (<$text text={{{ [<backward>jsonget[overdueP]] }}} /> %)</td>
+<td><$text text={{{ [<backward>jsonget[passed]] }}} /> (<$text text={{{ [<backward>jsonget[passedP]] }}} /> %)<$transclude
+ $variable="detailsBlock"
+ obj=<<backward>>
+/></td>
+<td><b><$text text={{{ [<backward>jsonget[wamP]] }}} /> %</b></td>
+</tr>
+\end recordRow
+
+\procedure logRows(logAttribute)
+<$let
+  log={{{ [<stats>jsonextract<logAttribute>] }}}
+><$list
+  variable="logIndex"
+  filter="[<log>jsonindexes[]]"
+><$let 
+  logRecord={{{ [<log>jsonextract<logIndex>] }}}
+  forward={{{ [<logRecord>jsonextract[forward]] }}}
+  backward={{{ [<logRecord>jsonextract[backward]] }}}
+><$transclude
+  $variable="recordRow"
+/></$let></$list></$let>
+\end logRows
+
+\procedure currentRow(attribute)
+<$let 
+  logRecord={{{ [<stats>jsonextract<attribute>] }}}
+  forward={{{ [<logRecord>jsonextract[forward]] }}}
+  backward={{{ [<logRecord>jsonextract[backward]] }}}
+><$transclude
+  $variable="recordRow"
+/></$let>
+\end currentRow
+
+\procedure statisticTable(logAttribute, currentAttribute)
+<table class="lls-statistic-table">
+<tr>
+<th rowspan="2">Time</th>
+<th rowspan="2">Total</th>
+<th colspan="4">Forward Direction</th>
+<th colspan="4">Backward Direction</th>
+</tr>
+<tr>
+<th>New</th>
+<th>Overdue</th>
+<th>Passed</th>
+<th>Progress</th>
+<th>New</th>
+<th>Overdue</th>
+<th>Passed</th>
+<th>Progress</th>
+</tr>
+<$transclude
+ $variable="logRows"
+ logAttribute=<<logAttribute>>
+/>
+<$transclude
+ $variable="currentRow"
+ attribute=<<currentAttribute>>
+/>
+</table>
+\end statisticTable
+
+
+<h2>Statistic History</h2>
+
+<div>
+Number of rows:
+<$edit-text 
+    tiddler=<<historyState>>
+    index=<<historyCountIndex>> 
+    tag=input
+    type=number
+    default="1"
+/>
+</div>
+
+<$let stats=<<lls-get-statistic>> >
+
+!!! Word Aricles Statistic
+
+<$transclude
+ $variable="statisticTable"
+ logAttribute="wordAricleLog"
+ currentAttribute="wordArticleCurrent"
+/>
+
+!!! Rules Statistic
+
+<$transclude
+ $variable="statisticTable"
+ logAttribute="ruleLog"
+ currentAttribute="ruleCurrent"
+/>
+
+!!! Usage Examples Statistic
+
+<$transclude
+ $variable="statisticTable"
+ logAttribute="usageExampleLog"
+ currentAttribute="usageExampleCurrent"
+/>
+
+</$let>
