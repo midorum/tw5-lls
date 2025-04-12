@@ -22,36 +22,22 @@ module-type: macro
     const now = new Date().getTime();
     const wikiUtils = utils.getWikiUtils(wiki);
     const stateTiddler = wikiUtils.withTiddler(tags.lastAnswerTime);
-    const time = stateTiddler.exists() ? utils.parseInteger(stateTiddler.getTiddlerField("text"), now) : now;
-    logStatistic(tags.wordArticleStatisticLog, tags.wordArticle, time, calculateStaticticMacro, wikiUtils);
-    logStatistic(tags.ruleStatisticLog, tags.rule, time, calculateStaticticMacro, wikiUtils);
-    logStatistic(tags.usageExampleStatisticLog, tags.usageExample, time, calculateStaticticMacro, wikiUtils);
+    const lastAnswerTime = stateTiddler.exists() ? utils.parseInteger(stateTiddler.getTiddlerField("text")) : undefined;
+    if (!lastAnswerTime || isSameDay(lastAnswerTime, now)) return true; // do not write log for today - proceed creating an SRS session
+    logStatistic(tags.wordArticleStatisticLog, tags.wordArticle, lastAnswerTime, calculateStaticticMacro, wikiUtils);
+    logStatistic(tags.ruleStatisticLog, tags.rule, lastAnswerTime, calculateStaticticMacro, wikiUtils);
+    logStatistic(tags.usageExampleStatisticLog, tags.usageExample, lastAnswerTime, calculateStaticticMacro, wikiUtils);
     return true; // proceed creating an SRS session
   };
 
   function logStatistic(log, tag, time, calculateStaticticMacro, wikiUtils) {
     const logTiddler = wikiUtils.withTiddler(log);
     const logContent = logTiddler.getTiddlerField("text");
-    const lastRecordTime = getLastRecordTime(logContent);
-    if (isSameDay(lastRecordTime, time)) return; // do not write extra log for the same day
-    const statistic = calculateStaticticMacro.run("[tag[" + tag + "]]", undefined, wikiUtils.wiki);
+    const statistic = calculateStaticticMacro.run("[tag[" + tag + "]]", time, wikiUtils.wiki);
     logTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({
       type: "text/plain",
       text: (logContent ? (logContent + "\n") : "") + statistic
     });
-  }
-
-  function getLastRecordTime(logContent) {
-    if (!logContent) return undefined;
-    const records = logContent.trim().split("\n");
-    const lastRecord = records.length ? records[records.length - 1] : undefined;
-    if (lastRecord) {
-      const delimiterIndex = lastRecord.indexOf(";");
-      if (delimiterIndex > -1) {
-        return utils.parseInteger(lastRecord.substring(0, delimiterIndex));
-      }
-    }
-    return undefined;
   }
 
   function isSameDay(timestamp1, timestamp2) {

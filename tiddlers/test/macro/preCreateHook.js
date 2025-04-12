@@ -22,111 +22,110 @@ describe("The lls-pre-create-hook macro", () => {
         expect(preCreateHookMacro).toBeDefined();
     })
 
-    it("should create log tiddlers if they do not exist", () => {
+    it("should create log tiddlers if they do not exist and the last answer time in the past", () => {
         const options = utils.setupWiki();
         // consoleSpy.and.callThrough();
         // consoleDebugSpy.and.callThrough();
-        const time = new Date().getTime();
+        const lastAnswerTime = new Date(2000, 3, 4).getTime();
         options.widget.wiki.addTiddler({
             title: tags.lastAnswerTime,
-            text: time
+            text: lastAnswerTime
         });
         preCreateHookMacro.run(options.wiki, {});
         verifyLog({
             title: tags.wordArticleStatisticLog,
             records: 1,
-            time: time
+            time: lastAnswerTime
         }, options)
         verifyLog({
             title: tags.ruleStatisticLog,
             records: 1,
-            time: time
+            time: lastAnswerTime
         }, options)
         verifyLog({
             title: tags.usageExampleStatisticLog,
             records: 1,
-            time: time
+            time: lastAnswerTime
         }, options)
     })
 
-    it("should update log tiddlers if they do exist", () => {
+    it("should update log tiddlers if they do exist and the last answer time in the past", () => {
         const options = utils.setupWiki();
         // consoleSpy.and.callThrough();
         // consoleDebugSpy.and.callThrough();
-        const previousRecordTime = new Date().getTime();
-        const time = previousRecordTime + 1000 * 60 * 60 * 24;
+        const lastRecordTime = new Date(2000, 4, 3).getTime();
+        const lastAnswerTime = new Date(2001, 4, 3).getTime();
         options.widget.wiki.addTiddler({
             title: tags.lastAnswerTime,
-            text: time
+            text: lastAnswerTime
         });
         options.widget.wiki.addTiddler({
             title: tags.wordArticleStatisticLog,
-            text: previousRecordTime + ";some data"
+            text: lastRecordTime + ";some data"
         });
         options.widget.wiki.addTiddler({
             title: tags.ruleStatisticLog,
-            text: previousRecordTime + ";some data"
+            text: lastRecordTime + ";some data"
         });
         options.widget.wiki.addTiddler({
             title: tags.usageExampleStatisticLog,
-            text: previousRecordTime + ";some data"
+            text: lastRecordTime + ";some data"
         });
         preCreateHookMacro.run(options.wiki, {});
         verifyLog({
             title: tags.wordArticleStatisticLog,
             records: 2,
-            time: time
+            time: lastAnswerTime
         }, options)
         verifyLog({
             title: tags.ruleStatisticLog,
             records: 2,
-            time: time
+            time: lastAnswerTime
         }, options)
         verifyLog({
             title: tags.usageExampleStatisticLog,
             records: 2,
-            time: time
+            time: lastAnswerTime
         }, options)
     })
 
-    it("should not update log tiddlers if the previous record has made in the same day", () => {
+    it("should not update log tiddlers if the last answer time is today", () => {
         const options = utils.setupWiki();
         // consoleSpy.and.callThrough();
         // consoleDebugSpy.and.callThrough();
-        const previousDate = new Date(2000, 3, 3, 12, 5);
-        const previousRecordTime = previousDate.getTime();
-        const time = previousRecordTime + 1000;
+        const lastRecordTime = new Date(2000, 3, 3, 12, 5).getTime();
+        const lsatAnswerTime = new Date().getTime();
         options.widget.wiki.addTiddler({
             title: tags.lastAnswerTime,
-            text: time
+            text: lsatAnswerTime
         });
         options.widget.wiki.addTiddler({
             title: tags.wordArticleStatisticLog,
-            text: previousRecordTime + ";some data"
+            text: lastRecordTime + ";some data"
         });
         options.widget.wiki.addTiddler({
             title: tags.ruleStatisticLog,
-            text: previousRecordTime + ";some data"
+            text: lastRecordTime + ";some data"
         });
         options.widget.wiki.addTiddler({
             title: tags.usageExampleStatisticLog,
-            text: previousRecordTime + ";some data"
+            text: lastRecordTime + ";some data"
         });
         preCreateHookMacro.run(options.wiki, {});
         verifyLog({
             title: tags.wordArticleStatisticLog,
             records: 1,
-            time: previousRecordTime
+            time: lastRecordTime
         }, options)
         verifyLog({
             title: tags.ruleStatisticLog,
             records: 1,
-            time: previousRecordTime
+            time: lastRecordTime
         }, options)
         verifyLog({
             title: tags.usageExampleStatisticLog,
             records: 1,
-            time: previousRecordTime
+            time: lastRecordTime
         }, options)
     })
 
@@ -137,6 +136,8 @@ describe("The lls-pre-create-hook macro", () => {
         const content = logInstance.fields.text;
         const records = content.split("\n");
         expect(records.length).toEqual(logData.records);
+        console.debug("log records", records)
         expect(records[records.length - 1].indexOf(logData.time)).toEqual(0);
     }
+
 });
