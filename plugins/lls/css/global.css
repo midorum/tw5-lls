@@ -109,3 +109,19 @@ span.lls-icon-button svg {
   width: 1em;
   vertical-align: middle;
 }
+
+.lls-statistic-table {
+  border-top: none;
+  border-bottom: none;
+}
+
+.lls-statistic-table th {
+  border-top: none;
+  border-bottom: none;
+}
+
+.lls-statistic-table td {
+  text-align: right;
+  border-top: none;
+  border-bottom: none;
+}

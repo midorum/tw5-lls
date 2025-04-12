@@ -5,6 +5,8 @@ Utilities for test.
 
 \*/
 
+const llsUtils = require("$:/plugins/midorum/lls/modules/utils.js").llsUtils;
+
 const llsContextCache = (function () {
     var context;
     return {
@@ -470,31 +472,36 @@ function stringifyValuesToList(valueOrValues) {
     return $tw.utils.stringifyList(valueOrValues);
 }
 
-function getSrsProxyWiki(wiki) {
+function getSrsProxyWiki(wiki) { // taken from $:/plugins/midorum/srs/modules/utils.js
     if (!wiki) throw new Error("wiki is required");
-    const utils = require("$:/plugins/midorum/srs/modules/utils.js").srsUtils;
-    const cache = require("$:/plugins/midorum/srs/modules/cache.js");
-    if (!utils || !cache) throw new Error("It seems that SRS plugin is missed");
-    const wikiUtils = utils.getWikiUtils(wiki);
-    const srsTags = cache.getTags(["scheduledForward", "scheduledBackward"]);
-    const getSrsData = function (tiddler) { // taken from $:/plugins/midorum/srs/modules/message-handler.js
+    const FORWARD_DIRECTION = "forward";
+    const BACKWARD_DIRECTION = "backward";
+    const SRS_FORWARD_DUE_FIELD = "srs-forward-due";
+    const SRS_BACKWARD_DUE_FIELD = "srs-backward-due";
+    const SRS_BASE_TIME = new Date(2000, 0, 1).getTime();
+    const srsTags = {
+        scheduledForward: "$:/srs/tags/scheduledForward",
+        scheduledBackward: "$:/srs/tags/scheduledBackward"
+    };
+    const wikiUtils = llsUtils.getWikiUtils(wiki);
+    const getSrsData = function (tiddler) {
         const title = tiddler.getTitle();
         const tags = tiddler.getTiddlerTagsShallowCopy();
         return {
             forward: tags.includes(srsTags.scheduledForward) ? {
-                due: utils.parseInteger(tiddler.getTiddlerField(utils.SRS_FORWARD_DUE_FIELD)),
-                direction: utils.FORWARD_DIRECTION,
+                due: llsUtils.parseInteger(tiddler.getTiddlerField(SRS_FORWARD_DUE_FIELD)),
+                direction: FORWARD_DIRECTION,
                 src: title
             } : undefined,
             backward: tags.includes(srsTags.scheduledBackward) ? {
-                due: utils.parseInteger(tiddler.getTiddlerField(utils.SRS_BACKWARD_DUE_FIELD)),
-                direction: utils.BACKWARD_DIRECTION,
+                due: llsUtils.parseInteger(tiddler.getTiddlerField(SRS_BACKWARD_DUE_FIELD)),
+                direction: BACKWARD_DIRECTION,
                 src: title
             } : undefined
         };
     }
-    return { // taken from $:/plugins/midorum/srs/modules/message-handler.js
-        SRS_BASE_TIME: utils.SRS_BASE_TIME,
+    return {
+        SRS_BASE_TIME: SRS_BASE_TIME,
         getTitlesWithTag: (tag) => wiki.getTiddlersWithTag(tag),
         filterTitles: (filterString) => wiki.filterTiddlers(filterString),
         allTitles: () => wiki.allTitles(),
