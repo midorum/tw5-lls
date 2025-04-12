@@ -16,3 +16,7 @@ srsScheduledBackward:$:/srs/tags/scheduledBackward
 userTag:$:/lls/tags/userTag
 userTagValue:$:/lls/tags/userTagValue
 rule:$:/lls/tags/rule
+lastAnswerTime:$:/lls/state/lastAnswerTime
+wordArticleStatisticLog:$:/lls/logs/statistic/wordArticle
+ruleStatisticLog:$:/lls/logs/statistic/rule
+usageExampleStatisticLog:$:/lls/logs/statistic/usageExample

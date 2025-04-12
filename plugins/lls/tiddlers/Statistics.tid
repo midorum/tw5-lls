@@ -20,3 +20,7 @@ TiddlyWiki version: ''<<version>>''
 LLS plugin version: ''{{$:/plugins/midorum/lls!!version}}''
 
 SRS plugin version: ''{{$:/plugins/midorum/srs!!version}}''
+
+<$transclude
+ $tiddler="$:/plugins/midorum/lls/ui/templates/statistic-history"
+/>

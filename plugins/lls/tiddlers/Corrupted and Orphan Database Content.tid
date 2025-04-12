@@ -1,7 +1,7 @@
 title: Corrupted and Orphan Database Content
 type: text/vnd.tiddlywiki
 
-\procedure type1(tagA, regexpB)
+\procedure type1(tagA, regexpB, canDelete)
 <div><$scrollable
  class='lls-scrollable'
 ><$list
@@ -10,9 +10,28 @@ type: text/vnd.tiddlywiki
  emptyMessage="not found"
 ><div>lost: <<lost>>
 objects: <$list
+ variable=target
  filter="[<lost>tagging[]]"
  join=", "
-></$list></div></$list></$scrollable></div>
+><<target>><$reveal
+ type="match"
+ state="$:/info/url/hostname"
+ text="localhost"
+><$list
+ filter="[<canDelete>compare:string[true]]"
+><$fieldmangler
+ tiddler=<<target>>><$button
+ message="tm-remove-tag"
+ param=<<lost>>>Delete</$button></$fieldmangler></$list></$reveal><$reveal
+ type="match"
+ state="$:/info/url/protocol"
+ text="file:"
+><$list
+ filter="[<canDelete>compare:string[true]]"
+><$fieldmangler
+ tiddler=<<target>>><$button
+ message="tm-remove-tag"
+ param=<<lost>>>Delete</$button></$fieldmangler></$list></$reveal></$list></div></$list></$scrollable></div>
 \end type1
 
 \procedure type2(tagA, typeB)
@@ -47,9 +66,15 @@ A -> B - объект A ссылается (хранит ссылку, тег) �
 ** `[tag[A-tag]lls:absent[B-prefix]]`
 
 * тип 3: известен объект B, но нет ни одного объекта (A), которые бы ссылались бы на него (хранили ссылку (тег)) (брошеный объект, orphan)
-** `[!tag[B]]` - объект B, который вообще не используются как теги ни для чего
-** тип 3a: `[tag[B-tag]!is[tag]]` - все объекты типа B, которые не используются как теги ни для чего
+** `[!tag[B]]` - объект B, который вообще не используется как тег ни для одного другого объекта в системе
+** тип 3a: `[tag[B-tag]!is[tag]]` - все объекты типа B, которые не используются как тег ни для одного другого объекта в системе
 ** тип 3b: ? - все объекты типа B, которые не используются как теги для конкретного типа объектов (A)
+
+<<<
+''You can delete wrong links if it is allowed only on a local copy of your wiki.''
+
+If you are hosting your wiki on external server download it to the filesystem, delete wrong links and than, if everythng is OK, upload it to server.
+<<<
 
 ! Проверки по типам связей
 
@@ -157,10 +182,12 @@ A -> B - объект A ссылается (хранит ссылку, тег) �
 `transcriptionGroup 1!->*? wordTranscription`
 
 тип 1 - группы транскрипций, для которых были удалены (возможно случайно) транскрипции, но тег остался
+<br/>это считается ошибкой, необходимо выяснять в какой момент остаются брошеные теги в группах транскрипций
 <$transclude
  $variable="type1"
  tagA="$:/lls/tags/transcriptionGroup"
  regexpB="^\$:/lls/db/wt//*"
+ canDelete="true"
 />
 
 тип 2 - группы транскрипций, не имеющие ни одной ссылки (тега) на транскрипцию
@@ -178,6 +205,9 @@ A -> B - объект A ссылается (хранит ссылку, тег) �
 />
 
 тип 2 - примеры использования, не имеющие ни одной ссылки (тега) на статью
+<br/>это могут быть примеры использования, связанные только с грамматическими правилами и не связанные со словарными статьями
+<br/>необходимо улучшить этот фильтр, чтобы он учитывал все разрешенные связи
+<br/>если быть точным, ошибочными являются примеры использования, не связанные ни с одной категорией
 <$transclude
  $variable="type2"
  tagA="$:/lls/tags/usageExample"
@@ -465,6 +495,8 @@ A -> B - объект A ссылается (хранит ссылку, тег) �
 >set SRS to usage example</$button>
 
 !! Word Translations without pronunciation ref
+
+Транскрипции, у которых не проставлено поле `src`. Это считается ошибкой. Необходимо выяснять откуда возникают такие транскрипции.
 
 uncomment
 <!-- 

@@ -16,7 +16,7 @@ Produces custom data for SRS learning session
     { name: "time", description: "Current time" }
   ];
   exports.run = function (wiki, direction, limit, time) {
-    // console.warn( "lls-session-data-provider", wiki, direction, limit, time)
+    // console.debug( "lls-session-data-provider", wiki, direction, limit, time)
     const takeForward = direction === "forward" || direction === "both";
     const takeBackward = direction === "backward" || direction === "both";
     const itemFitsDirection = el => (takeForward && el.forward) || (takeBackward && el.backward);
@@ -33,6 +33,8 @@ Produces custom data for SRS learning session
       return due1 - due2;
     };
     const dueDateComparator = (o1, o2) => (o1.due || wiki.SRS_BASE_TIME) - (o2.due || wiki.SRS_BASE_TIME);
+    const isNewOrOverdue = el => !el.due || el.due < time;
+    const isExists = el => !!el;
     const toMinimalDirection = el => {
       if (!el.forward) return el.backward;
       if (!el.backward) return el.forward;
@@ -42,30 +44,37 @@ Produces custom data for SRS learning session
     };
     const articleMap = {};
     var count = 0;
-    const words = wiki.getTitlesWithTag("$:/lls/tags/word");
-    words
+    wiki.getTitlesWithTag("$:/lls/tags/word")
       // .slice(0, 1)
-      // .map(el => {console.warn("word", el);return el;})
-      .forEach(word => {
-        const article = wiki.filterTitles("[tag[" + word + "]tag[$:/lls/tags/wordArticle]]")
-          .map(wa => wiki.getSrsData(wa))
-          .filter(itemFitsDirection)
-          .map(deleteInappropriateDirection)
-          .sort(bothDirectionsDueDateComparator)
-          .slice(0, 1)
-          .map(toMinimalDirection)
-          // .map(el => {console.warn("1", el);return el;})
-          .filter(el => !el.due || el.due < time)
-          .at(0);
-        // console.warn("article", article)
-        if (!article) return;
+      // .map(el => {console.debug("word", el);return el;})
+      .map(word => wiki.filterTitles("[tag[" + word + "]tag[$:/lls/tags/wordArticle]]")
+        // .map(el => {console.debug("wa", el);return el;})
+        .map(wa => wiki.getSrsData(wa))
+        // .map(el => {console.debug("wa srs data", el);return el;})
+        .filter(itemFitsDirection)
+        // .map(el => {console.debug("wa fits direction", el);return el;})
+        .map(deleteInappropriateDirection)
+        // .map(el => {console.debug("wa apropriate directions", el);return el;})
+        .map(toMinimalDirection)
+        // .map(el => {console.debug("wa minimal direction", el);return el;})
+        .filter(isNewOrOverdue)
+        // .map(el => {console.debug("wa is new or overdue", el);return el;})
+        .sort(dueDateComparator)
+        .at(0))
+      // .map(el => { console.debug("selected wa", el); return el; })
+      .filter(isExists)
+      .sort(dueDateComparator)
+      // .map(el => { console.debug("wa after sorting", el); return el; })
+      .slice(0, limit)
+      // .map(el => { console.debug("wa after limit", el); return el; })
+      .forEach(article => {
         const examples = wiki.filterTitles("[tag[" + article.src + "]tag[$:/lls/tags/usageExample]]")
-          // .map(el => { console.warn("usage example for ", article.src, el); return el; })
+          // .map(el => { console.debug("usage example for ", article.src, el); return el; })
           .map(ue => {
             const srsData = wiki.getSrsData(ue)
             return article.direction === "forward" ? srsData.forward : srsData.backward;
           })
-          .filter(el => !!el);
+          .filter(isExists);
         if (!examples.length && !articleMap[article.src]) {
           article["type"] = "$:/lls/tags/wordArticle";
           articleMap[article.src] = article;
@@ -81,8 +90,8 @@ Produces custom data for SRS learning session
             count++;
           });
       });
-    // console.warn("articleMap", Object.keys(articleMap))
-    // console.warn("articleMap", articleMap)
+    // console.debug("articleMap", Object.keys(articleMap))
+    // console.debug("articleMap", articleMap)
     if (count >= limit) {
       return Object.values(articleMap).slice(0, limit).sort(dueDateComparator);
 
@@ -91,16 +100,23 @@ Produces custom data for SRS learning session
     const rules = wiki.getTitlesWithTag("$:/lls/tags/rule");
     rules
       // .slice(0, 1)
-      // .map(el => { console.warn("rule 1", el); return el; })
+      // .map(el => { console.debug("rule 1", el, wiki.getTiddler(el).fields.brief); return el; })
       .map(rule => wiki.getSrsData(rule))
+      // .map(el => { console.debug("rule 2", el); return el; })
       .filter(itemFitsDirection)
+      // .map(el => { console.debug("rule 3", el); return el; })
       .map(deleteInappropriateDirection)
+      // .map(el => { console.debug("rule 4", el); return el; })
       .sort(bothDirectionsDueDateComparator)
+      // .map(el => { console.debug("rule 5", el); return el; })
       .map(toMinimalDirection)
-      // .map(el => { console.warn("rule 2", el); return el; })
+      // .map(el => { console.debug("rule 6", el); return el; })
+      .filter(isNewOrOverdue)
+      // .map(el => { console.debug("rule 7", el); return el; })
       .forEach(ruleEl => {
         return wiki.filterTitles("[tag[" + ruleEl.src + "]tag[$:/lls/tags/usageExample]]")
-          // .map(el => { console.warn("usage example for ", ruleEl.src, el); return el; })
+          // .map(el => { console.debug("usage example for ", ruleEl.src, el); return el; })
+          .filter(el => !articleMap[el])
           .map(ue => {
             const srsData = wiki.getSrsData(ue)
             return ruleEl.direction === "forward" ? srsData.forward : srsData.backward;
@@ -114,8 +130,8 @@ Produces custom data for SRS learning session
           });
       })
 
-    // console.warn("ruleMap", Object.keys(ruleMap))
-    // console.warn("ruleMap", ruleMap)
+    // console.debug("ruleMap", Object.keys(ruleMap))
+    // console.debug("ruleMap", ruleMap)
     return Object.values(articleMap).concat(Object.values(ruleMap).slice(0, limit - count)).sort(dueDateComparator);
   };
 

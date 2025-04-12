@@ -1,6 +1,14 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.7
+
+* new: log and display a detailed statistic for word articles, rules and usage examples
+* fix: exclude duplicate items from provided session data
+* fix: exclude from provided learning session scheduled rules which are in the future
+* improved: take new articles for provided learning session prior to overdue ones
+* improved: added the ability to delete orphan transcription tags from transcription group
+
 !! 0.2.6
 
 * changed: new learning session algorithm that considers both words and grammar rules

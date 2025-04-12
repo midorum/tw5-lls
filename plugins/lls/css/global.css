@@ -109,3 +109,19 @@ span.lls-icon-button svg {
 span.lls-form-section-caption {
   font-size: 28px;
 }
+
+.lls-statistic-table {
+  border-top: none;
+  border-bottom: none;
+}
+
+.lls-statistic-table th {
+  border-top: none;
+  border-bottom: none;
+}
+
+.lls-statistic-table td {
+  text-align: right;
+  border-top: none;
+  border-bottom: none;
+}
