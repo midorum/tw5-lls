@@ -42,6 +42,14 @@ Utility functions.
     return def;
   }
 
+  function parseJson(jsonString) {
+    try {
+      const o = JSON.parse(jsonString);
+      if (o && typeof o === "object") return o;
+    } catch (e) { }
+    return undefined;
+  };
+
   function parseWikiDate(d) {
     var value = $tw.utils.parseDate(d);
     if (value && $tw.utils.isDate(value) && value.toString() !== "Invalid Date") {
@@ -68,6 +76,20 @@ Utility functions.
       return arr[--i];
     });
   }
+
+  // Sequence generator function (commonly referred to as "range", cf. Python, Clojure, etc.)
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#sequence_generator_range
+  // Generate a sequence of numbers from 0 (inclusive) to 5 (exclusive), incrementing by 1
+  // range(0, 5, 1); => [0, 1, 2, 3, 4]
+  // Generate a sequence of numbers from 1 (inclusive) to 10 (exclusive), incrementing by 2
+  // range(1, 10, 2); => [1, 3, 5, 7, 9]
+  // Generate the Latin alphabet making use of it being ordered as a sequence
+  // range("A".charCodeAt(0), "Z".charCodeAt(0) + 1, 1).map((x) => String.fromCharCode(x),); => ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+  const range = (start, stop, step) =>
+    Array.from(
+      { length: Math.ceil((stop - start) / step) },
+      (_, i) => start + i * step,
+    );
 
   // Below are wiki-sensitive functions
   function getWikiUtils(wiki) {
@@ -122,12 +144,10 @@ Utility functions.
         if (!fields) throw new Error("fields parameter is required");
         check();
         lock();
-        if (tiddler.instance) {
-          wiki.addTiddler(new $tw.Tiddler(
-            tiddler.instance,
-            fields,
-            wiki.getModificationFields()));
-        }
+        wiki.addTiddler(new $tw.Tiddler(
+          tiddler.instance ? tiddler.instance : { title: tiddler.title },
+          fields,
+          wiki.getModificationFields()));
       };
 
       function listFields() {
@@ -242,12 +262,17 @@ Utility functions.
     trimToNull: trimToNull,
     trimToUndefined: trimToUndefined,
     parseInteger: parseInteger,
+    parseJson: parseJson,
     parseWikiDate: parseWikiDate,
     purgeArray: purgeArray,
     parseStringList: parseStringList,
     stringifyList: stringifyList,
     format: format,
+    range: range,
     getWikiUtils: getWikiUtils,
+    statistic: {
+      DAY_MS: 1000 * 60 * 60 * 24, D1: 1, D2: 2, D3: 3, W1: 7, W2: 14, M1: 30, M3: 91, M6: 183, Y1: 365
+    }
   };
 
 })();
