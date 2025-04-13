@@ -129,6 +129,47 @@ describe("The lls-pre-create-hook macro", () => {
         }, options)
     })
 
+    it("should not update log tiddlers if the previous record has made in the same day", () => {
+        const options = utils.setupWiki();
+        // consoleSpy.and.callThrough();
+        // consoleDebugSpy.and.callThrough();
+        const lastRecordDate = new Date(2000, 3, 3, 12, 5);
+        const lastRecordTime = lastRecordDate.getTime();
+        const lastAnswerTime = lastRecordTime + 1000;
+        options.widget.wiki.addTiddler({
+            title: tags.lastAnswerTime,
+            text: lastAnswerTime
+        });
+        options.widget.wiki.addTiddler({
+            title: tags.wordArticleStatisticLog,
+            text: lastRecordTime + ";some data"
+        });
+        options.widget.wiki.addTiddler({
+            title: tags.ruleStatisticLog,
+            text: lastRecordTime + ";some data"
+        });
+        options.widget.wiki.addTiddler({
+            title: tags.usageExampleStatisticLog,
+            text: lastRecordTime + ";some data"
+        });
+        preCreateHookMacro.run(options.wiki, {});
+        verifyLog({
+            title: tags.wordArticleStatisticLog,
+            records: 1,
+            time: lastRecordTime
+        }, options)
+        verifyLog({
+            title: tags.ruleStatisticLog,
+            records: 1,
+            time: lastRecordTime
+        }, options)
+        verifyLog({
+            title: tags.usageExampleStatisticLog,
+            records: 1,
+            time: lastRecordTime
+        }, options)
+    })
+
     function verifyLog(logData, options) {
         const logInstance = options.widget.wiki.getTiddler(logData.title);
         console.debug(logData.title, logInstance);

@@ -33,11 +33,26 @@ module-type: macro
   function logStatistic(log, tag, time, calculateStaticticMacro, wikiUtils) {
     const logTiddler = wikiUtils.withTiddler(log);
     const logContent = logTiddler.getTiddlerField("text");
+    const lastRecordTime = getLastRecordTime(logContent);
+    if (isSameDay(lastRecordTime, time)) return; // do not write extra log for the same day
     const statistic = calculateStaticticMacro.run("[tag[" + tag + "]]", time, wikiUtils.wiki);
     logTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({
       type: "text/plain",
       text: (logContent ? (logContent + "\n") : "") + statistic
     });
+  }
+
+  function getLastRecordTime(logContent) {
+    if (!logContent) return undefined;
+    const records = logContent.trim().split("\n");
+    const lastRecord = records.length ? records[records.length - 1] : undefined;
+    if (lastRecord) {
+      const delimiterIndex = lastRecord.indexOf(";");
+      if (delimiterIndex > -1) {
+        return utils.parseInteger(lastRecord.substring(0, delimiterIndex));
+      }
+    }
+    return undefined;
   }
 
   function isSameDay(timestamp1, timestamp2) {
