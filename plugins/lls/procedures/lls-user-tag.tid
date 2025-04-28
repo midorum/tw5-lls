@@ -14,7 +14,7 @@ type: text/vnd.tiddlywiki
 \procedure _removeTagAction()
 <$transclude
  $variable=<<removeTagAction>>
- ref=<<tagRef>>
+ tagRef=<<tagRef>>
 />
 \end _removeTagAction
 <$set 
@@ -303,6 +303,43 @@ $(ref)$_$(tagRef)$_value
  $tiddler="$:/core/images/delete-button"
 /></$button></$reveal>
 \end lls-user-tag-value-transclusion
+
+\procedure lls-user-tag-section(
+  ref,
+  addTagButtonText:"[add tag]"
+)
+\procedure add-tag-action()
+<$action-sendmessage
+ $message="tm-lls-attach-user-tag"
+ ref=<<ref>>
+ tagRef=<<_ref>>
+/>
+\end add-tag-action
+\procedure remove-tag-action(tagRef)
+<$action-confirm
+ $message="Do you wish to detach the tag? The additional description will not be affected."
+><$action-sendmessage
+ $message="tm-lls-detach-user-tag"
+ ref=<<ref>>
+ tagRef=<<tagRef>>
+/></$action-confirm>
+\end remove-tag-action
+<$transclude
+ $variable="lls-user-tag-list"
+ ref=<<ref>>
+ qualify=<<ref>>
+ removeTagAction="remove-tag-action"
+ tagValueTransclusion="lls-user-tag-value-transclusion"
+ $mode=inline
+/>
+<$transclude
+ $variable="lls-search-user-tag-link"
+ text=<<addTagButtonText>>
+ searchEntryAction=<<add-tag-action>>
+ qualify=<<ref>>
+ $mode=inline
+/>
+\end lls-user-tag-section
 
 <!---------------- usages ---------------------->
 
