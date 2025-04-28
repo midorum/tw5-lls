@@ -406,14 +406,14 @@ function createPartOfSpeech(title) {
     };
 }
 
-function createUserTag(title) {
+function createUserTag(title, focus) {
     if (!title) throw new Error("title is required");
     const context = llsContextCache.get();
     return {
         title: context.prefixes.userTag + title,
         name: title,
         description: title + "Description",
-        tags: [context.tags.userTag]
+        tags: [context.tags.userTag].concat(focus ? [context.tags.userFocus] : [])
     };
 }
 
