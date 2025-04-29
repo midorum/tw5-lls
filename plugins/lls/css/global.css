@@ -125,3 +125,7 @@ span.lls-icon-button svg {
   border-top: none;
   border-bottom: none;
 }
+
+.lls-user-focus.lls-tag-label {
+  background-color: rgb(252, 78, 240);
+}

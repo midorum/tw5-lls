@@ -24,8 +24,12 @@ type: text/vnd.tiddlywiki
  name=backgroundColor
  tiddler=<<palette>>
  index=background
+><$set
+ name=labelClass
+ filter="[<tagRef>tags[]compare:string:eq[$:/lls/tags/userFocus]then[lls-user-focus]else[]addsuffix[ tc-tag-label lls-tag-label]]"
+ select="0"
 ><span
- class="tc-tag-label lls-tag-label"
+ class=<<labelClass>>
  style=<<style>>
 ><$button
  class="lls-tag-button"
@@ -44,7 +48,7 @@ type: text/vnd.tiddlywiki
  style.fill=<<backgroundColor>>
  actions=<<_removeTagAction>>
 >{{$:/core/images/close-button}}</$button>
-</$list></span></$set></$set>
+</$list></span></$set></$set></$set>
 \end lls-tag-pill
 
 \procedure lls-tag-popup(
@@ -88,7 +92,8 @@ $:/state/popup/tag_$(tagName)$_$(qualify)$
  tagRef,
  removeTagAction,
  tagValueTransclusion,
- qualify
+ qualify,
+ tagViewFormLinkText:"[view items with this tag]"
 )
 \procedure popupTransclusion()
 <$transclude
@@ -97,7 +102,7 @@ $:/state/popup/tag_$(tagName)$_$(qualify)$
 /><$transclude
  $variable="open-custom-tag-view-form-link"
  _ref=<<tagRef>>
- _text="[other words with this tag]"
+ _text=<<tagViewFormLinkText>>
 /><$list
  filter="[<tagValueTransclusion>!compare:string:eq[]]"
 ><hr><$transclude
