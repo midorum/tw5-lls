@@ -24,24 +24,6 @@ state: $:/lls/state/wordEditor
 \define getNewSpellingText() {{$(newSpelling)$!!text}}
 \define getWordSpellingText() {{$(word)$!!text}}
 
-\define add-tag-to-article-action()
-<$action-sendmessage
- $message="tm-lls-attach-user-tag"
- ref=<<wordArticle>>
- tagRef=<<_ref>>
-/>
-\end add-tag-to-article-action
-
-\define remove-tag-form-article-action(ref)
-<$action-confirm
- $message="Do you wish to detach the tag from the word's meaning? The additional description will not be affected."
-><$action-sendmessage
- $message="tm-lls-detach-user-tag"
- ref=<<wordArticle>>
- tagRef="$ref$"
-/></$action-confirm>
-\end remove-tag-form-article-action
-
 \define detachTranscriptionGroup()
 <$action-confirm
  $message="Do you wish to detach the transcription(s) from the word's meaning?"
@@ -530,24 +512,6 @@ synonymsInfoMode-<<wordArticle>>
 /></$set></$list></$wikify>
 \end synonymsInfo
 
-\define articleTagsSection()
-<$transclude
- $variable="lls-user-tag-list"
- ref=<<wordArticle>>
- qualify=<<wordArticle>>
- removeTagAction="remove-tag-form-article-action"
- tagValueTransclusion="lls-user-tag-value-transclusion"
- $mode=inline
-/>
-<$transclude
- $variable="lls-search-user-tag-link"
- text="[add tag]"
- searchEntryAction=<<add-tag-to-article-action>>
- qualify=<<wordArticle>>
- $mode=inline
-/>
-\end articleTagsSection
-
 \define wordArticleNotesSection()
 <!-- blank lines are necessary to keep notes formatting -->
 <$list
@@ -573,7 +537,8 @@ synonymsInfoMode-<<wordArticle>>
  stateIndex="editingMeaning"
  text={{!!title}}
 ><$transclude
- $variable="articleTagsSection"
+ $variable="lls-user-tag-section"
+ ref=<<wordArticle>>
  $mode=block
 /><$set
  name=synonymsGroup

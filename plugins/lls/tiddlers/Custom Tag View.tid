@@ -17,16 +17,22 @@ state: $:/lls/state/customTagView
 \end userTagInfoSection
 
 \procedure linkedEntitiesSection()
+<h3>Tagged Words</h3>
 <$list
- filter="[tag<ref>]"
- emptyMessage="There are not any words tagged with this tag"
-><$set 
- name=var 
- filter="[<currentTiddler>tag[$:/lls/tags/wordArticle]then[wordArticleEntry]]"
+ filter="[tag<ref>tag[$:/lls/tags/wordArticle]]"
 ><$transclude
- $variable=<<var>>
+ $variable="wordArticleEntry"
  _ref=<<currentTiddler>>
-/></$set></$list>
+ $mode=block
+/></$list>
+<h3>Tagged Usage Examples</h3>
+<$list
+ filter="[tag<ref>tag[$:/lls/tags/usageExample]]"
+><$transclude
+ $variable="usageExampleEntry"
+ _ref=<<currentTiddler>>
+ $mode=block
+/></$list>
 \end linkedEntitiesSection
 
 \procedure wordArticleEntry(_ref)
@@ -46,6 +52,17 @@ state: $:/lls/state/customTagView
 /></$list>
 \end wordArticleEntry
 
+\procedure usageExampleEntry(_ref)
+<$transclude
+ $tiddler=<<_ref>>
+ $field="original"
+/><$transclude
+ $variable="openExampleViewFormLink"
+ ref=<<_ref>>
+ text="[view]"
+/>
+\end usageExampleEntry
+
 <!----------------- content --------------------------->
 
 <$vars this=<<currentTiddler>>>
@@ -61,8 +78,6 @@ state: $:/lls/state/customTagView
  $variable="userTagInfoSection"
  someParameter="parameter value"
 />
-
-<h3>Tagged Words and Usage Examples</h3>
 
 <$transclude
  $variable="linkedEntitiesSection"

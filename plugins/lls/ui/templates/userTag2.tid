@@ -2,7 +2,7 @@ created: 20240503165424379
 modified: 20240719054627123
 name: test tag name
 tags: 
-title: $:/plugins/midorum/lls/ui/templates/userTag2
+title: $:/plugins/midorum/lls/ui/templates/userTag2-deprecated_250429
 type: text/vnd.tiddlywiki
 
 \define lls-tag-pill2(tagName, popupTemplate, removeTagAction)

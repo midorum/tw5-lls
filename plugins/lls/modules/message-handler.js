@@ -2019,4 +2019,46 @@ Handling lls messages.
     ruleInstance.doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler([parentRule]);
   }
 
+  // tested
+  exports.attachUserFocus = function (ref, idle, widget) {
+    const alertMsg = "%1 cannot be empty";
+    const logger = new $tw.utils.Logger("attachUserFocus");
+    const context = {
+      prefixes: cache.getPrefixes([]),
+      tags: cache.getTags([]),
+      wikiUtils: utils.getWikiUtils(widget.wiki)
+    };
+    ref = utils.trimToUndefined(ref);
+    if (!ref) {
+      logger.alert(utils.format(alertMsg, "ref"));
+      return;
+    }
+    if (idle) {
+      console.log("attachUserFocus", idle, ref);
+      return;
+    }
+    context.wikiUtils.withTiddler(ref).doNotInvokeSequentiallyOnSameTiddler.addTagsToTiddler(context.tags.userFocus);
+  }
+
+  // not tested
+  exports.detachUserFocus = function (ref, idle, widget) {
+    const alertMsg = "%1 cannot be empty";
+    const logger = new $tw.utils.Logger("detachUserFocus");
+    const context = {
+      prefixes: cache.getPrefixes([]),
+      tags: cache.getTags([]),
+      wikiUtils: utils.getWikiUtils(widget.wiki)
+    };
+    ref = utils.trimToUndefined(ref);
+    if (!ref) {
+      logger.alert(utils.format(alertMsg, "ref"));
+      return;
+    }
+    if (idle) {
+      console.log("detachUserFocus", idle, ref);
+      return;
+    }
+    context.wikiUtils.withTiddler(ref).doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler(context.tags.userFocus);
+  }
+
 })();
