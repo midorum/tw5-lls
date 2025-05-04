@@ -56,10 +56,6 @@ TiddlyWiki version: ''<<version>>''
 * $:/plugins/midorum/lls/macros/lls-random-int.js
 * $:/plugins/midorum/lls/css/global.css
 * $:/plugins/midorum/lls/ui/sidebar/quicklinks
-* $:/plugins/midorum/lls/ui/templates/userTag
-* $:/plugins/midorum/lls/ui/templates/userTag2
-* $:/plugins/midorum/lls/ui/templates/userTag3
-* $:/plugins/midorum/lls/ui/templates/userTag4
 * $:/plugins/midorum/lls/ui/templates/wordArticleForwardQuestionCardTemplate
 * $:/plugins/midorum/lls/ui/templates/wordArticleForwardAnswerCardTemplate
 * $:/plugins/midorum/lls/ui/templates/wordArticleBackwardQuestionCardTemplate

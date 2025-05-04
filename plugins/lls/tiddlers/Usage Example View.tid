@@ -3,6 +3,7 @@ type: text/vnd.tiddlywiki
 state: $:/lls/state/usageExampleView
 
 \import $:/plugins/midorum/lls/procedures/srs-info
+\import $:/plugins/midorum/lls/procedures/lls-user-tag
 
 \define usageExampleViewState() $:/temp/lls/state/usageExampleView
 \define getExampleTiddlerField(field) {{$(ref)$!!$field$}}
@@ -395,6 +396,11 @@ We have word <$transclude $variable="openWordEditorFormLink" ref={{!!text}} text
 
 !! Usage Example
 <<exampleTable>>
+
+<$transclude
+ $variable="lls-user-tag-section"
+ ref=<<ref>>
+/>
 
 !! Notes
 <<notesTable>>

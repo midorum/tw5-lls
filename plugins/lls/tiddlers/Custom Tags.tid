@@ -5,6 +5,7 @@ title: Custom Tags
 type: text/vnd.tiddlywiki
 state: $:/lls/state/customTags
 
+\import $:/plugins/midorum/lls/procedures/lls-user-tag
 \parameters (
  state:"$:/temp/lls/state/customTagsForm",
  tagNameEditIndex:"tagNameEdit",
@@ -62,15 +63,38 @@ state: $:/lls/state/customTags
 >Create</$button></div></p>
 \end newUserTagBlock
 
+\procedure focus()
+<$action-sendmessage 
+ $message="tm-lls-attach-user-focus" 
+ ref=<<currentTiddler>>
+/>
+\end focus
+
+\procedure userFocusBlock()
+<$transclude
+ $variable="list-tagged-draggable"
+ tag="$:/lls/tags/userTag"
+ subFilter="tag[$:/lls/tags/userFocus]"
+ itemTemplate="$:/plugins/midorum/lls/ui/templates/userTagFocusedDraggable"
+ elementTag="p"
+><$fill
+ $name=button
+></$fill>
+</$transclude>
+\end userFocusBlock
+
 \procedure userTagListBlock()
 <$list
- filter="[!has[draft.of]tag[$:/lls/tags/userTag]sort[name]]"
-><div><$transclude
- $variable="open-custom-tag-view-form-link"
- _ref=<<currentTiddler>>
+ filter="[!has[draft.of]tag[$:/lls/tags/userTag]!tag[$:/lls/tags/userFocus]sort[name]]"
+><p><$transclude
+    $variable="lls-user-tag-popup" 
+    tagRef=<<currentTiddler>>
 /> - <$view
- field="text"
-/></div></$list>
+    field="text"
+/> <$button
+ class="tc-btn-invisible tc-tiddlylink"
+ actions=<<focus>>
+>[focus]</$button></p></$list>
 \end userTagListBlock
 
 <!----------------- content --------------------->
@@ -83,7 +107,9 @@ state: $:/lls/state/customTags
  field=<<presetTagNameField>>
 ><$transclude
  $variable="newUserTagBlock"
-/><hr><$transclude
+/><h2>Focused Tags</h2><$transclude
+ $variable="userFocusBlock"
+/><h2>Other Tags</h2><$transclude
  $variable="userTagListBlock"
 />
 </$set></$set>

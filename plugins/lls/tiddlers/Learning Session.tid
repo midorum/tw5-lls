@@ -6,7 +6,7 @@ type: text/vnd.tiddlywiki
  listProvider="lls-session-data-provider"
  limit=100
  resetAfter=-1
- newFirst=true
+ order=provided
  directions="forward backward both"
  directionButtons="[[Practice Understanding]] [[Practice Applying]] [[Practice Both Understanding And Applying]]" 
  preCreateHook="lls-pre-create-hook"

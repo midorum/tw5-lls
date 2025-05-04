@@ -1,6 +1,13 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.8
+
+* attach user tags to usage examples
+* using user custom tags to mark word articles and usage examples as focused (have a special meaning for user)
+** such word articles and usage examples have the precedence when orginizing the learning session
+* improved: prevent log statistic when the last answer time is today
+
 !! 0.2.7
 
 * new: log and display a detailed statistic for word articles, rules and usage examples
