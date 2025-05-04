@@ -1,0 +1,23 @@
+title: $:/plugins/midorum/lls/ui/templates/userTagFocusedDraggable
+type: text/vnd.tiddlywiki
+
+\import $:/plugins/midorum/lls/procedures/lls-user-tag
+
+\procedure distract()
+<$action-sendmessage 
+ $message="tm-lls-detach-user-focus" 
+ ref=<<currentTiddler>>
+/>
+\end distract
+
+<$draggable
+    tiddler=<<currentTiddler>>
+><$transclude
+    $variable="lls-user-tag-popup" 
+    tagRef=<<currentTiddler>>
+/> - <$view
+    field="text"
+/> <$button
+    class="tc-btn-invisible tc-tiddlylink"
+    actions=<<distract>>
+>[distract]</$button></$draggable>

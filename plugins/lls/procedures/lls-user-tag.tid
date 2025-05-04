@@ -14,7 +14,7 @@ type: text/vnd.tiddlywiki
 \procedure _removeTagAction()
 <$transclude
  $variable=<<removeTagAction>>
- ref=<<tagRef>>
+ tagRef=<<tagRef>>
 />
 \end _removeTagAction
 <$set 
@@ -24,8 +24,12 @@ type: text/vnd.tiddlywiki
  name=backgroundColor
  tiddler=<<palette>>
  index=background
+><$set
+ name=labelClass
+ filter="[<tagRef>tags[]compare:string:eq[$:/lls/tags/userFocus]then[lls-user-focus]else[]addsuffix[ tc-tag-label lls-tag-label]]"
+ select="0"
 ><span
- class="tc-tag-label lls-tag-label"
+ class=<<labelClass>>
  style=<<style>>
 ><$button
  class="lls-tag-button"
@@ -44,7 +48,7 @@ type: text/vnd.tiddlywiki
  style.fill=<<backgroundColor>>
  actions=<<_removeTagAction>>
 >{{$:/core/images/close-button}}</$button>
-</$list></span></$set></$set>
+</$list></span></$set></$set></$set>
 \end lls-tag-pill
 
 \procedure lls-tag-popup(
@@ -88,7 +92,8 @@ $:/state/popup/tag_$(tagName)$_$(qualify)$
  tagRef,
  removeTagAction,
  tagValueTransclusion,
- qualify
+ qualify,
+ tagViewFormLinkText:"[view items with this tag]"
 )
 \procedure popupTransclusion()
 <$transclude
@@ -97,7 +102,7 @@ $:/state/popup/tag_$(tagName)$_$(qualify)$
 /><$transclude
  $variable="open-custom-tag-view-form-link"
  _ref=<<tagRef>>
- _text="[other words with this tag]"
+ _text=<<tagViewFormLinkText>>
 /><$list
  filter="[<tagValueTransclusion>!compare:string:eq[]]"
 ><hr><$transclude
@@ -172,18 +177,22 @@ $:/state/popup/tag_$(tagName)$_$(qualify)$
 \end popupTransclusion
 \procedure searchEntryTransclusion(_ref)
 <$set
+ name=buttonClass
+ filter="[<_ref>tags[]compare:string:eq[$:/lls/tags/userFocus]then[lls-user-focus]else[lls-user-tag]addsuffix[ tc-btn-invisible tc-tiddlylink]]"
+ select="0"
+><$set
  name=tagName
  tiddler=<<_ref>>
  field="name"
 ><$button
- class="tc-btn-invisible tc-tiddlylink"
+ class=<<buttonClass>>
  actions=<<searchEntryAction>>
-><<no-wrap-text "$(tagName)$">></$button></$set>
+><<no-wrap-text "$(tagName)$">></$button></$set></$set>
 \end searchEntryTransclusion
 \define tagStyle()
-background-color: transparent;
-border: solid thin $(color)$;
-color:$(color)$;
+ background-color: transparent;
+ border: solid thin $(color)$;
+ color:$(color)$;
 \end tagStyle
 <$set 
  name=palette 
@@ -303,6 +312,43 @@ $(ref)$_$(tagRef)$_value
  $tiddler="$:/core/images/delete-button"
 /></$button></$reveal>
 \end lls-user-tag-value-transclusion
+
+\procedure lls-user-tag-section(
+  ref,
+  addTagButtonText:"[add tag]"
+)
+\procedure add-tag-action()
+<$action-sendmessage
+ $message="tm-lls-attach-user-tag"
+ ref=<<ref>>
+ tagRef=<<_ref>>
+/>
+\end add-tag-action
+\procedure remove-tag-action(tagRef)
+<$action-confirm
+ $message="Do you wish to detach the tag? The additional description will not be affected."
+><$action-sendmessage
+ $message="tm-lls-detach-user-tag"
+ ref=<<ref>>
+ tagRef=<<tagRef>>
+/></$action-confirm>
+\end remove-tag-action
+<$transclude
+ $variable="lls-user-tag-list"
+ ref=<<ref>>
+ qualify=<<ref>>
+ removeTagAction="remove-tag-action"
+ tagValueTransclusion="lls-user-tag-value-transclusion"
+ $mode=inline
+/>
+<$transclude
+ $variable="lls-search-user-tag-link"
+ text=<<addTagButtonText>>
+ searchEntryAction=<<add-tag-action>>
+ qualify=<<ref>>
+ $mode=inline
+/>
+\end lls-user-tag-section
 
 <!---------------- usages ---------------------->
 

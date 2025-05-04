@@ -238,6 +238,18 @@ Adds listeners for lls messages.
       messageHandler.detachParentRule(params.rule, params.parentRule, params.idle, widget);
     });
 
+    $tw.rootWidget.addEventListener("tm-lls-attach-user-focus", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.attachUserFocus(params.ref, params.idle, widget);
+    });
+
+    $tw.rootWidget.addEventListener("tm-lls-detach-user-focus", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.detachUserFocus(params.ref, params.idle, widget);
+    });
+
 
   };
 
