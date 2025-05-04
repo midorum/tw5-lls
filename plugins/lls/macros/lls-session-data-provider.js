@@ -32,47 +32,61 @@ Produces custom data for SRS learning session
         o2.backward ? (o2.backward.due || wiki.SRS_BASE_TIME) : Number.MAX_SAFE_INTEGER);
       return due1 - due2;
     };
-    const dueDateComparator = (o1, o2) => (o1.due || wiki.SRS_BASE_TIME) - (o2.due || wiki.SRS_BASE_TIME);
+    const focusedThenNewThenOverdue = (o1, o2) => (o1.focused && !o2.focused) ? -1
+      : (!o1.focused && o2.focused) ? 1
+        : (o1.due || wiki.SRS_BASE_TIME) - (o2.due || wiki.SRS_BASE_TIME);
     const isNewOrOverdue = el => !el.due || el.due < time;
     const isExists = el => !!el;
+    const isFocused = title => (wiki.getTiddler(title).fields.tags || []).some(tag => focusedTags.includes(tag));
     const toMinimalDirection = el => {
-      if (!el.forward) return el.backward;
-      if (!el.backward) return el.forward;
-      const fd = el.forward.due || wiki.SRS_BASE_TIME;
-      const bd = el.backward.due || wiki.SRS_BASE_TIME;
-      return fd <= bd ? el.forward : el.backward;
+      const result = !el.forward ? el.backward
+        : !el.backward ? el.forward
+          : (el.forward.due || wiki.SRS_BASE_TIME) <= (el.backward.due || wiki.SRS_BASE_TIME) ? el.forward
+            : el.backward;
+      result.focused = el.focused;
+      return result;
     };
     const articleMap = {};
     var count = 0;
+    // console.debug("wiki", wiki)
+    const focusedTags = wiki.filterTitles("[tag[$:/lls/tags/userTag]tag[$:/lls/tags/userFocus]]");
+    // console.debug("focusedTags", focusedTags);
     wiki.getTitlesWithTag("$:/lls/tags/word")
       // .slice(0, 1)
       // .map(el => {console.debug("word", el);return el;})
       .map(word => wiki.filterTitles("[tag[" + word + "]tag[$:/lls/tags/wordArticle]]")
         // .map(el => {console.debug("wa", el);return el;})
-        .map(wa => wiki.getSrsData(wa))
-        // .map(el => {console.debug("wa srs data", el);return el;})
+        .map(wa => {
+          const srsData = wiki.getSrsData(wa);
+          srsData.focused = isFocused(wa);
+          return srsData;
+        })
+        // .map(el => { console.debug("wa srs data", el); return el; })
         .filter(itemFitsDirection)
         // .map(el => {console.debug("wa fits direction", el);return el;})
         .map(deleteInappropriateDirection)
         // .map(el => {console.debug("wa apropriate directions", el);return el;})
         .map(toMinimalDirection)
-        // .map(el => {console.debug("wa minimal direction", el);return el;})
+        // .map(el => { console.debug("wa minimal direction", el); return el; })
         .filter(isNewOrOverdue)
         // .map(el => {console.debug("wa is new or overdue", el);return el;})
-        .sort(dueDateComparator)
+        .sort(focusedThenNewThenOverdue)
+        // .map(el => {console.debug("wa sorted", el);return el;})
         .at(0))
       // .map(el => { console.debug("selected wa", el); return el; })
       .filter(isExists)
-      .sort(dueDateComparator)
-      // .map(el => { console.debug("wa after sorting", el); return el; })
+      .sort(focusedThenNewThenOverdue)
+      // .map(el => { console.debug("selected wa after sorting", el); return el; })
       .slice(0, limit)
-      // .map(el => { console.debug("wa after limit", el); return el; })
+      // .map(el => { console.debug("selected wa after limit", el); return el; })
       .forEach(article => {
         const examples = wiki.filterTitles("[tag[" + article.src + "]tag[$:/lls/tags/usageExample]]")
           // .map(el => { console.debug("usage example for ", article.src, el); return el; })
           .map(ue => {
             const srsData = wiki.getSrsData(ue)
-            return article.direction === "forward" ? srsData.forward : srsData.backward;
+            const result = article.direction === "forward" ? srsData.forward : srsData.backward;
+            if (result) result.focused = article.focused || isFocused(ue);
+            return result;
           })
           .filter(isExists);
         if (!examples.length && !articleMap[article.src]) {
@@ -82,7 +96,7 @@ Produces custom data for SRS learning session
           return;
         }
         examples.filter(el => !articleMap[el.src])
-          .sort(dueDateComparator)
+          .sort(focusedThenNewThenOverdue)
           .slice(0, 1)
           .forEach(el => {
             el["type"] = "$:/lls/tags/usageExample";
@@ -92,10 +106,8 @@ Produces custom data for SRS learning session
       });
     // console.debug("articleMap", Object.keys(articleMap))
     // console.debug("articleMap", articleMap)
-    if (count >= limit) {
-      return Object.values(articleMap).slice(0, limit).sort(dueDateComparator);
-
-    }
+    if (count >= limit) return Object.values(articleMap).slice(0, limit).sort(focusedThenNewThenOverdue);
+    // take examples from rules if the current count is insufficient
     const ruleMap = {};
     const rules = wiki.getTitlesWithTag("$:/lls/tags/rule");
     rules
@@ -119,20 +131,21 @@ Produces custom data for SRS learning session
           .filter(el => !articleMap[el])
           .map(ue => {
             const srsData = wiki.getSrsData(ue)
-            return ruleEl.direction === "forward" ? srsData.forward : srsData.backward;
+            const result = ruleEl.direction === "forward" ? srsData.forward : srsData.backward;
+            if (result) result.focused = isFocused(ue);
+            return result;
           })
           .filter(el => !!el && !ruleMap[el.src])
-          .sort(dueDateComparator)
+          .sort(focusedThenNewThenOverdue)
           .slice(0, 1)
           .forEach(el => {
             el["type"] = "$:/lls/tags/usageExample";
             ruleMap[el.src] = el;
           });
       })
-
     // console.debug("ruleMap", Object.keys(ruleMap))
     // console.debug("ruleMap", ruleMap)
-    return Object.values(articleMap).concat(Object.values(ruleMap).slice(0, limit - count)).sort(dueDateComparator);
+    return Object.values(articleMap).concat(Object.values(ruleMap).slice(0, limit - count)).sort(focusedThenNewThenOverdue);
   };
 
 })();

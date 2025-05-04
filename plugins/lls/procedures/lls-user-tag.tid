@@ -177,18 +177,22 @@ $:/state/popup/tag_$(tagName)$_$(qualify)$
 \end popupTransclusion
 \procedure searchEntryTransclusion(_ref)
 <$set
+ name=buttonClass
+ filter="[<_ref>tags[]compare:string:eq[$:/lls/tags/userFocus]then[lls-user-focus]else[lls-user-tag]addsuffix[ tc-btn-invisible tc-tiddlylink]]"
+ select="0"
+><$set
  name=tagName
  tiddler=<<_ref>>
  field="name"
 ><$button
- class="tc-btn-invisible tc-tiddlylink"
+ class=<<buttonClass>>
  actions=<<searchEntryAction>>
-><<no-wrap-text "$(tagName)$">></$button></$set>
+><<no-wrap-text "$(tagName)$">></$button></$set></$set>
 \end searchEntryTransclusion
 \define tagStyle()
-background-color: transparent;
-border: solid thin $(color)$;
-color:$(color)$;
+ background-color: transparent;
+ border: solid thin $(color)$;
+ color:$(color)$;
 \end tagStyle
 <$set 
  name=palette 

@@ -22,6 +22,8 @@ describe("The lls-session-data-provider macro", () => {
     })
 
     it("should select usage examples for scheduled word articles", () => {
+        // consoleDebugSpy.and.callThrough();
+        // consoleSpy.and.callThrough();
         const options = utils.setupWiki();
         const proxyWiki = utils.getSrsProxyWiki(options.wiki);
         const direction = "forward";
@@ -29,8 +31,6 @@ describe("The lls-session-data-provider macro", () => {
         const time = new Date().getTime();
         const overdueTime = new Date().getTime() - offset_24h;
         const inFutureTime = new Date().getTime() + offset_24h;
-        // consoleDebugSpy.and.callThrough();
-        // consoleSpy.and.callThrough();
         const wa1 = options.push.wordArticle("wa1", {// should be taken as an article
             scheduledForward: {
                 due: overdueTime
@@ -97,14 +97,14 @@ describe("The lls-session-data-provider macro", () => {
     })
 
     it("should select new word articles prior to overdue ones", () => {
+        // consoleDebugSpy.and.callThrough();
+        // consoleSpy.and.callThrough();
         const options = utils.setupWiki();
         const proxyWiki = utils.getSrsProxyWiki(options.wiki);
         const direction = "forward";
         const limit = 4;
         const time = new Date().getTime();
         const overdueTime = new Date().getTime() - offset_24h;
-        // consoleDebugSpy.and.callThrough();
-        // consoleSpy.and.callThrough();
         const wag1 = options.push.wordArticleGroup("wag1", {
             wag: [
                 {
@@ -160,6 +160,163 @@ describe("The lls-session-data-provider macro", () => {
         expect(srcs.includes(wag5.wordArticle.title)).toBeTruthy();
         expect(srcs.includes(ue2.usageExample.title)).toBeTruthy();
         expect(srcs.includes(ue4.usageExample.title)).toBeTruthy();
+    })
+
+    it("should select focused word articles prior to ordinary ones", () => {
+        // consoleDebugSpy.and.callThrough();
+        // consoleSpy.and.callThrough();
+        const options = utils.setupWiki();
+        const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+        const direction = "forward";
+        const limit = 100;
+        const time = new Date().getTime();
+        const overdueTime = new Date().getTime() - offset_24h;
+        const inFutureTime = new Date().getTime() + offset_24h;
+        const ordinaryTag = options.push.userTag("ordinary_tag");
+        const focusedTag = options.push.userTag("focused_tag", { focus: true });
+        const withoutExamples = options.push.wordArticleGroup("without_examples", {
+            wag: [
+                {// should not be taken despite it has more overdue tme
+                    title: "ordinary",
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime - offset_24h
+                    }
+                },
+                {// should be taken as an article because it has the focused tag
+                    title: "focused",
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                }
+            ]
+        });
+        const ordinaryNewWithExample = options.push.wordArticle("ordinary_new_with_example", {// should be taken as an example
+            scheduledForward: {}
+        });
+        const focusedInFuture = options.push.wordArticle("focused_in_future", {// should not be taken because it isn't overdue despite it is focused
+            tags: [focusedTag.userTag.title],
+            scheduledForward: {
+                due: inFutureTime
+            }
+        });
+        const focusedOverdue = options.push.wordArticle("focused_overdue", {// should be taken as an example
+            tags: [focusedTag.userTag.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const ordinaryWithFocusedExample = options.push.wordArticle("ordinary_with_focused_example", {// should be taken as an example
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const focusedWithOrdinaryExample = options.push.wordArticle("focused_with_ordinary_example", {// should be taken as an example
+            tags: [focusedTag.userTag.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const rule1 = options.push.rule("rule1", {// should not be taken because it does not have any usage example
+            scheduledForward: {}
+        });
+        const rule2 = options.push.rule("rule2", {// should be taken as an example ue2
+            scheduledForward: {}
+        });
+        const rule5 = options.push.rule("rule5", {// should not be taken because it isn't overdue
+            scheduledForward: {
+                due: inFutureTime
+            }
+        });
+        const rule6 = options.push.rule("rule6", {// should be taken as an focused example
+            scheduledForward: {}
+        });
+        const ordinaryNewUsageExample = options.push.usageExample("ordinary_new_usage_example", {// should be taken for ordinaryNewWithExample and rule2
+            tags: [ordinaryNewWithExample.wordArticle.title, rule2.rule.title],
+            scheduledForward: {}
+        });
+        const ue3 = options.push.usageExample("ue3", {// should not be taken because the linked article isn't overdue
+            tags: [focusedInFuture.wordArticle.title, focusedTag.userTag.title],
+            scheduledForward: {}
+        });
+        const focusedOverdueUsageExampleForFocusedArticle = options.push.usageExample("focused_overdue_usage_example_for_focused_article", {
+            tags: [focusedOverdue.wordArticle.title, focusedTag.userTag.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const focusedNewUsageExampleForFocusedArticle = options.push.usageExample("focused_new_usage_example_for_focused_article", {
+            tags: [focusedOverdue.wordArticle.title, focusedTag.userTag.title],
+            scheduledForward: {}
+        });
+        const ordinaryOverdueUsageExampleForFocusedArticle = options.push.usageExample("ordinary_overdue_usage_example_for_focused_article", {
+            tags: [focusedOverdue.wordArticle.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const focusedUsageExampleForOrdinaryArticle = options.push.usageExample("focused_usage_example_for_ordinary_article", {// should be taken because the linked article is overdue
+            tags: [ordinaryWithFocusedExample.wordArticle.title, focusedTag.userTag.title],
+            scheduledForward: {
+                due: inFutureTime
+            }
+        });
+        const ordinaryUsageExampleForOrdinaryArticle = options.push.usageExample("ordinary_usage_example_for_ordinary_article", {// should be taken because the linked article is overdue
+            tags: [ordinaryWithFocusedExample.wordArticle.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const ordinaryUsageExampleForFocusedArticle = options.push.usageExample("ordinary_usage_example_for_focused_article", {// should be taken because the linked article is focused and overdue
+            tags: [focusedWithOrdinaryExample.wordArticle.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const ue5 = options.push.usageExample("ue5", {// should not be taken because the linked rule isn't overdue
+            tags: [rule5.rule.title],
+            scheduledForward: {}
+        });
+        const rule6OrdinaryExample = options.push.usageExample("rule6_ordinary_example", {// should not be taken because a focused example exists
+            tags: [rule6.rule.title],
+            scheduledForward: {
+                due: overdueTime
+            }
+        });
+        const rule6FocusedExample = options.push.usageExample("rule6_focused_example", {// should be taken
+            tags: [rule6.rule.title, focusedTag.userTag.title],
+            scheduledForward: {}
+        });
+        const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+        console.debug("data", data)
+        expect(Array.isArray(data)).toBeTruthy();
+        expect(data.length).toEqual(6);
+        const srcs = data.map(el => el.src);
+        expect(srcs.includes(withoutExamples.wag["ordinary"].title)).toBeFalsy();
+        expect(srcs.includes(withoutExamples.wag["focused"].title)).toBeTruthy();
+        expect(srcs.includes(ordinaryNewWithExample.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(focusedInFuture.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(ordinaryWithFocusedExample.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(rule1.rule.title)).toBeFalsy();
+        expect(srcs.includes(rule2.rule.title)).toBeFalsy();
+        expect(srcs.includes(rule5.rule.title)).toBeFalsy();
+        expect(srcs.includes(ordinaryNewUsageExample.usageExample.title)).toBeTruthy();
+        expect(srcs.indexOf(withoutExamples.wag["focused"].title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
+        expect(srcs.includes(ue3.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(focusedNewUsageExampleForFocusedArticle.usageExample.title)).toBeTruthy();
+        expect(srcs.includes(focusedOverdueUsageExampleForFocusedArticle.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(ordinaryOverdueUsageExampleForFocusedArticle.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(focusedUsageExampleForOrdinaryArticle.usageExample.title)).toBeTruthy();
+        expect(srcs.includes(ordinaryUsageExampleForOrdinaryArticle.usageExample.title)).toBeFalsy();
+        expect(srcs.indexOf(focusedUsageExampleForOrdinaryArticle.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
+        expect(srcs.includes(ordinaryUsageExampleForFocusedArticle.usageExample.title)).toBeTruthy();
+        expect(srcs.indexOf(ordinaryUsageExampleForFocusedArticle.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
+        expect(srcs.includes(ue5.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(rule6OrdinaryExample.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(rule6FocusedExample.usageExample.title)).toBeTruthy();
+        expect(srcs.indexOf(rule6FocusedExample.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
+
     })
 
 });
