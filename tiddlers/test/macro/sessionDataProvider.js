@@ -21,6 +21,2246 @@ describe("The lls-session-data-provider macro", () => {
         expect(sessionDataProvider).toBeDefined();
     })
 
+
+    describe("", () => {
+
+        it("should select a word article as word article"
+            + " when it is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeTruthy();
+            })
+
+        it("should select a word article as word article"
+            + " when it is focused"
+            + " and its next check time is missed (new)"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeTruthy();
+            })
+
+        it("should select a word article as word article"
+            + " when it is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeTruthy();
+            })
+
+        it("should select a word article as word article"
+            + " when it is focused"
+            + " and its next check time is overdue"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeTruthy();
+            })
+
+        it("should not select a word article"
+            + " when it is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+            })
+
+        it("should not select a word article"
+            + " when it is focused"
+            + " and its next check time is in the future"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+            })
+
+    });
+
+
+    describe("", () => {
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should not select a word article"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should not select a word article"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should not select a word article"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+        it("should not select a word article"
+            + " when the article is ordinary (not focused)"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a word article as usage example"
+            + " when the article is focused"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should not select a word article"
+            + " when the article is focused"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+        it("should not select a word article"
+            + " when the article is focused"
+            + " and its next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const wordArticle = options.push.wordArticle("wordArticle", {
+                    tags: [focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [wordArticle.wordArticle.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(wordArticle.wordArticle.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+    });
+
+
+    describe("", () => {
+
+        it("should not select a grammar rule"
+            + " when its next check time is missed (new)"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+            })
+
+        it("should not select a grammar rule"
+            + " when its next check time is overdue"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+            })
+
+        it("should not select a grammar rule"
+            + " when its next check time is in the future"
+            + " and it has not any usage example", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is missed (new)"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {}
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is overdue"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+    });
+
+    describe("", () => {
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is missed (new)", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {}
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should select a grammar rule as usage example"
+            + " when the rule's next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is overdue", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: overdueTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(1);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeTruthy();
+            })
+
+        it("should not select a grammar rule"
+            + " when the rule's next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is ordinary (not focused)"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, ordinaryTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+        it("should not select a grammar rule"
+            + " when the rule's next check time is in the future"
+            + " and it has a usage example"
+            + " and the usage example is focused"
+            + " and its next check time is in the future", () => {
+                // consoleDebugSpy.and.callThrough();
+                // consoleSpy.and.callThrough();
+                const options = utils.setupWiki();
+                const proxyWiki = utils.getSrsProxyWiki(options.wiki);
+                const direction = "forward";
+                const limit = 100;
+                const time = new Date().getTime();
+                const overdueTime = new Date().getTime() - offset_24h;
+                const inFutureTime = new Date().getTime() + offset_24h;
+                const ordinaryTag = options.push.userTag("ordinary_tag");
+                const focusedTag = options.push.userTag("focused_tag", { focus: true });
+                const grammarRule = options.push.rule("grammarRule", {
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const usageExample = options.push.usageExample("usageExample", {
+                    tags: [grammarRule.rule.title, focusedTag.userTag.title],
+                    scheduledForward: {
+                        due: inFutureTime
+                    }
+                });
+                const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+                console.debug("data", data)
+                expect(Array.isArray(data)).toBeTruthy();
+                expect(data.length).toEqual(0);
+                const srcs = data.map(el => el.src);
+                expect(srcs.includes(grammarRule.rule.title)).toBeFalsy();
+                expect(srcs.includes(usageExample.usageExample.title)).toBeFalsy();
+            })
+
+    });
+
     it("should select usage examples for scheduled word articles", () => {
         // consoleDebugSpy.and.callThrough();
         // consoleSpy.and.callThrough();
@@ -55,7 +2295,7 @@ describe("The lls-session-data-provider macro", () => {
         const rule2 = options.push.rule("rule2", {// should be taken as an example ue2
             scheduledForward: {}
         });
-        const rule5 = options.push.rule("rule5", {// should not be taken because it isn't overdue
+        const rule5 = options.push.rule("rule5", {// should be taken as an example because the usage example is new
             scheduledForward: {
                 due: inFutureTime
             }
@@ -74,14 +2314,14 @@ describe("The lls-session-data-provider macro", () => {
                 due: inFutureTime
             }
         });
-        const ue5 = options.push.usageExample("ue5", {// should not be taken because the linked rule isn't overdue
+        const ue5 = options.push.usageExample("ue5", {// should be taken because it's new
             tags: [rule5.rule.title],
             scheduledForward: {}
         });
         const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
         console.debug("data", data)
         expect(Array.isArray(data)).toBeTruthy();
-        expect(data.length).toEqual(3);
+        expect(data.length).toEqual(4);
         const srcs = data.map(el => el.src);
         expect(srcs.includes(wa1.wordArticle.title)).toBeTruthy();
         expect(srcs.includes(wa2.wordArticle.title)).toBeFalsy();
@@ -93,7 +2333,7 @@ describe("The lls-session-data-provider macro", () => {
         expect(srcs.includes(ue2.usageExample.title)).toBeTruthy();
         expect(srcs.includes(ue3.usageExample.title)).toBeFalsy();
         expect(srcs.includes(ue4.usageExample.title)).toBeTruthy();
-        expect(srcs.includes(ue5.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(ue5.usageExample.title)).toBeTruthy();
     })
 
     it("should select new word articles prior to overdue ones", () => {
@@ -195,13 +2435,13 @@ describe("The lls-session-data-provider macro", () => {
         const ordinaryNewWithExample = options.push.wordArticle("ordinary_new_with_example", {// should be taken as an example
             scheduledForward: {}
         });
-        const focusedInFuture = options.push.wordArticle("focused_in_future", {// should not be taken because it isn't overdue despite it is focused
+        const focusedInFutureArticle = options.push.wordArticle("focused_in_future", {// should be taken as a focused new usage example
             tags: [focusedTag.userTag.title],
             scheduledForward: {
                 due: inFutureTime
             }
         });
-        const focusedOverdue = options.push.wordArticle("focused_overdue", {// should be taken as an example
+        const focusedOverdueArticle = options.push.wordArticle("focused_overdue", {// should be taken as an example
             tags: [focusedTag.userTag.title],
             scheduledForward: {
                 due: overdueTime
@@ -224,7 +2464,7 @@ describe("The lls-session-data-provider macro", () => {
         const rule2 = options.push.rule("rule2", {// should be taken as an example ue2
             scheduledForward: {}
         });
-        const rule5 = options.push.rule("rule5", {// should not be taken because it isn't overdue
+        const rule5 = options.push.rule("rule5", {// should be taken as a usage example because the example is new
             scheduledForward: {
                 due: inFutureTime
             }
@@ -236,22 +2476,22 @@ describe("The lls-session-data-provider macro", () => {
             tags: [ordinaryNewWithExample.wordArticle.title, rule2.rule.title],
             scheduledForward: {}
         });
-        const ue3 = options.push.usageExample("ue3", {// should not be taken because the linked article isn't overdue
-            tags: [focusedInFuture.wordArticle.title, focusedTag.userTag.title],
+        const focusedNewUsageExampleForFocusedInFutureArticle = options.push.usageExample("focused_new_usage_example_for_focused_in_future_article", {// should be taken despite the linked article isn't overdue because this example is focused and new (overdue)
+            tags: [focusedInFutureArticle.wordArticle.title, focusedTag.userTag.title],
             scheduledForward: {}
         });
         const focusedOverdueUsageExampleForFocusedArticle = options.push.usageExample("focused_overdue_usage_example_for_focused_article", {
-            tags: [focusedOverdue.wordArticle.title, focusedTag.userTag.title],
+            tags: [focusedOverdueArticle.wordArticle.title, focusedTag.userTag.title],
             scheduledForward: {
                 due: overdueTime
             }
         });
-        const focusedNewUsageExampleForFocusedArticle = options.push.usageExample("focused_new_usage_example_for_focused_article", {
-            tags: [focusedOverdue.wordArticle.title, focusedTag.userTag.title],
+        const focusedNewUsageExampleForFocusedOverdueArticle = options.push.usageExample("focused_new_usage_example_for_focused_overdue_article", {
+            tags: [focusedOverdueArticle.wordArticle.title, focusedTag.userTag.title],
             scheduledForward: {}
         });
         const ordinaryOverdueUsageExampleForFocusedArticle = options.push.usageExample("ordinary_overdue_usage_example_for_focused_article", {
-            tags: [focusedOverdue.wordArticle.title],
+            tags: [focusedOverdueArticle.wordArticle.title],
             scheduledForward: {
                 due: overdueTime
             }
@@ -274,7 +2514,7 @@ describe("The lls-session-data-provider macro", () => {
                 due: overdueTime
             }
         });
-        const ue5 = options.push.usageExample("ue5", {// should not be taken because the linked rule isn't overdue
+        const ue5 = options.push.usageExample("ue5", {// should be taken because it's new
             tags: [rule5.rule.title],
             scheduledForward: {}
         });
@@ -291,20 +2531,21 @@ describe("The lls-session-data-provider macro", () => {
         const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
         console.debug("data", data)
         expect(Array.isArray(data)).toBeTruthy();
-        expect(data.length).toEqual(6);
+        expect(data.length).toEqual(8);
         const srcs = data.map(el => el.src);
         expect(srcs.includes(withoutExamples.wag["ordinary"].title)).toBeFalsy();
         expect(srcs.includes(withoutExamples.wag["focused"].title)).toBeTruthy();
         expect(srcs.includes(ordinaryNewWithExample.wordArticle.title)).toBeFalsy();
-        expect(srcs.includes(focusedInFuture.wordArticle.title)).toBeFalsy();
+        expect(srcs.includes(focusedInFutureArticle.wordArticle.title)).toBeFalsy();
         expect(srcs.includes(ordinaryWithFocusedExample.wordArticle.title)).toBeFalsy();
         expect(srcs.includes(rule1.rule.title)).toBeFalsy();
         expect(srcs.includes(rule2.rule.title)).toBeFalsy();
         expect(srcs.includes(rule5.rule.title)).toBeFalsy();
         expect(srcs.includes(ordinaryNewUsageExample.usageExample.title)).toBeTruthy();
         expect(srcs.indexOf(withoutExamples.wag["focused"].title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
-        expect(srcs.includes(ue3.usageExample.title)).toBeFalsy();
-        expect(srcs.includes(focusedNewUsageExampleForFocusedArticle.usageExample.title)).toBeTruthy();
+        expect(srcs.includes(focusedNewUsageExampleForFocusedInFutureArticle.usageExample.title)).toBeTruthy();
+        expect(srcs.indexOf(focusedNewUsageExampleForFocusedInFutureArticle.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
+        expect(srcs.includes(focusedNewUsageExampleForFocusedOverdueArticle.usageExample.title)).toBeTruthy();
         expect(srcs.includes(focusedOverdueUsageExampleForFocusedArticle.usageExample.title)).toBeFalsy();
         expect(srcs.includes(ordinaryOverdueUsageExampleForFocusedArticle.usageExample.title)).toBeFalsy();
         expect(srcs.includes(focusedUsageExampleForOrdinaryArticle.usageExample.title)).toBeTruthy();
@@ -312,11 +2553,10 @@ describe("The lls-session-data-provider macro", () => {
         expect(srcs.indexOf(focusedUsageExampleForOrdinaryArticle.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
         expect(srcs.includes(ordinaryUsageExampleForFocusedArticle.usageExample.title)).toBeTruthy();
         expect(srcs.indexOf(ordinaryUsageExampleForFocusedArticle.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
-        expect(srcs.includes(ue5.usageExample.title)).toBeFalsy();
+        expect(srcs.includes(ue5.usageExample.title)).toBeTruthy();
         expect(srcs.includes(rule6OrdinaryExample.usageExample.title)).toBeFalsy();
         expect(srcs.includes(rule6FocusedExample.usageExample.title)).toBeTruthy();
         expect(srcs.indexOf(rule6FocusedExample.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
-
     })
 
 });
