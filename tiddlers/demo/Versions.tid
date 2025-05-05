@@ -1,6 +1,10 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.9
+
+* fixed getting focused questions for provided learning session
+
 !! 0.2.8
 
 * attach user tags to usage examples
