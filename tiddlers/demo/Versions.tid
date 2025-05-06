@@ -4,6 +4,7 @@ type: text/vnd.tiddlywiki
 !! 0.2.9
 
 * fixed getting focused questions for provided learning session
+* fixed questions ordering for provided learning session
 
 !! 0.2.8
 

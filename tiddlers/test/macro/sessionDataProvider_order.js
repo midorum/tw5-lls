@@ -18,7 +18,7 @@ describe("The lls-session-data-provider macro", () => {
     });
 
     it("should select word articles and usage examples in the following order (with the specified priority)", () => {
-        consoleDebugSpy.and.callThrough();
+        // consoleDebugSpy.and.callThrough();
         // consoleSpy.and.callThrough();
         const options = utils.setupWiki();
         const proxyWiki = utils.getSrsProxyWiki(options.wiki);
