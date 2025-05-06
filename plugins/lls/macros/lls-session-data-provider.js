@@ -35,6 +35,9 @@ Produces custom data for SRS learning session
     const focusedThenNewThenOverdue = (o1, o2) => (o1.focused && !o2.focused) ? -1
       : (!o1.focused && o2.focused) ? 1
         : (o1.due || wiki.SRS_BASE_TIME) - (o2.due || wiki.SRS_BASE_TIME);
+    const focusedThenNewThenOverdueOnBase = (o1, o2) => (o1.focused && !o2.focused) ? -1
+      : (!o1.focused && o2.focused) ? 1
+        : (o1.base || wiki.SRS_BASE_TIME) - (o2.base || wiki.SRS_BASE_TIME);
     const isNewOrOverdue = el => !el.due || el.due < time;
     const isExists = el => !!el;
     const isFocused = title => (wiki.getTiddler(title).fields.tags || []).some(tag => focusedTags.includes(tag));
@@ -82,6 +85,7 @@ Produces custom data for SRS learning session
           if (!examples.length) {
             if (isArticleOverdue) {
               article["type"] = "$:/lls/tags/wordArticle";
+              if (article.due) article.base = article.due;
               return article;
             } else return undefined;
           }
@@ -90,6 +94,7 @@ Produces custom data for SRS learning session
           const isUsageExampleOverdue = isNewOrOverdue(ue);
           if (isArticleOverdue || (isUsageExampleOverdue && (article.focused || ue.focused))) {
             ue["type"] = "$:/lls/tags/usageExample";
+            if (article.due) ue.base = article.due;
             return ue;
           } else return undefined;
         })
@@ -148,6 +153,7 @@ Produces custom data for SRS learning session
         const isUsageExampleOverdue = isNewOrOverdue(ue);
         if (isRuleOverdue || isUsageExampleOverdue) {
           ue["type"] = "$:/lls/tags/usageExample";
+          if (rule.due) ue.base = rule.due;
           return ue;
         } else return undefined;
       })
@@ -157,7 +163,7 @@ Produces custom data for SRS learning session
       });
     // console.debug("ruleMap", Object.keys(ruleMap))
     // console.debug("ruleMap", ruleMap)
-    return Object.values(articleMap).concat(Object.values(ruleMap).slice(0, limit - count)).sort(focusedThenNewThenOverdue);
+    return Object.values(articleMap).concat(Object.values(ruleMap).slice(0, limit - count)).sort(focusedThenNewThenOverdueOnBase);
   };
 
 })();
