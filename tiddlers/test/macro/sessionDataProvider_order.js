@@ -6,32 +6,37 @@ const Logger = $tw.utils.Logger.prototype;
 const offset_24h = 86400000;
 
 describe("The lls-session-data-provider macro", () => {
-    var consoleSpy;
+    var consoleLogSpy;
     var consoleInfoSpy;
     var consoleDebugSpy;
+    var consoleTraceSpy;
     var loggerSpy;
     var sessionDataProvider;
 
     beforeEach(function () {
-        consoleSpy = spyOn(console, 'log');
+        consoleLogSpy = spyOn(console, 'log');
         consoleInfoSpy = spyOn(console, 'info');
         consoleDebugSpy = spyOn(console, 'debug');
+        consoleTraceSpy = spyOn(console, 'trace');
         loggerSpy = spyOn(Logger, 'alert');
         sessionDataProvider = $tw.macros["lls-session-data-provider"]
     });
 
     it("should select word articles and usage examples in the following order (with the specified priority)", () => {
+        // consoleLogSpy.and.callThrough();
         // consoleInfoSpy.and.callThrough();
         // consoleDebugSpy.and.callThrough();
-        // consoleSpy.and.callThrough();
+        // consoleTraceSpy.and.callThrough();
         const options = utils.setupWiki();
         const proxyWiki = utils.getSrsProxyWiki(options.wiki);
         const direction = "forward";
         const time = new Date().getTime();
         const overdueTime = new Date().getTime() - offset_24h;
         const inFutureTime = new Date().getTime() + offset_24h;
+        const repeatEachItem = 3;
 
         const items = createItems({
+            repeatEach: repeatEachItem,
             focusedNewQuestionsBasedOnArticles: [
                 { wa: { focused: true } },
                 { wa: { focused: false }, ue: { focused: true } },
@@ -120,7 +125,7 @@ describe("The lls-session-data-provider macro", () => {
                 { gr: { due: inFutureTime }, ue: { focused: true, due: inFutureTime } },
             ]
         }, overdueTime, inFutureTime, options);
-        // console.debug("items", items)
+        console.log("items", items)
         // options.wiki.filterTiddlers("[prefix[$:/lls/db/wa]]").forEach(el => console.debug(options.wiki.getTiddler(el)))
         // options.wiki.filterTiddlers("[prefix[$:/lls/db/ue]]").forEach(el => console.debug(options.wiki.getTiddler(el)))
 
@@ -161,11 +166,10 @@ describe("The lls-session-data-provider macro", () => {
             + ordinaryOverdueQuestionsBasedOnRulesCount
             + ordinaryInFutureQuestionsBasedOnRulesCount;
         const totalQuestions = totalQuestionsThatCanBeAsked + items.questionsThatShouldNotBeSelected.length;
-        expect(totalQuestions).toEqual(63);
+        expect(totalQuestions).toEqual(63 * repeatEachItem);
 
         // obtain data for learning session
-        // const limit = 50;
-        // testForLimit(limit);
+        // testForLimit(50);
         llsUtils.range(0, totalQuestions + 1, 1).forEach(i => testForLimit(i));
 
         function testForLimit(limit) {
@@ -245,53 +249,56 @@ describe("The lls-session-data-provider macro", () => {
         var index = 0;
         const putGroup = function (groupData) {
             const items = [];
-            groupData.toReversed() // we put items in the reerse order to eliminate involving their position in the database
-                .forEach(el => {
-                    if (el.wa) {
-                        const waKey = index + "_a" + (el.wa.focused ? "f" : "o") + stringifyDueTime(el.wa.due);
-                        const userTag = el.wa.focused ? focusedTag : ordinaryTag;
-                        const wordArticle = options.push.wordArticle(waKey, {
-                            tags: [userTag.userTag.title],
-                            scheduledForward: {
-                                due: el.wa.due
-                            }
-                        });
-                        if (el.ue) {
-                            const ueKey = waKey + "_e" + (el.ue.focused ? "f" : "o") + stringifyDueTime(el.ue.due);
-                            const userTag = el.ue.focused ? focusedTag : ordinaryTag;
-                            const usageExample = options.push.usageExample(ueKey, {
-                                tags: [wordArticle.wordArticle.title, userTag.userTag.title],
+            var repeatEach = data.repeatEach;
+            while (repeatEach-- > 0) {
+                groupData.toReversed() // we put items in the reerse order to eliminate involving their position in the database
+                    .forEach(el => {
+                        if (el.wa) {
+                            const waKey = index + "_a" + (el.wa.focused ? "f" : "o") + stringifyDueTime(el.wa.due);
+                            const userTag = el.wa.focused ? focusedTag : ordinaryTag;
+                            const wordArticle = options.push.wordArticle(waKey, {
+                                tags: [userTag.userTag.title],
                                 scheduledForward: {
-                                    due: el.ue.due
+                                    due: el.wa.due
                                 }
                             });
-                            items.push(usageExample.usageExample.title);
-                        } else {
-                            items.push(wordArticle.wordArticle.title);
-                        }
-                    } else if (el.gr) {
-                        const grKey = index + "_r" + stringifyDueTime(el.gr.due);
-                        const grammarRule = options.push.rule(grKey, {
-                            scheduledForward: {
-                                due: el.gr.due
+                            if (el.ue) {
+                                const ueKey = waKey + "_e" + (el.ue.focused ? "f" : "o") + stringifyDueTime(el.ue.due);
+                                const userTag = el.ue.focused ? focusedTag : ordinaryTag;
+                                const usageExample = options.push.usageExample(ueKey, {
+                                    tags: [wordArticle.wordArticle.title, userTag.userTag.title],
+                                    scheduledForward: {
+                                        due: el.ue.due
+                                    }
+                                });
+                                items.push(usageExample.usageExample.title);
+                            } else {
+                                items.push(wordArticle.wordArticle.title);
                             }
-                        });
-                        if (el.ue) {
-                            const ueKey = grKey + "_e" + (el.ue.focused ? "f" : "o") + stringifyDueTime(el.ue.due);
-                            const userTag = el.ue.focused ? focusedTag : ordinaryTag;
-                            const usageExample = options.push.usageExample(ueKey, {
-                                tags: [grammarRule.rule.title, userTag.userTag.title],
+                        } else if (el.gr) {
+                            const grKey = index + "_r" + stringifyDueTime(el.gr.due);
+                            const grammarRule = options.push.rule(grKey, {
                                 scheduledForward: {
-                                    due: el.ue.due
+                                    due: el.gr.due
                                 }
                             });
-                            items.push(usageExample.usageExample.title);
-                        } else {
-                            items.push(grammarRule.rule.title);
+                            if (el.ue) {
+                                const ueKey = grKey + "_e" + (el.ue.focused ? "f" : "o") + stringifyDueTime(el.ue.due);
+                                const userTag = el.ue.focused ? focusedTag : ordinaryTag;
+                                const usageExample = options.push.usageExample(ueKey, {
+                                    tags: [grammarRule.rule.title, userTag.userTag.title],
+                                    scheduledForward: {
+                                        due: el.ue.due
+                                    }
+                                });
+                                items.push(usageExample.usageExample.title);
+                            } else {
+                                items.push(grammarRule.rule.title);
+                            }
                         }
-                    }
-                    index++;
-                });
+                        index++;
+                    });
+            }
             return items;
         };
         // we put items in the reerse order to eliminate involving their position in the database
