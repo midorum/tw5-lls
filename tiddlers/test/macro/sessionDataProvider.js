@@ -2556,7 +2556,7 @@ describe("The lls-session-data-provider macro", () => {
         expect(srcs.includes(ue5.usageExample.title)).toBeTruthy();
         expect(srcs.includes(rule6OrdinaryExample.usageExample.title)).toBeFalsy();
         expect(srcs.includes(rule6FocusedExample.usageExample.title)).toBeTruthy();
-        expect(srcs.indexOf(rule6FocusedExample.usageExample.title) < srcs.indexOf(ordinaryNewUsageExample.usageExample.title)).toBeTruthy(); //focused prior to ordinary
+        expect(srcs.indexOf(srcs.indexOf(ordinaryNewUsageExample.usageExample.title) < rule6FocusedExample.usageExample.title)).toBeTruthy(); //word article question prior to grammar rule question
     })
 
 });

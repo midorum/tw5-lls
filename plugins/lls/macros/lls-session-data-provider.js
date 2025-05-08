@@ -17,6 +17,7 @@ Produces custom data for SRS learning session
   ];
   exports.run = function (wiki, direction, limit, time) {
     // console.debug( "lls-session-data-provider", wiki, direction, limit, time)
+    const basedOn = { wordArticle: 0, grammarRule: 1 };
     const takeForward = direction === "forward" || direction === "both";
     const takeBackward = direction === "backward" || direction === "both";
     const itemFitsDirection = el => (takeForward && el.forward) || (takeBackward && el.backward);
@@ -35,9 +36,11 @@ Produces custom data for SRS learning session
     const focusedThenNewThenOverdue = (o1, o2) => (o1.focused && !o2.focused) ? -1
       : (!o1.focused && o2.focused) ? 1
         : (o1.due || wiki.SRS_BASE_TIME) - (o2.due || wiki.SRS_BASE_TIME);
-    const focusedThenNewThenOverdueOnBase = (o1, o2) => (o1.focused && !o2.focused) ? -1
-      : (!o1.focused && o2.focused) ? 1
-        : (o1.base || wiki.SRS_BASE_TIME) - (o2.base || wiki.SRS_BASE_TIME);
+    const focusedThenNewThenOverdueOnBase = (o1, o2) =>
+      (o1.basedOn !== o2.basedOn) ? o1.basedOn - o2.basedOn
+        : (o1.focused && !o2.focused) ? -1
+          : (!o1.focused && o2.focused) ? 1
+            : (o1.base || wiki.SRS_BASE_TIME) - (o2.base || wiki.SRS_BASE_TIME);
     const isNewOrOverdue = el => !el.due || el.due < time;
     const isExists = el => !!el;
     const isFocused = title => (wiki.getTiddler(title).fields.tags || []).some(tag => focusedTags.includes(tag));
@@ -86,6 +89,7 @@ Produces custom data for SRS learning session
             if (isArticleOverdue) {
               article["type"] = "$:/lls/tags/wordArticle";
               if (article.due) article.base = article.due;
+              article.basedOn = basedOn.wordArticle;
               return article;
             } else return undefined;
           }
@@ -95,17 +99,18 @@ Produces custom data for SRS learning session
           if (isArticleOverdue || (isUsageExampleOverdue && (article.focused || ue.focused))) {
             ue["type"] = "$:/lls/tags/usageExample";
             if (article.due) ue.base = article.due;
+            ue.basedOn = basedOn.wordArticle;
             return ue;
           } else return undefined;
         })
         .filter(isExists)
         // .map(el => {console.debug("wa is new or overdue", el);return el;})
-        .sort(focusedThenNewThenOverdue)
+        .sort(focusedThenNewThenOverdueOnBase)
         // .map(el => {console.debug("wa sorted", el);return el;})
         .at(0))
       // .map(el => { console.debug("selected article or usage example", el); return el; })
       .filter(isExists)
-      .sort(focusedThenNewThenOverdue)
+      .sort(focusedThenNewThenOverdueOnBase)
       // .map(el => { console.debug("selected wa after sorting", el); return el; })
       .forEach(item => {
         if (count < limit && !articleMap[item.src]) {
@@ -115,7 +120,7 @@ Produces custom data for SRS learning session
       });
     // console.debug("articleMap", Object.keys(articleMap))
     // console.debug("articleMap", articleMap)
-    if (count >= limit) return Object.values(articleMap).slice(0, limit).sort(focusedThenNewThenOverdue);
+    if (count >= limit) return Object.values(articleMap).slice(0, limit).sort(focusedThenNewThenOverdueOnBase);
     // take examples from rules if the current count is insufficient
     const ruleMap = {};
     const rules = wiki.getTitlesWithTag("$:/lls/tags/rule");
@@ -154,10 +159,12 @@ Produces custom data for SRS learning session
         if (isRuleOverdue || isUsageExampleOverdue) {
           ue["type"] = "$:/lls/tags/usageExample";
           if (rule.due) ue.base = rule.due;
+          ue.basedOn = basedOn.grammarRule;
           return ue;
         } else return undefined;
       })
       .filter(isExists)
+      .sort(focusedThenNewThenOverdueOnBase)
       .forEach(item => {
         if (!ruleMap[item.src]) ruleMap[item.src] = item;
       });
