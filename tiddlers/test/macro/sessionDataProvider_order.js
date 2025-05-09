@@ -168,13 +168,17 @@ describe("The lls-session-data-provider macro", () => {
         const totalQuestions = totalQuestionsThatCanBeAsked + items.questionsThatShouldNotBeSelected.length;
         expect(totalQuestions).toEqual(63 * repeatEachItem);
 
+        console.time("tottal time")
         // obtain data for learning session
-        // testForLimit(50);
+        // testForLimit(100);
         llsUtils.range(0, totalQuestions + 1, 1).forEach(i => testForLimit(i));
+        console.timeEnd("tottal time")
 
         function testForLimit(limit) {
             console.info("test the session data provided when the limit equal to", limit);
+            // console.time("time with limit " + limit)
             const data = sessionDataProvider.run(proxyWiki, direction, limit, time);
+            // console.timeEnd("time with limit " + limit)
             console.info("got data total", data.length);
             console.debug("data", data);
             expect(Array.isArray(data)).toBeTruthy();

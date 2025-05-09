@@ -8,6 +8,13 @@ Produces custom data for SRS learning session
 (function () {
   "use strict";
 
+  Array.prototype.toMinimal = function (comparator) {
+    if (this.length === 0) return undefined;
+    return this.reduce((min, current) =>
+      comparator(current, min) < 0 ? current : min
+    );
+  };
+
   exports.name = "lls-session-data-provider";
   exports.params = [
     { name: "wiki", description: "Object that allows to retrieve data from the wiki" },
@@ -85,29 +92,26 @@ Produces custom data for SRS learning session
               return result;
             })
             .filter(isExists);
-          if (!examples.length) {
-            if (isArticleOverdue) {
-              article["type"] = "$:/lls/tags/wordArticle";
-              if (article.due) article.base = article.due;
-              article.basedOn = basedOn.wordArticle;
-              return article;
+          const ue = examples.toMinimal(focusedThenNewThenOverdue);
+          if (ue) {
+            const isUsageExampleOverdue = isNewOrOverdue(ue);
+            if (isArticleOverdue || (isUsageExampleOverdue && (article.focused || ue.focused))) {
+              ue["type"] = "$:/lls/tags/usageExample";
+              if (article.due) ue.base = article.due;
+              ue.basedOn = basedOn.wordArticle;
+              return ue;
             } else return undefined;
           }
-          const ue = examples.sort(focusedThenNewThenOverdue)
-            .at(0);
-          const isUsageExampleOverdue = isNewOrOverdue(ue);
-          if (isArticleOverdue || (isUsageExampleOverdue && (article.focused || ue.focused))) {
-            ue["type"] = "$:/lls/tags/usageExample";
-            if (article.due) ue.base = article.due;
-            ue.basedOn = basedOn.wordArticle;
-            return ue;
+          if (isArticleOverdue) {
+            article["type"] = "$:/lls/tags/wordArticle";
+            if (article.due) article.base = article.due;
+            article.basedOn = basedOn.wordArticle;
+            return article;
           } else return undefined;
         })
         .filter(isExists)
         // .map(el => {console.debug("wa is new or overdue", el);return el;})
-        .sort(focusedThenNewThenOverdueOnBase)
-        // .map(el => {console.debug("wa sorted", el);return el;})
-        .at(0))
+        .toMinimal(focusedThenNewThenOverdueOnBase))
       // .map(el => { console.debug("selected article or usage example", el); return el; })
       .filter(isExists)
       .sort(focusedThenNewThenOverdueOnBase)
@@ -150,11 +154,8 @@ Produces custom data for SRS learning session
             return result;
           })
           .filter(el => !!el && !articleMap[el.src]);
-        if (!examples.length) {
-          return undefined;
-        }
-        const ue = examples.sort(focusedThenNewThenOverdue)
-          .at(0);
+        const ue = examples.toMinimal(focusedThenNewThenOverdue);
+        if (!ue) return undefined;
         const isUsageExampleOverdue = isNewOrOverdue(ue);
         if (isRuleOverdue || isUsageExampleOverdue) {
           ue["type"] = "$:/lls/tags/usageExample";
