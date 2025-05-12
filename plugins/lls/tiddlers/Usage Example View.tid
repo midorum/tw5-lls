@@ -170,17 +170,6 @@ state: $:/lls/state/usageExampleView
 </$reveal>
 \end
 
-\define notesCell()
-<$reveal type="nomatch" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-  <<getExampleTiddlerField text>>
-</$reveal>
-<$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
-  <div class="lls-wide-input">
-   <$edit-text tiddler=<<ref>> field="text" minHeight="10px" tag=textarea/>
-  </div>
-</$reveal>
-\end
-
 \procedure exampleSection()
 <span class="lls-form-section-caption">
   Usage Example
@@ -245,6 +234,12 @@ state: $:/lls/state/usageExampleView
       setIndex="editNotes"
       setTo="yes"
       icon="$:/core/images/edit-button"
+      $mode=inline
+    />
+    <$transclude
+      $variable="getExampleTiddlerField"
+      field="text"
+      $mode=block
     />
   </$reveal>
   <$reveal type="match" stateTitle=<<usageExampleViewState>> stateIndex=editNotes text="yes">
@@ -255,13 +250,13 @@ state: $:/lls/state/usageExampleView
       setIndex="editNotes"
       setTo=""
       icon="$:/core/images/done-button"
+      $mode=inline
     />
+    <div class="lls-wide-input">
+      <$edit-text tiddler=<<ref>> field="text" minHeight="10px" tag=textarea/>
+    </div>
   </$reveal>
 </span>
-<$transclude
- $variable="notesCell"
- $mode=block
-/>
 \end notesSection
 
 \define addWordMeaningSection()

@@ -513,7 +513,7 @@ synonymsInfoMode-<<wordArticle>>
 \end synonymsInfo
 
 \define wordArticleNotesSection()
-<!-- blank lines are necessary to keep notes formatting -->
+<!-- blank lines below are necessary to keep notes being formatted -->
 <$list
  filter="[<wordArticle>get[notes]]"
 >
